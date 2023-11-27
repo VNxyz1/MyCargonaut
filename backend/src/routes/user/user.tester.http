@@ -1,0 +1,77 @@
+### Get Logged In User
+GET localhost:3000/user HTTP/2
+
+### POST User
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "vnxyz312@gmail.com",
+  "firstName" : "Vincent",
+  "lastName": "Neeb",
+  "username": "VNxyz",
+  "password": "1234"
+}
+
+### Update User
+PUT localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "vnxyz312@gmail.com",
+  "firstName" : "Vincent",
+  "lastName": "Schneeb",
+  "username": "VNxyz12",
+  "password": "1234"
+}
+
+### Delete logged in User
+DELETE localhost:3000/user HTTP/2
+
+
+### POST User Fehler selbe Mail
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "vnxyz312@gmail.com",
+  "firstName" : "Vincent",
+  "lastName": "Neeb",
+  "username": "VNxyz",
+  "password": "1234"
+}
+
+### POST User Fehler Parameter fehlt
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "vnxy32@gmail.com",
+  "firstName" : "Vincent",
+  "lastName": "Neeb",
+  "password": "1234"
+}
+
+### POST second User
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "kneisel@gmail.com",
+  "firstName" : "Peter",
+  "lastName": "Kneisel",
+  "username": "Kneiselmeister",
+  "password": "1234"
+}
+
+### POST User
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "sdakkwd@gmail.com",
+  "firstName" : "Vincent",
+  "lastName": "Neeb",
+  "username": "sdas",
+  "password": "1234"
+}

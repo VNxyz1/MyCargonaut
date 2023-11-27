@@ -20,7 +20,7 @@ export class AuthService {
       return user;
     } else {
       throw new NotFoundException(
-        `There is no combination of this username or email and this password.`,
+        `There is no combination of this email and password.`,
       );
     }
   }

@@ -1,0 +1,37 @@
+### Log In with Username
+POST localhost:3000/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "vnxyz312@gmail.com",
+  "password": "1234"
+}
+
+### LogOut
+POST localhost:3000/auth/logout HTTP/2
+
+### Log In just with password
+POST localhost:3000/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "password": "1234"
+}
+
+### Log In with second User
+POST localhost:3000/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "username": "Kneiselmeister",
+  "password": "1234"
+}
+
+### Log In with Mail
+POST localhost:3000/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "sdakkwd@gmail.com",
+  "password": "1234"
+}
