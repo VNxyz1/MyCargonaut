@@ -36,11 +36,11 @@ export class UserService {
 
   async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
 
-    await this.duplicateUsername(updateUserDto.username);
 
     const user = await this.userRepository.findOne({ where: { id } });
 
     if (updateUserDto.username) {
+      await this.duplicateUsername(updateUserDto.username);
       user.username = updateUserDto.username;
     }
     if (updateUserDto.eMail) {
