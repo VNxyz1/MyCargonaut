@@ -22,15 +22,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: "./server"
+        working-directory: "./backend"
 
       - name: Run Tests
         run: npm test
-        working-directory: "./server"
+        working-directory: "./backend"
 
       - name: Run Lint
         run: npm run lint
-        working-directory: "./server"
+        working-directory: "./backend"
 
   reject-push-on-error:
     runs-on: ubuntu-latest
