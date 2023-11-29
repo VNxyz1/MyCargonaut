@@ -1,9 +1,9 @@
-import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
-import {CreateUserRequestDto} from "../user/DTOs/CreateUserRequestDTO";
-import {UpdateUserRequestDto} from "../user/DTOs/UpdateUserRequestDTO";
+import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
+import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
 
 @Injectable()
 export class UserService {
@@ -21,27 +21,18 @@ export class UserService {
   }
 
   async postUser(createUserDto: CreateUserRequestDto) {
-    await this.duplicateUsername(createUserDto.username);
     const user = this.userRepository.create(createUserDto);
     return await this.userRepository.save(user);
   }
 
-  private async duplicateUsername(username) {
-    const duplicate = await this.userRepository.findOne({where: {username}});
-    if(duplicate) {
-      throw new InternalServerErrorException("Username is already taken")
-    }
-
-  }
-
   async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
-
-
     const user = await this.userRepository.findOne({ where: { id } });
 
-    if (updateUserDto.username) {
-      await this.duplicateUsername(updateUserDto.username);
-      user.username = updateUserDto.username;
+    if (updateUserDto.birthday) {
+      user.birthday = updateUserDto.birthday;
+    }
+    if (updateUserDto.phoneNumber) {
+      user.phoneNumber = updateUserDto.phoneNumber;
     }
     if (updateUserDto.eMail) {
       user.eMail = updateUserDto.eMail;
@@ -63,17 +54,16 @@ export class UserService {
   }
 
   async deleteLoggedInUser(id: number) {
-      const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
 
-      user.username = `Gelöschter Benutzer${user.id}`;
-      user.firstName = "****";
-      user.lastName = "****";
-      user.eMail = null;
-      user.profilePicture = "";
-      user.password = null;
+    user.phoneNumber = null;
+    user.firstName = '****';
+    user.lastName = '****';
+    user.eMail = null;
+    user.profilePicture = '';
+    user.password = null;
+    user.birthday = null;
 
-      await this.userRepository.save(user);
+    await this.userRepository.save(user);
   }
-
-
 }

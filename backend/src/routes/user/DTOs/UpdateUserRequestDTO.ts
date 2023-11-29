@@ -1,39 +1,49 @@
-import {IsEmail, IsNotEmpty, IsOptional, IsString} from 'class-validator';
-import {ApiProperty} from "@nestjs/swagger";
+import {
+  IsEmail,
+  IsISO8601,
+  IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 export class UpdateUserRequestDto {
+  @IsNotEmpty()
+  @IsEmail()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  eMail?: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    eMail?: string;
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  firstName?: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    firstName?: string;
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  lastName?: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    lastName?: string;
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  profilePicture?: string;
 
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    username?: string;
+  @IsOptional()
+  @IsPhoneNumber()
+  @ApiProperty({ required: false })
+  phoneNumber?: string;
 
-    @IsOptional()
-    @ApiProperty({ required: false })
-    profilePicture?: string;
+  @IsOptional()
+  @IsISO8601()
+  @ApiProperty({ required: false })
+  birthday?: Date;
 
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    password?: string;
-
+  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  password?: string;
 }

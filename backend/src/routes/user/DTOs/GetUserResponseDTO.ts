@@ -1,4 +1,12 @@
-import { IsEmail, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsISO8601,
+  IsNotEmpty,
+  IsNumber,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetUserResponseDto {
@@ -22,12 +30,19 @@ export class GetUserResponseDto {
   @ApiProperty()
   lastName: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsPhoneNumber()
   @ApiProperty()
-  username: string;
+  phoneNumber: string;
 
   @IsString()
   @ApiProperty()
   profilePicture: string;
+
+  @IsISO8601()
+  @ApiProperty()
+  birthday: Date;
+
+  @IsNumber()
+  @ApiProperty()
+  coins: number;
 }

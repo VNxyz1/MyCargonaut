@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import {NotFoundException} from "@nestjs/common";
-import {User} from "../../database/User";
-import {getRepositoryToken} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import { NotFoundException } from '@nestjs/common';
+import { User } from '../../database/User';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 class UserRepositoryMock {
   findOne() {} // You may want to provide a mock implementation if needed
@@ -18,8 +18,8 @@ describe('UserService', () => {
       providers: [
         UserService,
         {
-          provide: getRepositoryToken(User), // This is a utility function from '@nestjs/typeorm'
-          useClass: UserRepositoryMock, // Use your mock class here
+          provide: getRepositoryToken(User),
+          useClass: UserRepositoryMock,
         },
       ],
     }).compile();
@@ -44,6 +44,8 @@ describe('UserService', () => {
   it('should throw NotFoundException when user is not found', async () => {
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-    await expect(userService.getUserById(1)).rejects.toThrowError(NotFoundException);
+    await expect(userService.getUserById(1)).rejects.toThrowError(
+      NotFoundException,
+    );
   });
 });
