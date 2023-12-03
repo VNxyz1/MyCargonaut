@@ -1,0 +1,18 @@
+.mainButton {
+    background: #005B52 !important;
+    border-radius: 20px !important;
+    border-color: #005B52 !important;
+    padding-left: 1.6rem !important;
+    padding-right: 1.6rem !important;
+    box-shadow: 0.15rem 0.15rem 0.15rem rgba(0, 0, 0, 0.21) !important;
+}
+
+.mainButton:hover {
+    box-shadow: 0.25rem 0.25rem 0.25rem rgba(0, 0, 0, 0.21) !important;
+
+}
+
+.mainButton:active {
+    box-shadow: 0.15rem 0.15rem 0.15rem rgba(0, 0, 0, 0.21) !important;
+
+}
