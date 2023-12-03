@@ -5,7 +5,7 @@ KMS WiSe 2023
 
 Der Server kann nur auf ein build zugreifen. Jede änderung im React Code wird erst nach einem ausführen des Build Scripts gültig.
 ```bash
-cd frontent
+cd frontend
 npm run build
 ```
 
@@ -13,8 +13,10 @@ npm run build
 Server Starten:
 ```bash
 cd backend
-mpm run start:dev
+npm run start:dev
 ```
+
+Öffnen auf: http://localhost:3000
 
 Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die Swagger API funktioniert :smiling_face_with_tear:
 
