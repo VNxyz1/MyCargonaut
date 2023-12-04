@@ -94,7 +94,7 @@ function LoginForm() {
                             <Form.Check type="checkbox" label="Remember Me"/>
                         </Form.Group>
                         <Button type="submit" className="mainButton">
-                            Submit
+                            login
                         </Button>
                     </Form>
                 </Card.Body>
