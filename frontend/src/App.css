@@ -9,10 +9,16 @@
 
 .mainButton:hover {
     box-shadow: 0.25rem 0.25rem 0.25rem rgba(0, 0, 0, 0.21) !important;
-
 }
 
 .mainButton:active {
     box-shadow: 0.15rem 0.15rem 0.15rem rgba(0, 0, 0, 0.21) !important;
+}
 
+.formLink {
+    text-decoration: underline;
+}
+
+.formLink:hover {
+    cursor: pointer;
 }
