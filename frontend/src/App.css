@@ -264,3 +264,31 @@ body {
 .prof-side-btn-wrapper span.disabled{
     color: #c3c3c3;
 }
+
+/*_____NumberFieldSpinner______*/
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                        margin: 0;
+                    }
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/*_______VehicleAddModal_______*/
+
+.image-preview-container {
+    display: flex;
+    align-items: center;
+}
+
+.preview-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 10px;
+}
