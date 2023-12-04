@@ -6,7 +6,8 @@ import logo from "../../assets/semi_androidMyCargonautmdpi.png"
 function LoginAndRegisterPage() {
 
     return (
-        <Container className="mt-4">
+        <div id="login_page">
+        <Container className="mt-4 content-container">
             <Row className="d-flex justify-content-center mb-5">
                 <Image style={{height: "5rem", width: "auto"}} src={logo} alt="Logo" fluid />
             </Row>
@@ -19,6 +20,7 @@ function LoginAndRegisterPage() {
                 </Col>
             </Row>
         </Container>
+        </div>
     );
 }
 export default LoginAndRegisterPage
