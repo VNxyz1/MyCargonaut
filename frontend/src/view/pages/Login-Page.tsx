@@ -1,10 +1,16 @@
+import Container from 'react-bootstrap/Container';
 
 function LoginPage() {
 
     return (
         <>
-            <h1>Hallooooo</h1>
+            <div id="login_page">
+            <Container className="content-container">
+                <h1>Login</h1>
+            </Container>
+            </div>
         </>
     );
 }
+
 export default LoginPage
