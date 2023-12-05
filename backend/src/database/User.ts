@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique} from 'typeorm';
+import {Offer} from "./Offer";
 
 @Entity()
 @Unique(['eMail'])
@@ -29,4 +30,13 @@ export class User {
 
   @Column({ default: 0 })
   coins: number;
+
+  @OneToMany(() => Offer, offer => offer.provider)
+  offers: Offer[];
+
+  @ManyToMany(() => Offer, offer => offer.clients)
+  @JoinTable()
+  trips: Offer[];
+
+
 }

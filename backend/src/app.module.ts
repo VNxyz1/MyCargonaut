@@ -7,6 +7,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './database/User';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthService } from './routes/auth.service/auth.service';
+import { OfferService } from './routes/offer.service/offer.service';
+import { OfferController } from './routes/offer/offer.controller';
+import {Offer} from "./database/Offer";
 
 @Module({
   imports: [
@@ -16,12 +19,12 @@ import { AuthService } from './routes/auth.service/auth.service';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './db/tmp.sqlite',
-      entities: [User],
+      entities: [User, Offer],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Offer]),
   ],
-  controllers: [UserController, AuthController],
-  providers: [UserService, AuthService],
+  controllers: [UserController, AuthController, OfferController],
+  providers: [UserService, AuthService, OfferService],
 })
 export class AppModule {}
