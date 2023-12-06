@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, InternalServerErrorException,
   Post,
   Put,
   Session,
@@ -48,8 +48,15 @@ export class UserController {
   @ApiOperation({ summary: 'Creates a new User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateUserRequestDto) {
-    await this.userService.postUser(body);
-    return new OKResponseWithMessageDTO(true, 'User Created');
+    try {
+      await this.userService.postUser(body);
+      return new OKResponseWithMessageDTO(true, 'User Created');
+    } catch (e) {
+      if (e.errno == 19) {
+        return new InternalServerErrorException("E-Mail bereits vergeben");
+      }
+    }
+
   }
 
   @Put()
