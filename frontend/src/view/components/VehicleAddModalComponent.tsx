@@ -45,9 +45,8 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
 
         setValidated(true);
         if (form.checkValidity()) {
-            if (image) {
-                console.log("image");
-            }
+            // TODO: send form data to backend
+            if (image) {} // only so that image is not unused for linting
             props.onHide();
         }
     };
