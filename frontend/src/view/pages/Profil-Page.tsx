@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect } from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -9,11 +9,15 @@ import MyTransportsComponent from "../components/MyTransportsComponent";
 import MyVehiclesComponent from "../components/MyVehiclesComponent";
 import ProfileEditModal from "../components/ProfileEditModalComponent";
 import VehicleAddModal from "../components/VehicleAddModalComponent";
+import { useAuth } from '../../AuthContext';
+import {useNavigate} from "react-router-dom";
 
 function ProfilPage() {
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
+   const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     const renderSectionContent = () => {
         switch (currentSection) {
@@ -35,6 +39,33 @@ function ProfilPage() {
     const openVehicleAddModal = () => {
         setShowVehicleAddModal(true);
     };
+
+    //Get logged user data
+    useEffect(() => {
+        console.log("PROFIL - GET USER");
+        const getLoggedInUser = async () => {
+            try {
+                const res = await fetch("/user", {
+                    method: "GET",
+                    headers: {},
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    console.log(data);
+                } else {
+                    console.error("Error fetching logged in user");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        if (isAuthenticated) {
+        getLoggedInUser();
+        } else {
+            navigate('/');
+            console.log("EINLOGGEN UM PROFIL ZU SEHEN!!")
+        }
+    }, [isAuthenticated]);
 
     return (
         <>

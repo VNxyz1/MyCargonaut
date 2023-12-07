@@ -2,6 +2,8 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {useState} from "react";
+import {useAuth} from '../../AuthContext';
+import {useNavigate} from 'react-router-dom';
 
 interface LoginDataProps {
     eMail: string;
@@ -9,24 +11,26 @@ interface LoginDataProps {
 }
 
 function LoginForm() {
+    const {login} = useAuth();
+    const navigate = useNavigate();
     const [feedback, setFeedback] = useState<string | undefined>(undefined);
     const [loginData, setLoginData] = useState<LoginDataProps>({eMail: "", password: ""});
 
     const handleSubmit = async (event: any) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const res = await postLogin();
-            if (res) {
-                console.log(res.message);
-                setFeedback(res.message);
+        event.preventDefault();
+        event.stopPropagation();
+        const res = await postLogin();
+        if (res) {
+            console.log(res.message);
+            setFeedback(res.message);
 
-                if (res.successful) {
-                    window.location.href = "/"
-                }
+            if (res.successful) {
+                login();
+                navigate('/profil');
             }
+        }
 
     };
-
 
     const postLogin = async () => {
         try {
@@ -47,7 +51,6 @@ function LoginForm() {
         } catch (error) {
             console.error("Error:", error);
         }
-
     }
 
 
@@ -69,14 +72,14 @@ function LoginForm() {
                             <Form.Control
                                 type="email"
                                 placeholder="E-Mail"
-                                onChange={(event) =>handleFormChange("eMail", event.target.value)}
+                                onChange={(event) => handleFormChange("eMail", event.target.value)}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="loginPassword">
                             <Form.Control
                                 type="password"
                                 placeholder="Passwort"
-                                onChange={(event) =>handleFormChange("password", event.target.value)}
+                                onChange={(event) => handleFormChange("password", event.target.value)}
                             />
                             {!feedback ?
                                 <></>
@@ -86,7 +89,7 @@ function LoginForm() {
                                 </p>
                             }
                             <Form.Text className="text-muted formLink">
-                                    Passwort vergessen?
+                                Passwort vergessen?
                             </Form.Text>
                         </Form.Group>
                         {/* TODO: remember me checkbox is not used (session) */}
