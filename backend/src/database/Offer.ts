@@ -1,5 +1,6 @@
-import {Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "./User";
+import { Plz } from "./Plz";
 
 @Entity()
 export class Offer {
@@ -9,16 +10,14 @@ export class Offer {
     @ManyToOne(() => User, { eager: true })
     provider: User;
 
-    @Column()
-    startPlz: number;
-
-    @Column()
-    endPlz: number;
+    @ManyToMany(() => Plz, plz => plz.offers, { eager: true })
+    @JoinTable()
+    route: Plz[];
 
     @Column()
     createdAt: Date;
 
-    @ManyToMany(() => User, user => user.trips)
+    @ManyToMany(() => User, user => user.trips, { eager: true })
     clients: User[];
 
     //TODO
@@ -30,7 +29,7 @@ export class Offer {
 
     //Todo
     @Column()
-    state: number;
+    state: string;
 
     @Column()
     description: string;

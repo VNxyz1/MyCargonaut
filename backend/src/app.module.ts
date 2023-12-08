@@ -10,6 +10,7 @@ import { AuthService } from './routes/auth.service/auth.service';
 import { OfferService } from './routes/offer.service/offer.service';
 import { OfferController } from './routes/offer/offer.controller';
 import {Offer} from "./database/Offer";
+import {Plz} from "./database/Plz";
 
 @Module({
   imports: [
@@ -19,10 +20,10 @@ import {Offer} from "./database/Offer";
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './db/tmp.sqlite',
-      entities: [User, Offer],
+      entities: [User, Offer, Plz],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Offer]),
+    TypeOrmModule.forFeature([User, Offer, Plz]),
   ],
   controllers: [UserController, AuthController, OfferController],
   providers: [UserService, AuthService, OfferService],

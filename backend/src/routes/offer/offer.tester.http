@@ -1,0 +1,32 @@
+### POST Offer
+POST localhost:3000/offer HTTP/2
+Content-Type: application/json
+
+{
+  "route": [
+    {
+      "plz": 63679
+    },
+    {
+      "plz": 64002
+    },
+    {
+      "plz": 35290
+    }
+  ],
+  "vehicle": "test",
+  "description": "Das ist ein b!",
+  "startDate": "2024-02-18"
+}
+
+
+### GET all offers
+GET localhost:3000/offer HTTP/2
+
+
+### GET offers of logged in user
+GET localhost:3000/offer/own HTTP/2
+
+
+###Get filtered offerlist
+GET localhost:3000/offer/search/b!
