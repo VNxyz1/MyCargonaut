@@ -21,7 +21,7 @@ function ProfilPage() {
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
     const [userData, setUserData] = useState(null);
     const [userAge, setUserAge] = useState<number | null>(null);
-    const {isAuthenticated} = useAuth();
+    const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
 
     const renderSectionContent = () => {
@@ -62,7 +62,7 @@ function ProfilPage() {
     };
 
 
-    //Get logged user data
+    //Get logged user data TODO: redirect Bug on Page Reload, wen user ist logged in
     useEffect(() => {
         console.log("PROFIL - GET USER");
         const getLoggedInUser = async () => {
@@ -93,6 +93,28 @@ function ProfilPage() {
         }
     }, [isAuthenticated]);
 
+    const handleLogout = async () => {
+
+        try {
+            const response = await fetch("/auth/logout", {
+                method: "POST",
+                headers: {"Content-type": "application/json"},
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                logout();
+                navigate('/');
+            } else {
+                const data = await response.json();
+                console.log(data);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     return (
         <>
             <Container className="content-container">
@@ -108,15 +130,16 @@ function ProfilPage() {
 
                             </>
                         )}
-                        <p style={{ color: '#aeaeae' }}>4,7 40 Ratings (statisch)</p>
-                        <p style={{ color: '#aeaeae' }}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch)</p>
-                        <p style={{ color: '#aeaeae' }}>40 Abgeschlossene Fahrten(statisch)</p>
-                        <p style={{ color: '#aeaeae' }}>Mitglied seit 15.07.2021(statisch)</p>
+                        <p style={{ color: '#aeaeae' }}>4,7 40 Ratings (statisch - nicht implementiert)</p>
+                        <p style={{ color: '#aeaeae' }}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch - nicht implementiert)</p>
+                        <p style={{ color: '#aeaeae' }}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
+                        <p style={{ color: '#aeaeae' }}>Mitglied seit 15.07.2021(statisch - nicht implementiert)</p>
                         <div className="prof-side-btn-wrapper">
-                            <span className="disabled"> [Icon] Fahrt anlegen</span>
-                            <span className="disabled"> [Icon] Transport anlegen</span>
-                            <span onClick={openVehicleAddModal}> [Icon] Fahrzeug hinzufügen</span>
-                            <span onClick={openProfileEditModal}> [Icon] Profil bearbeiten</span>
+                            <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
+                            <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
+                            <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
+                            <span onClick={openProfileEditModal}><i className="icon-pen-to-square"></i> Profil bearbeiten</span>
+                            <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
 
@@ -135,7 +158,7 @@ function ProfilPage() {
                 </Row>
             </Container>
 
-            {/* Modalfenster für Profil bearbeiten */}
+            {/* Modalfenster für Profil bearbeiten  TODO: ADD USER EDIT FUNKTION*/}
             {showProfileEditModal && <ProfileEditModal onClose={() => setShowProfileEditModal(false)}/>}
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
         </>

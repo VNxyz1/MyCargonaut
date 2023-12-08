@@ -1,36 +1,10 @@
 import Container from 'react-bootstrap/Container';
-
 import Logo from "../../assets/img/Logo.png";
 import { Link } from "react-router-dom";
 import { useAuth } from '../../AuthContext';
-import { useNavigate  } from 'react-router-dom';
-
 
 function NavigationComponent() {
-    const { isAuthenticated, logout } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-
-        try {
-            const response = await fetch("/auth/logout", {
-                method: "POST",
-                headers: {"Content-type": "application/json"},
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-               console.log(data);
-                logout();
-                navigate('/');
-            } else {
-                const data = await response.json();
-                console.log(data);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+    const { isAuthenticated } = useAuth();
 
     return (
         <div className="navigation">
@@ -59,7 +33,6 @@ function NavigationComponent() {
                                     <li><Link to="/profil">Transport veröffentlichen</Link></li>
                                     <li><Link to="/404">Nachrichten</Link></li>
                                     <li><Link to="/profil">Profil</Link></li>
-                                    <li><a href="#" onClick={handleLogout}>Logout</a></li>
                                 </>
                             )}
 
