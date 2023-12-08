@@ -18,6 +18,8 @@ npm run start:dev
 
 Öffnen auf: http://localhost:3000
 
+API Doku: http://localhost:3000/api#/
+
 Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die Swagger API funktioniert :smiling_face_with_tear:
 
 <img src="https://media.tenor.com/Opkrr0Wd2VAAAAAd/struggle-crying.gif"  width="200" />

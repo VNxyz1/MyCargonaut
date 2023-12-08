@@ -8,10 +8,12 @@ import MyTripsComponent from "../components/MyTripsComponent";
 import MyTransportsComponent from "../components/MyTransportsComponent";
 import MyVehiclesComponent from "../components/MyVehiclesComponent";
 import ProfileEditModal from "../components/ProfileEditModalComponent";
+import VehicleAddModal from "../components/VehicleAddModalComponent";
 
 function ProfilPage() {
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
+    const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
 
     const renderSectionContent = () => {
         switch (currentSection) {
@@ -28,6 +30,10 @@ function ProfilPage() {
 
     const openProfileEditModal = () => {
         setShowProfileEditModal(true);
+    };
+
+    const openVehicleAddModal = () => {
+        setShowVehicleAddModal(true);
     };
 
     return (
@@ -48,7 +54,7 @@ function ProfilPage() {
                         <div className="prof-side-btn-wrapper">
                             <span className="disabled"> [Icon] Fahrt anlegen</span>
                             <span className="disabled"> [Icon] Transport anlegen</span>
-                            <span className="disabled"> [Icon] Fahrzeug hinzufügen</span>
+                            <span onClick={openVehicleAddModal}> [Icon] Fahrzeug hinzufügen</span>
                             <span onClick={openProfileEditModal}> [Icon] Profil bearbeiten</span>
                         </div>
 
@@ -70,6 +76,7 @@ function ProfilPage() {
 
             {/* Modalfenster für Profil bearbeiten */}
             {showProfileEditModal && <ProfileEditModal onClose={() => setShowProfileEditModal(false)}/>}
+            <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
         </>
     );
 }
