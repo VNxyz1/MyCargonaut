@@ -1,22 +1,27 @@
-import {useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
+import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
 import MyTripsComponent from "../components/MyTripsComponent";
 import MyTransportsComponent from "../components/MyTransportsComponent";
 import MyVehiclesComponent from "../components/MyVehiclesComponent";
 import ProfileEditModal from "../components/ProfileEditModalComponent";
 import VehicleAddModal from "../components/VehicleAddModalComponent";
-import { useAuth } from '../../AuthContext';
+import {useAuth} from '../../AuthContext';
 import {useNavigate} from "react-router-dom";
+
 
 function ProfilPage() {
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
-   const { isAuthenticated } = useAuth();
+    const [userData, setUserData] = useState(null);
+    const [userAge, setUserAge] = useState<number | null>(null);
+    const {isAuthenticated} = useAuth();
     const navigate = useNavigate();
 
     const renderSectionContent = () => {
@@ -40,6 +45,23 @@ function ProfilPage() {
         setShowVehicleAddModal(true);
     };
 
+
+    const calculateAge = (birthDate: Date): number | null => {
+        const currentDate = new Date();
+
+        if (isNaN(birthDate.getTime())) {
+            return null;
+        }
+
+        let age = currentDate.getFullYear() - birthDate.getFullYear();
+
+        if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+
     //Get logged user data
     useEffect(() => {
         console.log("PROFIL - GET USER");
@@ -51,7 +73,11 @@ function ProfilPage() {
                 });
                 if (res.ok) {
                     const data = await res.json();
+                    setUserData(data);
                     console.log(data);
+
+                    const bDate = calculateAge(new Date(data.birthday));
+                    setUserAge(bDate);
                 } else {
                     console.error("Error fetching logged in user");
                 }
@@ -60,10 +86,10 @@ function ProfilPage() {
             }
         };
         if (isAuthenticated) {
-        getLoggedInUser();
+            getLoggedInUser();
         } else {
             navigate('/');
-            console.log("EINLOGGEN UM PROFIL ZU SEHEN!!")
+            console.log(" EINLOGGEN UM PROFIL ZUSEHEN!!")
         }
     }, [isAuthenticated]);
 
@@ -73,15 +99,19 @@ function ProfilPage() {
                 <Row>
                     <Col sm={4} id="prof-sidebar">
 
-                        <img src="f"></img>
-                        <p>Viktor Schuster</p>
-                        <p>4,7 40 Ratings</p>
+                        <img src={placeholderImg} ></img>
+                        {userData && (
+                            <>
+                                <p>{(userData as any).firstName} {(userData as any).lastName}</p>
+                                <p>{(userData as any).coins} Coins</p>
+                                <p>{userAge} Jahre alt</p>
 
-                        <p>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.</p>
-
-                        <p>28 Jahre alt</p>
-                        <p>40 Abgeschlossene Fahrten</p>
-                        <p>Mitglied seit 15.07.2021</p>
+                            </>
+                        )}
+                        <p style={{ color: '#aeaeae' }}>4,7 40 Ratings (statisch)</p>
+                        <p style={{ color: '#aeaeae' }}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch)</p>
+                        <p style={{ color: '#aeaeae' }}>40 Abgeschlossene Fahrten(statisch)</p>
+                        <p style={{ color: '#aeaeae' }}>Mitglied seit 15.07.2021(statisch)</p>
                         <div className="prof-side-btn-wrapper">
                             <span className="disabled"> [Icon] Fahrt anlegen</span>
                             <span className="disabled"> [Icon] Transport anlegen</span>
