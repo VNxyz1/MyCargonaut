@@ -83,4 +83,27 @@ export class UserController {
     await this.userService.deleteLoggedInUser(id);
     return new OKResponseWithMessageDTO(true, 'User deleted.');
   }
+
+  @Get('all')
+  @ApiOperation({ summary: 'Gets all Users' })
+  @ApiResponse({ type: GetUserResponseDto, isArray: true })
+  async getAllUsers() {
+    const users = await this.userService.getAllUsers();
+
+    const usersDto: GetUserResponseDto[] = users.map(user => {
+      const userDto = new GetUserResponseDto();
+      userDto.id = user.id;
+      userDto.eMail = user.eMail;
+      userDto.firstName = user.firstName;
+      userDto.lastName = user.lastName;
+      userDto.birthday = user.birthday;
+      userDto.coins = user.coins;
+      userDto.profilePicture = user.profilePicture;
+      userDto.phoneNumber = user.phoneNumber;
+      return userDto;
+    });
+
+    return usersDto;
+  }
+
 }
