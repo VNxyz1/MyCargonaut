@@ -45,7 +45,6 @@ function ProfilPage() {
         setShowVehicleAddModal(true);
     };
 
-
     const calculateAge = (birthDate: Date): number | null => {
         const currentDate = new Date();
 
@@ -61,10 +60,10 @@ function ProfilPage() {
         return age;
     };
 
-
-    //Get logged user data TODO: redirect Bug on Page Reload, wen user ist logged in
     useEffect(() => {
-        console.log("PROFIL - GET USER");
+
+        console.log("PROFIL - GET USER " + isAuthenticated);
+
         const getLoggedInUser = async () => {
             try {
                 const res = await fetch("/user", {
@@ -85,13 +84,17 @@ function ProfilPage() {
                 console.error("Error:", error);
             }
         };
+
+
         if (isAuthenticated) {
             getLoggedInUser();
         } else {
             navigate('/');
             console.log(" EINLOGGEN UM PROFIL ZUSEHEN!!")
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, navigate]);
+
+
 
     const handleLogout = async () => {
 
@@ -159,8 +162,9 @@ function ProfilPage() {
             </Container>
 
             {/* Modalfenster für Profil bearbeiten  TODO: ADD USER EDIT FUNKTION*/}
-            {showProfileEditModal && <ProfileEditModal onClose={() => setShowProfileEditModal(false)}/>}
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
+            <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)} />
+
         </>
     );
 }

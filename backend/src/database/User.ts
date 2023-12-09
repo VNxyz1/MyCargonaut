@@ -29,4 +29,12 @@ export class User {
 
   @Column({ default: 0 })
   coins: number;
+
+  /* TODO: Integrate
+  @Column({ default: ''  })
+  description: string;
+
+   @Column({ nullable: true })
+   entryDate: Date;
+  */
 }

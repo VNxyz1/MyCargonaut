@@ -14,7 +14,10 @@ type AuthProviderProps = {
 };
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        const storedAuthStatus = localStorage.getItem('isAuthenticated');
+        return storedAuthStatus ? JSON.parse(storedAuthStatus) : false;
+    });
 
     const checkLoginStatus = async () => {
         try {
@@ -36,11 +39,13 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const login = () => {
         console.log("AUTH-CONTEXT: SET LOGIN")
         setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', JSON.stringify(true));
     };
 
     const logout = () => {
         console.log("AUTH-CONTEXT: SET LOGOUT")
         setIsAuthenticated(false);
+        localStorage.removeItem('isAuthenticated');
     };
 
 
