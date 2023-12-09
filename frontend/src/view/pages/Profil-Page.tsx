@@ -118,6 +118,28 @@ function ProfilPage() {
         }
     };
 
+    //TODO dazugehörende User Inserate löschen
+    //TODO User wird nocht in der Datenbank entfernt sondern nur zuruckgesetzt
+    const deleteUser = async () => {
+        try{
+            const response = await fetch("/user", {
+                method: "DELETE",
+                headers: {"Content-type": "application/json"},
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                logout();
+                navigate('/');
+            } else {
+                const data = await response.json();
+                console.log(data);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
     return (
         <>
             <Container className="content-container">
@@ -142,6 +164,7 @@ function ProfilPage() {
                             <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
                             <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
                             <span onClick={openProfileEditModal}><i className="icon-pen-to-square"></i> Profil bearbeiten</span>
+                            <span onClick={deleteUser}><i className="icon-pen-to-square"></i> Profil löschen</span>
                             <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
