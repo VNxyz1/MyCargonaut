@@ -8,6 +8,7 @@ import NavigationComponent from "./view/components/NavigationComponent.tsx";
 import FooterComponent from "./view/components/FooterComponent.tsx";
 import SearchTransportPage from "./view/pages/Search-Transport-Page.tsx";
 import SearchCargoPage from "./view/pages/Search-Cargo-Page";
+import MessagesPage from "./view/pages/Messages-Page";
 
 function RoutesComponent() {
 
@@ -22,6 +23,7 @@ function RoutesComponent() {
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage />} />
                 <Route path="/search-cargo" element={<SearchCargoPage />} />
+                <Route path="/messages" element={<MessagesPage />} />
             </Routes>
             <FooterComponent />
         </BrowserRouter>

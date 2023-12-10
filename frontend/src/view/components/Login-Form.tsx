@@ -89,12 +89,12 @@ function LoginForm() {
                                 </p>
                             }
                             <Form.Text className="text-muted formLink">
-                                Passwort vergessen?
+                                Passwort vergessen? (no function)
                             </Form.Text>
                         </Form.Group>
                         {/* TODO: remember me checkbox is not used (session) */}
                         <Form.Group className="mb-3" controlId="rememberMeCheckbox">
-                            <Form.Check type="checkbox" label="Remember Me"/>
+                            <Form.Check type="checkbox" label="Remember Me (no function)"/>
                         </Form.Group>
                         <Button type="submit" className="mainButton">
                             login

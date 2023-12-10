@@ -24,7 +24,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             const response = await fetch('/auth/login');
             const data = await response.json();
 
-            console.log("AUTH-CONTEXT: CHECK LOGIN STATE - LOGGEDIN: " + data.isLoggedIn)
+            console.log("CLIENT - AUTH-CONTEXT: CHECK LOGIN STATE - LOGGEDIN: " + data.isLoggedIn)
 
             if (data.isLoggedIn) {
                 login();
@@ -37,13 +37,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     const login = () => {
-        console.log("AUTH-CONTEXT: SET LOGIN")
         setIsAuthenticated(true);
         localStorage.setItem('isAuthenticated', JSON.stringify(true));
     };
 
     const logout = () => {
-        console.log("AUTH-CONTEXT: SET LOGOUT")
+        setIsAuthenticated(false);
         setIsAuthenticated(false);
         localStorage.removeItem('isAuthenticated');
     };

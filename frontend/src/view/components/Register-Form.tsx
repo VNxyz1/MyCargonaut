@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useState} from "react";
+import {Link} from "react-router-dom";
 
 interface RegisterDataProps {
     eMail: string;
@@ -29,6 +30,12 @@ function RegisterForm() {
     const handleSubmit = async (event: any) => {
         const form = event.currentTarget;
         event.preventDefault();
+
+        if (isOldEnough()) {
+            console.log('Die Person ist 18 Jahre oder älter. Formular abschicken...');
+        } else {
+            console.error('Die Person ist nicht 18 Jahre alt.');
+        }
 
         if (form.checkValidity() === false) {
             event.stopPropagation();
@@ -85,7 +92,20 @@ function RegisterForm() {
         }
         return ""
     }
+    const [ageError, setAgeError] = useState<string | null>(null);
+    const isOldEnough = () => {
+        const birthdate = new Date(registerData.birthday as any);
+        const currentDate = new Date();
+        const age = currentDate.getFullYear() - birthdate.getFullYear();
 
+        if (age < 18) {
+            setAgeError("Du musst mindestens 18 Jahre alt sein.");
+            return false;
+        } else {
+            setAgeError(null);
+            return true;
+        }
+    };
 
     return (
         <>
@@ -116,7 +136,7 @@ function RegisterForm() {
                                 required
                                 type="email"
                                 placeholder="E-Mail"
-                                onChange={(event) =>handleFormChange("eMail", event.target.value)}
+                                onChange={(event) => handleFormChange("eMail", event.target.value)}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="registerBirthdate">
@@ -124,8 +144,12 @@ function RegisterForm() {
                                 required
                                 type="date"
                                 placeholder="Geburtsdatum"
-                                onChange={(event) =>handleFormChange("birthday", event.target.value)}
+                                onChange={(event) => {
+                                    handleFormChange('birthday', event.target.value);
+                                    isOldEnough();
+                                }}
                             />
+                            {ageError && (<Form.Text style={{color: 'red'}}>{ageError}</Form.Text>)}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="registerPassword">
                             <Form.Control
@@ -149,10 +173,17 @@ function RegisterForm() {
                                 })}
                             />
                         </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="dataPolicyCheck">
+                            <Form.Check type="checkbox" label={
+                                <span>Mit der Anmeldung bestätige ich, dass ich die <Link to="/privacy" target="_blank" rel="noopener noreferrer">Datenschutzhinweise </Link> akzeptiere und mindestens 18 Jahre alt bin. </span>
+                            } required/>
+                        </Form.Group>
+
                         {!feedback ?
                             <></>
                             :
-                            <p style={{fontStyle: "italic"}}>
+                            <p style={{fontStyle: "italic"}}>a
                                 {feedback}
                             </p>
                         }

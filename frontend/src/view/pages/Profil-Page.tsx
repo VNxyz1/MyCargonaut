@@ -13,6 +13,8 @@ import ProfileEditModal from "../components/ProfileEditModalComponent";
 import VehicleAddModal from "../components/VehicleAddModalComponent";
 import {useAuth} from '../../AuthContext';
 import {useNavigate} from "react-router-dom";
+import {Modal} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 
 function ProfilPage() {
@@ -89,11 +91,10 @@ function ProfilPage() {
         if (isAuthenticated) {
             getLoggedInUser();
         } else {
-            navigate('/');
+            navigate('/login');
             console.log(" EINLOGGEN UM PROFIL ZUSEHEN!!")
         }
     }, [isAuthenticated, navigate]);
-
 
 
     const handleLogout = async () => {
@@ -118,10 +119,25 @@ function ProfilPage() {
         }
     };
 
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleShowDeleteModal = () => {
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false);
+    };
+
+    const handleConfirmDeleteUser = () => {
+        deleteUser();
+        handleCloseDeleteModal();
+    };
+
     //TODO dazugehörende User Inserate löschen
-    //TODO User wird nocht in der Datenbank entfernt sondern nur zuruckgesetzt
+    //TODO User wird nicht in der Datenbank entfernt sondern nur zurückgesetzt
     const deleteUser = async () => {
-        try{
+        try {
             const response = await fetch("/user", {
                 method: "DELETE",
                 headers: {"Content-type": "application/json"},
@@ -146,7 +162,8 @@ function ProfilPage() {
                 <Row>
                     <Col sm={4} id="prof-sidebar">
 
-                        <img src={placeholderImg} ></img>
+                        <img src={userData && (userData as any).profilePicture ? (userData as any).profilePicture : placeholderImg} alt="User profile image"/>
+
                         {userData && (
                             <>
                                 <p>{(userData as any).firstName} {(userData as any).lastName}</p>
@@ -155,19 +172,33 @@ function ProfilPage() {
 
                             </>
                         )}
-                        <p style={{ color: '#aeaeae' }}>4,7 40 Ratings (statisch - nicht implementiert)</p>
-                        <p style={{ color: '#aeaeae' }}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch - nicht implementiert)</p>
-                        <p style={{ color: '#aeaeae' }}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
-                        <p style={{ color: '#aeaeae' }}>Mitglied seit 15.07.2021(statisch - nicht implementiert)</p>
+
+                        <p style={{color: '#aeaeae'}}>4,7 40 Ratings (statisch - nicht implementiert)</p>
+                        <p style={{color: '#aeaeae'}}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch - nicht implementiert)</p>
+                        <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
+                        <p style={{color: '#aeaeae'}}>Mitglied seit 15.07.2021(statisch - nicht implementiert)</p>
+
                         <div className="prof-side-btn-wrapper">
                             <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
                             <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
                             <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
                             <span onClick={openProfileEditModal}><i className="icon-pen-to-square"></i> Profil bearbeiten</span>
-                            <span onClick={deleteUser}><i className="icon-pen-to-square"></i> Profil löschen</span>
+                            <span onClick={handleShowDeleteModal}><i className="icon-trash"></i> Profil löschen</span>
                             <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
+                        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Profil löschen</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Möchten du dein Profil <strong>unwiderruflich</strong> löschen?
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="danger" onClick={handleConfirmDeleteUser}> Profil löschen </Button>
+                                <Button variant="secondary" onClick={handleCloseDeleteModal}> Abbrechen </Button>
+                            </Modal.Footer>
+                        </Modal>
 
                     </Col>
 
@@ -186,7 +217,7 @@ function ProfilPage() {
 
             {/* Modalfenster für Profil bearbeiten  TODO: ADD USER EDIT FUNKTION*/}
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
-            <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)} />
+            <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)}/>
 
         </>
     );
