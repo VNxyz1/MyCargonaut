@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 
 import transporter from "../../assets/img/home_transport.png";
 import pakete from "../../assets/img/home_package.png";
+import {Link} from "react-router-dom";
 
 
 function HomePage() {
@@ -13,9 +14,8 @@ function HomePage() {
         <>
             <div className="home_header">
                 <Container className="content_area">
-                    <h1 className="homeTitel">Fahrt teilen, Kosten sparen</h1>
+                    <h1 className="homeTitel">Fahrt <strong>teilen</strong> - Kosten  <strong>sparen</strong></h1>
                     <h1 className="homeTitel">Finde deine ideale Fahrgemeinschaft!</h1>
-                    <div>Suche einbauen</div>
                 </Container>
             </div>
 
@@ -29,8 +29,8 @@ function HomePage() {
                         <p>FAHRT ANBIETEN</p>
                         <h3>Bist du auf dem Weg und kannst jemanden mitnehmen oder etwas transportieren?</h3>
                         <div className="btn_wrapper">
-                            <Button className="mainButton">Fracht suchen</Button>
-                            <Button className="mainButton">Anzeige erstellen</Button>
+                            <Link to="/search-cargo"><Button className="mainButton">Cargo suchen</Button></Link>
+                            <Link to="/profil"><Button className="mainButton">Fahrt anlegen</Button></Link>
                         </div>
                     </Col>
                 </Row>
@@ -40,8 +40,8 @@ function HomePage() {
                         <p>TRANSPORTIEREN LASSEN</p>
                         <h3>Suchst du eine Mitfahrgelegenheit oder jemanden, der etwas für dich transportiert?</h3>
                         <div className="btn_wrapper">
-                            <Button className="mainButton">Fahrt suchen</Button>
-                            <Button className="mainButton">Anzeige erstellen</Button>
+                            <Link to="/search-transport"><Button className="mainButton">Fahrt suche</Button></Link>
+                            <Link to="/profil"><Button className="mainButton">Cargo anlegen</Button></Link>
                         </div>
                     </Col>
                     <Col sm={6} className="homeImg">
@@ -49,9 +49,6 @@ function HomePage() {
                     </Col>
                 </Row>
             </Container>
-
-
-
         </>
     );
 }

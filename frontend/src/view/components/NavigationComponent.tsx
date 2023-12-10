@@ -17,12 +17,12 @@ function NavigationComponent() {
                     </div>
                     <div>
                         <ul>
-                            <li><Link to="/search-transport">Transport suche</Link></li>
-                            <li><Link to="/search-cargo">Fracht suchen</Link></li>
+                            <li><Link to="/search-transport">Fahrt suche</Link></li>
+                            <li><Link to="/search-cargo">Cargo suchen</Link></li>
                             {!isAuthenticated && (
                                 <>
                                     <li><Link to="/login">Fahrt veröffentlichen</Link></li>
-                                    <li><Link to="/login">Transport veröffentlichen</Link></li>
+                                    <li><Link to="/login">Cargo veröffentlichen</Link></li>
                                     <li><Link to="/login">Login</Link></li>
                                 </>
                             )}
@@ -30,8 +30,8 @@ function NavigationComponent() {
                             {isAuthenticated && (
                                 <>
                                     <li><Link to="/profil">Fahrt veröffentlichen</Link></li>
-                                    <li><Link to="/profil">Transport veröffentlichen</Link></li>
-                                    <li><Link to="/404">Nachrichten</Link></li>
+                                    <li><Link to="/profil">Cargo veröffentlichen</Link></li>
+                                    <li><Link to="/messages">Nachrichten</Link></li>
                                     <li><Link to="/profil">Profil</Link></li>
                                 </>
                             )}
@@ -41,7 +41,7 @@ function NavigationComponent() {
                 </div>
             </Container>
         </div>
-);
+    );
 }
 
 export default NavigationComponent;

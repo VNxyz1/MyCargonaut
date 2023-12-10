@@ -3,6 +3,8 @@ import {Modal, ModalProps} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {useAuth} from "../../AuthContext";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 interface ProfileEditModalComponentProps extends ModalProps {
     onHide: () => void;
@@ -14,7 +16,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         birthday: undefined,
         firstName: '',
         lastName: '',
-        phoneNumber:'',
+        phoneNumber: '',
         eMail: '',
         password: '',
         profilePicture: null,
@@ -65,7 +67,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
 
         const res = await editUser();
 
-            console.log(res);
+        console.log(res);
 
     }
 
@@ -81,7 +83,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
             });
             if (!response.ok) {
                 const data = await response.json();
-               console.log(data);
+                console.log(data);
             } else {
                 const data = await response.json();
                 console.log(data);
@@ -110,80 +112,86 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
             centered
         >
             <Modal.Header closeButton>
-                <Modal.Title>
-                    PROFIL BEARBEITEN
-                </Modal.Title>
+                <Modal.Title>PROFIL BEARBEITEN</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="firstName">
-                        <Form.Label>Vorname</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                    <Row>
+                        <Form.Group as={Col} className="sm-6" controlId="firstName">
+                            <Form.Label>Vorname</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group controlId="lastName">
-                        <Form.Label>Nachname</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group as={Col} className="sm-6" controlId="lastName">
+                            <Form.Label>Nachname</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
+                    </Row>
 
-                    <Form.Group controlId="eMail">
-                        <Form.Label>E-Mail</Form.Label>
-                        <Form.Control
-                            type="email"
-                            name="eMail"
-                            value={formData.eMail}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                    <Row>
+                        <Form.Group as={Col} className="sm-6" controlId="birthday">
+                            <Form.Label>Geburtsdatum</Form.Label>
+                            <Form.Control
+                                type="date"
+                                name="birthday"
+                                value={formData.birthday ? new Date(formData.birthday).toISOString().slice(0, 10) : ''}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group controlId="birthday">
-                        <Form.Label>Geburtsdatum</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="birthday"
-                            value={formData.birthday ? new Date(formData.birthday).toISOString().slice(0, 10) : ''}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group as={Col} className="sm-6" controlId="phoneNumber">
+                            <Form.Label>Handynummer</Form.Label>
+                            <Form.Control
+                                type="string"
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
+                    </Row>
+                    <Row>
+                        <Form.Group as={Col} className="sm-6" controlId="eMail">
+                            <Form.Label>E-Mail</Form.Label>
+                            <Form.Control
+                                type="email"
+                                name="eMail"
+                                placeholder={"E-Mail"}
+                                value={formData.eMail}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
 
-                    <Form.Group controlId="phoneNumber">
-                        <Form.Label>Nummer</Form.Label>
-                        <Form.Control
-                            type="string"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+                        <Form.Group as={Col} className="sm-6" controlId="password">
+                            <Form.Label>Passwort</Form.Label>
+                            <Form.Control
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Form.Group>
+                    </Row>
 
+                    <p>Profilbild und Beschreibung fehlt noch - Mail und passwort  evtl. raus</p>
 
-                    <Form.Group controlId="password">
-                        <Form.Label>Passwort</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
-   {/*
+                    {/*
                     <Form.Group controlId="profilePicture">
                         <Form.Label>Profilbild</Form.Label>
                         <Form.File
