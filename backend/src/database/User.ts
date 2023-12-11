@@ -39,4 +39,12 @@ export class User {
   trips: Offer[];
 
 
+
+  /* TODO: Integrate
+  @Column({ default: ''  })
+  description: string;
+
+   @Column({ nullable: true })
+   entryDate: Date;
+  */
 }
