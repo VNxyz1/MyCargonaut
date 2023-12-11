@@ -40,11 +40,13 @@ export class User {
 
 
 
-  /* TODO: Integrate
-  @Column({ default: ''  })
+  @Column({ default: '' })
   description: string;
 
-   @Column({ nullable: true })
-   entryDate: Date;
-  */
+  @Column({
+    nullable: true,
+    default: new Date().toISOString(),
+  })
+  entryDate: Date;
+
 }
