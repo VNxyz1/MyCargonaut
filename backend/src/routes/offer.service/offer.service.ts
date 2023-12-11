@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, InternalServerErrorException} from '@nestjs/common';
 import {CreateOfferDto} from "../offer/DTOs/CreateOfferDto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../../database/User";
@@ -7,6 +7,7 @@ import {Offer} from "../../database/Offer";
 import {Plz} from "../../database/Plz";
 import {CreatePlzDto} from "../offer/DTOs/CreatePlzDto";
 import {Like} from "typeorm";
+import {UpdateOfferRequestDto} from "../offer/DTOs/UpdateOfferRequestDto";
 
 @Injectable()
 export class OfferService {
@@ -31,22 +32,7 @@ export class OfferService {
         const offerDb = await this.offerRepository.save(offer)
 
         for (let plzDto of offerDto.route) {
-            //TODO: vorher prüfen ob plz bereits existiert, dann plz unique machen!
-            const checkPlz = await this.checkIfPlzIsDuplicat(plzDto);
-
-            if (!checkPlz) {
-                const plz = new Plz();
-                plz.offers = [];
-                plz.offers.push(offerDb);
-                plz.plz = plzDto.plz;
-                await this.plzRepository.save(plz);
-            } else {
-                checkPlz.offers.push(offerDb);
-                offerDb.route.push(checkPlz);
-                await this.plzRepository.save(checkPlz);
-                await this.offerRepository.save(offerDb);
-            }
-
+            await this.createPlzAndPush(offerDb, plzDto);
         }
 
     }
@@ -78,6 +64,51 @@ export class OfferService {
                 userId: userId
             })
             .getMany();
+    }
+
+    async getOffer(id: number) {
+        const offer =  await this.offerRepository.findOne({where: {id: id}, relations: ["provider", "route", "clients"]});
+        if (!offer) {
+            throw new InternalServerErrorException("Offer was not found!");
+        }
+        return offer
+    }
+
+    private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto ) {
+        //TODO: vorher prüfen ob plz bereits existiert, dann plz unique machen!
+        const checkPlz = await this.checkIfPlzIsDuplicat(plzDto);
+
+        if (!checkPlz) {
+            const plz = new Plz();
+            plz.offers = [];
+            plz.offers.push(offer);
+            plz.plz = plzDto.plz;
+            await this.plzRepository.save(plz);
+        } else {
+            checkPlz.offers.push(offer);
+            offer.route.push(checkPlz);
+            await this.plzRepository.save(checkPlz);
+            await this.offerRepository.save(offer);
+        }
+    }
+
+    async updateOffer(updateData: UpdateOfferRequestDto, offer: Offer) {
+        if (updateData.route) {
+            offer.route = [];
+            for (let plzDto of updateData.route) {
+                await this.createPlzAndPush(offer, plzDto)
+            }
+        }
+
+        if (updateData.description) {
+            offer.description = updateData.description;
+        }
+
+        if (updateData.startDate) {
+            offer.startDate = updateData.startDate;
+        }
+
+        await this.offerRepository.save(offer);
     }
 
 

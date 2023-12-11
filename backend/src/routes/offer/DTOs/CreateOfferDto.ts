@@ -1,13 +1,14 @@
 import {
     IsNotEmpty,
     IsString,
-    IsISO8601, IsArray,
+    IsISO8601, IsArray, ArrayMinSize,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {CreatePlzDto} from "./CreatePlzDto";
 export class CreateOfferDto {
 
     @IsArray()
+    @ArrayMinSize(2)
     @IsNotEmpty()
     @ApiProperty()
     route: CreatePlzDto[];

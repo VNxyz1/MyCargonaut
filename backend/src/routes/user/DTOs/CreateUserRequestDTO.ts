@@ -37,8 +37,8 @@ export class CreateUserRequestDto {
   @ApiProperty()
   profilePicture?: string;
 
-  @IsPhoneNumber()
   @IsOptional()
+  @IsPhoneNumber()
   @ApiProperty()
   phoneNumber?: string;
 }

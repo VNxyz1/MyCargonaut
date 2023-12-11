@@ -1,4 +1,15 @@
-import {Body, Controller, Get, Param, Post, Session, UseGuards} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    Session,
+    UseGuards
+} from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {OfferService} from "../offer.service/offer.service";
 import {OKResponseWithMessageDTO} from "../../generalDTOs/OKResponseWithMessageDTO";
@@ -10,6 +21,7 @@ import {Offer} from "../../database/Offer";
 import {GetOfferResponseDto} from "./DTOs/GetOfferResponseDto";
 import {User} from "../../database/User";
 import {GetOtherUserDto} from "./DTOs/GetOtherUserDto";
+import {UpdateOfferRequestDto} from "./DTOs/UpdateOfferRequestDto";
 
 @ApiTags('offer')
 @Controller('offer')
@@ -80,6 +92,24 @@ export class OfferController {
         }
 
         return offerListDto;
+    }
+
+    @Put(":id")
+    @UseGuards(IsLoggedInGuard)
+    @ApiOperation({ summary: 'Updates the selected Offer. Only if the Logged in User is the Provider' })
+    @ApiResponse({ type: OKResponseWithMessageDTO })
+    async updateOffer(
+        @Session() session: ISession,
+        @Param("id", ParseIntPipe) offerId: number,
+        @Body() body: UpdateOfferRequestDto
+    ) {
+        const userId = session.userData.id;
+        const offer = await this.offerService.getOffer(offerId);
+        if (offer.provider.id !== userId) {
+            throw new BadRequestException("You are not the Provider of this Offer!")
+        }
+        await this.offerService.updateOffer(body, offer);
+        return new OKResponseWithMessageDTO(true, "Offer Updated")
     }
 
 

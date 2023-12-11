@@ -8,6 +8,8 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class UpdateUserRequestDto {
+
+  //TODO: email und passwort raus nehmen
   @IsNotEmpty()
   @IsEmail()
   @IsOptional()
