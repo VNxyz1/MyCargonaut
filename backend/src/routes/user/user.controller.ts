@@ -150,8 +150,8 @@ export class UserController {
       const imagePathUpload = `./uploads/profile-images/${file.originalname}`;
       fs.writeFileSync(imagePathUpload, file.buffer);
 
-      const serverBaseUrl = 'http://localhost:3000';
-      const imageUrl = `${serverBaseUrl}/uploads/profile-images/${file.originalname}`;
+      const serverBaseUrl = 'http://localhost:3000/uploads/profile-images';
+      const imageUrl = `${serverBaseUrl}/${file.originalname}`;
       await this.userService.saveProfileImagePath(session.userData.id, imageUrl);
 
       return { url: imageUrl };
