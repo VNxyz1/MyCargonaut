@@ -10,7 +10,10 @@ export class CreateOfferDto {
     @IsArray()
     @ArrayMinSize(2)
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({
+        type: [CreatePlzDto],
+        minimum: 2
+    })
     route: CreatePlzDto[];
 
     @IsString()

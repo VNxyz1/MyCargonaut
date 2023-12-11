@@ -7,7 +7,11 @@ export class UpdateOfferRequestDto {
     @IsArray()
     @ArrayMinSize(2)
     @IsOptional()
-    @ApiProperty({ required: false })
+    @ApiProperty({
+        required: false,
+        type: [CreatePlzDto],
+        minimum: 2
+    })
     route?: CreatePlzDto[];
 
     @IsString()
