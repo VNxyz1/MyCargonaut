@@ -147,11 +147,14 @@ export class UserController {
   ): Promise<{ url: string }> {
     try {
       console.log(file);
-      const imagePath = `./uploads/profile-images/${file.originalname}`;
-      fs.writeFileSync(imagePath, file.buffer);
-      await this.userService.saveProfileImagePath(session.userData.id, imagePath);
+      const imagePathUpload = `./uploads/profile-images/${file.originalname}`;
+      fs.writeFileSync(imagePathUpload, file.buffer);
 
-      return { url: imagePath };
+      const serverBaseUrl = 'http://localhost:3000';
+      const imageUrl = `${serverBaseUrl}/uploads/profile-images/${file.originalname}`;
+      await this.userService.saveProfileImagePath(session.userData.id, imageUrl);
+
+      return { url: imageUrl };
     } catch (error) {
       console.error("Error uploading profile image:", error);
       throw new InternalServerErrorException("Fehler beim Hochladen des Profilbilds");

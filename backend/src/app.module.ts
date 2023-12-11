@@ -19,6 +19,10 @@ import { AuthService } from './routes/auth.service/auth.service';
       entities: [User],
       synchronize: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController, AuthController],
