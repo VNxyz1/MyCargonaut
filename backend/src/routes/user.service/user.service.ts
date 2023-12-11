@@ -70,4 +70,15 @@ export class UserService {
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.find();
   }
+
+  async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
+    }
+
+    user.profilePicture = imagePath;
+
+    await this.userRepository.save(user);
+  }
 }

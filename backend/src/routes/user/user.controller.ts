@@ -7,6 +7,9 @@ import {
   Put,
   Session,
   UseGuards,
+
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from '../user.service/user.service';
@@ -16,6 +19,30 @@ import { ISession } from '../../utils/ISession';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { CreateUserRequestDto } from './DTOs/CreateUserRequestDTO';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
+
+
+import { Multer, MulterFile } from 'multer';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+
+
+
+
+const storage = diskStorage({
+  destination: './uploads/profile-images',
+  filename: (req, file, callback) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = extname(file.originalname);
+    callback(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
+  },
+});
+
+const multerConfig = {
+  storage: storage,
+};
+
 
 @ApiTags('user')
 @Controller('user')
@@ -105,5 +132,33 @@ export class UserController {
 
     return usersDto;
   }
+
+
+
+
+
+
+  @Post('upload-profile-image')
+  @UseGuards(IsLoggedInGuard)
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadProfileImage(
+      @Session() session: ISession,
+      @UploadedFile() file,
+  ): Promise<{ url: string }> {
+    try {
+      console.log(file);
+      const imagePath = `./uploads/profile-images/${file.originalname}`;
+      fs.writeFileSync(imagePath, file.buffer);
+      await this.userService.saveProfileImagePath(session.userData.id, imagePath);
+
+      return { url: imagePath };
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      throw new InternalServerErrorException("Fehler beim Hochladen des Profilbilds");
+    }
+  }
+
+
+
 
 }
