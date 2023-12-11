@@ -30,11 +30,12 @@ export class User {
   @Column({ default: 0 })
   coins: number;
 
-  /* TODO: Integrate
-  @Column({ default: ''  })
+  @Column({ default: '' })
   description: string;
 
-   @Column({ nullable: true })
-   entryDate: Date;
-  */
+  @Column({
+    nullable: true,
+    default: new Date().toISOString(),
+  })
+  entryDate: Date;
 }

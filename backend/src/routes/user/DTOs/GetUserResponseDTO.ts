@@ -45,4 +45,12 @@ export class GetUserResponseDto {
   @IsNumber()
   @ApiProperty()
   coins: number;
+
+  @IsString()
+  @ApiProperty()
+  description: string;
+
+  @IsISO8601()
+  @ApiProperty()
+  entryDate: Date;
 }

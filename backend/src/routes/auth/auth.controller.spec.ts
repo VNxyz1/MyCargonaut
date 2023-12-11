@@ -28,6 +28,8 @@ describe('AuthController', () => {
       profilePicture: '',
       birthday: undefined,
       coins: 0,
+      description: '',
+      entryDate: undefined,
     },
   };
 
