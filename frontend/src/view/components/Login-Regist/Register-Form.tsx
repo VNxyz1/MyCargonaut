@@ -149,7 +149,7 @@ function RegisterForm() {
                                     handleFormChange('birthday', event.target.value);
                                     isOldEnough();
                                 }}
-                                onBlur={() => isOldEnough()} // Füge diese Zeile hinzu
+                                onBlur={() => isOldEnough()}
                                 isInvalid={!!ageError}
                             />
                             {ageError && (<Form.Text style={{color: 'red'}}>{ageError}</Form.Text>)}
