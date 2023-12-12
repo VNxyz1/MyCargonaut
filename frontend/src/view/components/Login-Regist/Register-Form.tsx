@@ -93,6 +93,7 @@ function RegisterForm() {
         return ""
     }
     const [ageError, setAgeError] = useState<string | null>(null);
+
     const isOldEnough = () => {
         const birthdate = new Date(registerData.birthday as any);
         const currentDate = new Date();
@@ -148,6 +149,8 @@ function RegisterForm() {
                                     handleFormChange('birthday', event.target.value);
                                     isOldEnough();
                                 }}
+                                onBlur={() => isOldEnough()} // Füge diese Zeile hinzu
+                                isInvalid={!!ageError}
                             />
                             {ageError && (<Form.Text style={{color: 'red'}}>{ageError}</Form.Text>)}
                         </Form.Group>
@@ -161,6 +164,7 @@ function RegisterForm() {
                                     p1: event.target.value
                                 })}
                             />
+
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="registerPasswordRepeat">
                             <Form.Control
