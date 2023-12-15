@@ -264,8 +264,8 @@ function RegisterForm() {
                             </InputGroup>
                             {passwordErrors &&
                                 passwordErrors.map((error, index) => (
-                                    <div key={index} style={{color: 'red'}}>
-                                        {error}
+                                    <div key={index} >
+                                        <Form.Text style={{color: 'red'}}>{error}</Form.Text>
                                     </div>
                                 ))}
                         </Form.Group>
