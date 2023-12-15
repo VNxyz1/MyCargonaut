@@ -1,10 +1,12 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import {InputGroup} from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useAuth} from "../../../AuthContext";
 
 interface RegisterDataProps {
     eMail: string;
@@ -17,7 +19,13 @@ interface RegisterDataProps {
 function RegisterForm() {
     const [validated, setValidated] = useState(false);
     const [feedback, setFeedback] = useState<string | undefined>(undefined);
-    const [passwordValidation, setPasswordValidation] = useState({p1: "", p2: ""});
+    const [ageError, setAgeError] = useState<string | null>(null);
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [passwordValidation, setPasswordValidation] = useState<{ p1: string; p2: string }>({p1: "", p2: ""});
+    const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+    const [isEqualPassword, setisEqualPassword] = useState<string | null>(null);
+    const {login} = useAuth();
+    const navigate = useNavigate();
     const [registerData, setRegisterData] = useState<RegisterDataProps>({
         birthday: undefined,
         firstName: "",
@@ -28,13 +36,18 @@ function RegisterForm() {
 
 
     const handleSubmit = async (event: any) => {
+
         const form = event.currentTarget;
         event.preventDefault();
 
-        if (isOldEnough()) {
-            console.log('Die Person ist 18 Jahre oder älter. Formular abschicken...');
-        } else {
+        if (!isOldEnough()) {
             console.error('Die Person ist nicht 18 Jahre alt.');
+            return
+        }
+
+        if (passwordErrors.length != 0) {
+            console.error('Passwort erfüllt nicht die anforderungen');
+            return
         }
 
         if (form.checkValidity() === false) {
@@ -44,13 +57,29 @@ function RegisterForm() {
         if (form.checkValidity() === true) {
             registerData.password = checkPasswords();
             if (registerData.password.trim() === "") {
-                setFeedback("Passwörter müssen übereinstimmen");
+                console.error('Passwörter ungelich!');
                 return
             }
             const res = await postUser();
             if (res) {
+
                 console.log(res.message);
                 setFeedback(res.message);
+
+                if (res.successful) {
+
+                    const res = await loginUser();
+                    if (res) {
+                        console.log(res.message);
+                        setFeedback(res.message);
+
+                        if (res.successful) {
+                            login();
+                            navigate('/profil');
+                        }
+                    }
+
+                }
             }
         }
         setValidated(true);
@@ -73,6 +102,37 @@ function RegisterForm() {
                 },
                 body: JSON.stringify(registerData),
             });
+
+            if (response) {
+                const data = await response.json();
+                console.log(data);
+                if (data.ok) {
+                    return {successful: true, message: data.message}
+                } else {
+                    return {successful: false, message: data.message}
+                }
+            } else {
+                console.error("PROBLEM")
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+
+    const loginUser = async () => {
+        console.log("ZEIT ZUM LOGIN")
+        try {
+            const response = await fetch("/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    eMail: registerData.eMail,
+                    password: registerData.password
+                }),
+            });
             if (!response.ok) {
                 const data = await response.json();
                 return {successful: false, message: data.message}
@@ -83,16 +143,20 @@ function RegisterForm() {
         } catch (error) {
             console.error("Error:", error);
         }
-
     }
 
     const checkPasswords = () => {
         if (passwordValidation.p1 === passwordValidation.p2) {
+            console.log("gleich");
+            setisEqualPassword(null);
             return passwordValidation.p1
+        } else {
+            console.log("ungleich");
+            setisEqualPassword("Die Passwörter sind ungleich.");
+            return "";
         }
-        return ""
     }
-    const [ageError, setAgeError] = useState<string | null>(null);
+
 
     const isOldEnough = () => {
         const birthdate = new Date(registerData.birthday as any);
@@ -107,6 +171,26 @@ function RegisterForm() {
             return true;
         }
     };
+
+
+    const validatePasswordConditions = (password: string) => {
+        const errors: string[] = [];
+
+        if (password.length < 8) {
+            errors.push("Passwort muss mindestens 8 Zeichen lang sein.");
+        }
+        if (!/[a-z]/.test(password)) {
+            errors.push("Passwort muss mindestens einen Kleinbuchstaben enthalten.");
+        }
+        if (!/[A-Z]/.test(password)) {
+            errors.push("Passwort muss mindestens einen Großbuchstaben enthalten.");
+        }
+        if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(password)) {
+            errors.push("Passwort muss mindestens ein Sonderzeichen enthalten.");
+        }
+        setPasswordErrors(errors);
+    };
+
 
     return (
         <>
@@ -154,29 +238,61 @@ function RegisterForm() {
                             />
                             {ageError && (<Form.Text style={{color: 'red'}}>{ageError}</Form.Text>)}
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="registerPassword">
-                            <Form.Control
-                                required
-                                type="password"
-                                placeholder="Passwort"
-                                onChange={(event) => setPasswordValidation({
-                                    ...passwordValidation,
-                                    p1: event.target.value
-                                })}
-                            />
 
+                        <Form.Group className="mb-3" controlId="registerPassword">
+                            <InputGroup>
+                                <Form.Control
+                                    required
+                                    type={passwordVisible ? "text" : "password"}
+                                    placeholder="Passwort"
+                                    onChange={(event) => {
+                                        setPasswordValidation({
+                                            ...passwordValidation,
+                                            p1: event.target.value,
+                                        });
+                                        validatePasswordConditions(event.target.value);
+                                    }}
+                                    isInvalid={passwordErrors && passwordErrors.length > 0}
+                                />
+                                <InputGroup.Text>
+                                    <i
+                                        className={`icon-eye${passwordVisible ? "-slash" : ""}`}
+                                        onClick={() => setPasswordVisible(!passwordVisible)}
+                                        style={{cursor: "pointer"}}
+                                    />
+                                </InputGroup.Text>
+                            </InputGroup>
+                            {passwordErrors &&
+                                passwordErrors.map((error, index) => (
+                                    <div key={index} style={{color: 'red'}}>
+                                        {error}
+                                    </div>
+                                ))}
                         </Form.Group>
+
                         <Form.Group className="mb-3" controlId="registerPasswordRepeat">
-                            <Form.Control
-                                required
-                                type="password"
-                                placeholder="Passwort wiederholen"
-                                onChange={(event) => setPasswordValidation({
-                                    ...passwordValidation,
-                                    p2: event.target.value
-                                })}
-                            />
+                            <InputGroup>
+                                <Form.Control
+                                    required
+                                    type={passwordVisible ? "text" : "password"}
+                                    placeholder="Passwort wiederholen"
+                                    onChange={(event) => {
+                                        setPasswordValidation({
+                                            ...passwordValidation,
+                                            p2: event.target.value,
+                                        });
+                                    }}
+                                />
+                                <InputGroup.Text
+                                    onClick={() => setPasswordVisible(!passwordVisible)}
+                                    style={{cursor: "pointer"}}
+                                >
+                                    <i className={`icon-eye${passwordVisible ? "-slash" : ""}`}/>
+                                </InputGroup.Text>
+                            </InputGroup>
+                            {isEqualPassword && (<Form.Text style={{color: 'red'}}>{isEqualPassword}</Form.Text>)}
                         </Form.Group>
+
 
                         <Form.Group className="mb-3" controlId="dataPolicyCheck">
                             <Form.Check type="checkbox" label={
@@ -187,9 +303,11 @@ function RegisterForm() {
                         {!feedback ?
                             <></>
                             :
-                            <p style={{fontStyle: "italic"}}>a
-                                {feedback}
-                            </p>
+                            <div>
+                                <Form.Text style={{color: 'red'}}>
+                                    {feedback}
+                                </Form.Text>
+                            </div>
                         }
                         <Button type="submit" className="mainButton">
                             sign in
