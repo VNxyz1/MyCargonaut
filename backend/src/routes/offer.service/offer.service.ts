@@ -8,6 +8,7 @@ import {Plz} from "../../database/Plz";
 import {CreatePlzDto} from "../offer/DTOs/CreatePlzDto";
 import {Like} from "typeorm";
 import {UpdateOfferRequestDto} from "../offer/DTOs/UpdateOfferRequestDto";
+import {TripState} from "../../database/TripState";
 
 @Injectable()
 export class OfferService {
@@ -27,7 +28,7 @@ export class OfferService {
         offer.provider = await this.userRepository.findOne({where: {id: providerId}});
 
         offer.createdAt = new Date();
-        offer.state = "open";
+        offer.state = TripState.offer;
 
         const offerDb = await this.offerRepository.save(offer)
 
@@ -43,6 +44,7 @@ export class OfferService {
 
 
     async getOffers(searchFor?: string) {
+
         if (searchFor) {
             return await this.offerRepository.find({where: {description: Like(`%${searchFor}%`),}, relations: ["provider", "route", "clients"]})
         }
@@ -74,8 +76,9 @@ export class OfferService {
         return offer
     }
 
+
+
     private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto ) {
-        //TODO: vorher prüfen ob plz bereits existiert, dann plz unique machen!
         const checkPlz = await this.checkIfPlzIsDuplicat(plzDto);
 
         if (!checkPlz) {
@@ -109,6 +112,10 @@ export class OfferService {
         }
 
         await this.offerRepository.save(offer);
+    }
+
+    async deleteOffer(offer: Offer) {
+        await this.offerRepository.delete(offer)
     }
 
 

@@ -1,6 +1,7 @@
-import {Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "./User";
 import { Plz } from "./Plz";
+import {TransitRequest} from "./TransitRequest";
 
 @Entity()
 export class Offer {
@@ -27,14 +28,15 @@ export class Offer {
     @Column({ default: 0 })
     bookedSeats: number;
 
-    //Todo
     @Column()
-    state: string;
+    state: number;
 
     @Column()
     description: string;
 
-    @Column()
+    @Column( { nullable: true } )
     startDate: Date;
 
+    @OneToMany(() => TransitRequest, transitRequest => transitRequest.offer, { eager: true })
+    transitRequests: TransitRequest[];
 }

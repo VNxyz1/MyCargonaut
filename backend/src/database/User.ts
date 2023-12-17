@@ -1,5 +1,6 @@
 import {Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique} from 'typeorm';
 import {Offer} from "./Offer";
+import {TransitRequest} from "./TransitRequest";
 
 @Entity()
 @Unique(['eMail'])
@@ -39,7 +40,6 @@ export class User {
   trips: Offer[];
 
 
-
   @Column({ default: '' })
   description: string;
 
@@ -48,5 +48,8 @@ export class User {
     default: new Date().toISOString(),
   })
   entryDate: Date;
+
+  @OneToMany(() => TransitRequest, transitRequest => transitRequest.requester)
+  requestedTransits: TransitRequest[];
 
 }

@@ -1,7 +1,7 @@
 import {
     BadRequestException,
     Body,
-    Controller,
+    Controller, Delete,
     Get,
     Param,
     ParseIntPipe,
@@ -94,9 +94,9 @@ export class OfferController {
         return offerListDto;
     }
 
-    @Put(":id")
+    @Put("props/:id")
     @UseGuards(IsLoggedInGuard)
-    @ApiOperation({ summary: 'Updates the selected Offer. Only if the Logged in User is the Provider' })
+    @ApiOperation({ summary: 'Updates the selected Offer. Only the properties that are sent are updated. Only if the Logged in User is the Provider' })
     @ApiResponse({ type: OKResponseWithMessageDTO })
     async updateOffer(
         @Session() session: ISession,
@@ -111,6 +111,26 @@ export class OfferController {
         await this.offerService.updateOffer(body, offer);
         return new OKResponseWithMessageDTO(true, "Offer Updated")
     }
+
+
+    @Delete("delete/:id")
+    @UseGuards(IsLoggedInGuard)
+    @ApiOperation({ summary: 'Deletes Offer. Only if the Logged in User is the Provider' })
+    @ApiResponse({ type: OKResponseWithMessageDTO })
+    async deleteOffer(
+        @Session() session: ISession,
+        @Param("id", ParseIntPipe) offerId: number
+    ) {
+        const userId = session.userData.id;
+        const offer = await this.offerService.getOffer(offerId);
+        if (offer.provider.id !== userId) {
+            throw new BadRequestException("You are not the Provider of this Offer!")
+        }
+        await this.offerService.deleteOffer(offer);
+        return new OKResponseWithMessageDTO(true, "Offer Deleted")
+    }
+
+
 
 
 

@@ -11,6 +11,9 @@ import { OfferService } from './routes/offer.service/offer.service';
 import { OfferController } from './routes/offer/offer.controller';
 import {Offer} from "./database/Offer";
 import {Plz} from "./database/Plz";
+import {TransitRequest} from "./database/TransitRequest";
+import { TransitRequestService } from './routes/transit-request.service/transit-request.service';
+import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 
 @Module({
   imports: [
@@ -20,12 +23,12 @@ import {Plz} from "./database/Plz";
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './db/tmp.sqlite',
-      entities: [User, Offer, Plz],
+      entities: [User, Offer, Plz, TransitRequest],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Offer, Plz]),
+    TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest]),
   ],
-  controllers: [UserController, AuthController, OfferController],
-  providers: [UserService, AuthService, OfferService],
+  controllers: [UserController, AuthController, OfferController, TransitRequestController],
+  providers: [UserService, AuthService, OfferService, TransitRequestService],
 })
 export class AppModule {}

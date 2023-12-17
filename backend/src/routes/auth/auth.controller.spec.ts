@@ -30,6 +30,9 @@ describe('AuthController', () => {
       coins: 0,
       description: '',
       entryDate: undefined,
+      offers: [],
+      trips: [],
+      requestedTransits: []
     },
   };
 

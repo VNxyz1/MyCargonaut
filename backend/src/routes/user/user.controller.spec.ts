@@ -31,6 +31,9 @@ describe('UserController', () => {
       coins: 0,
       description: '',
       entryDate: undefined,
+      offers: [],
+      trips: [],
+      requestedTransits: []
     },
   };
 

@@ -26,7 +26,7 @@ export class GetOfferResponseDto {
     bookedSeats: number
 
     @ApiProperty()
-    state: string;
+    state: number;
 
     @ApiProperty()
     description: string;
