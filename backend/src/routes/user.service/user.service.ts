@@ -34,9 +34,7 @@ export class UserService {
     if (updateUserDto.phoneNumber) {
       user.phoneNumber = updateUserDto.phoneNumber;
     }
-    if (updateUserDto.eMail) {
-      user.eMail = updateUserDto.eMail;
-    }
+
     if (updateUserDto.firstName) {
       user.firstName = updateUserDto.firstName;
     }
@@ -46,8 +44,9 @@ export class UserService {
     if (updateUserDto.profilePicture) {
       user.profilePicture = updateUserDto.profilePicture;
     }
-    if (updateUserDto.password) {
-      user.password = updateUserDto.password;
+
+    if (updateUserDto.description) {
+      user.description = updateUserDto.description;
     }
 
     return this.userRepository.save(user);

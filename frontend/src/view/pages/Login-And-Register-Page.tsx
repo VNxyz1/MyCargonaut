@@ -1,6 +1,6 @@
 import {Col, Container, Row, Image} from "react-bootstrap";
-import LoginForm from "../components/Login-Form.tsx";
-import RegisterForm from "../components/Register-Form.tsx";
+import LoginForm from "../components/Login-Regist/Login-Form.tsx";
+import RegisterForm from "../components/Login-Regist/Register-Form.tsx";
 import logo from "../../assets/semi_androidMyCargonautmdpi.png"
 
 function LoginAndRegisterPage() {

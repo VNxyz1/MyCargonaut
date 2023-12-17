@@ -2,7 +2,8 @@ import {
   Body,
   Controller,
   Delete,
-  Get, InternalServerErrorException,
+  Get,
+  InternalServerErrorException,
   Post,
   Put,
   Session,
@@ -64,6 +65,8 @@ export class UserController {
     userDto.lastName = user.lastName;
     userDto.birthday = user.birthday;
     userDto.coins = user.coins;
+    userDto.entryDate = user.entryDate;
+    userDto.description = user.description;
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
@@ -80,10 +83,9 @@ export class UserController {
       return new OKResponseWithMessageDTO(true, 'User Created');
     } catch (e) {
       if (e.errno == 19) {
-        return new InternalServerErrorException("E-Mail bereits vergeben");
+        return new InternalServerErrorException('E-Mail bereits vergeben');
       }
     }
-
   }
 
   @Put()
@@ -117,7 +119,7 @@ export class UserController {
   async getAllUsers() {
     const users = await this.userService.getAllUsers();
 
-    const usersDto: GetUserResponseDto[] = users.map(user => {
+    const usersDtos: GetUserResponseDto[] = users.map((user) => {
       const userDto = new GetUserResponseDto();
       userDto.id = user.id;
       userDto.eMail = user.eMail;
@@ -130,7 +132,7 @@ export class UserController {
       return userDto;
     });
 
-    return usersDto;
+    return usersDtos;
   }
 
 

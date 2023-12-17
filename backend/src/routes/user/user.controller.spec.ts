@@ -5,13 +5,13 @@ import { GetUserResponseDto } from './DTOs/GetUserResponseDTO';
 import { ISession } from '../../utils/ISession';
 import { User } from '../../database/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CreateUserRequestDto } from './DTOs/CreateUserRequestDTO';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { AuthController } from '../auth/auth.controller';
 import { AuthService } from '../auth.service/auth.service';
 import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
+import { MockCreateUser } from './DTOs/MockCreateUser';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -29,6 +29,8 @@ describe('UserController', () => {
       profilePicture: '',
       birthday: undefined,
       coins: 0,
+      description: '',
+      entryDate: undefined,
     },
   };
 
@@ -66,7 +68,7 @@ describe('UserController', () => {
   });
 
   it('should post a user to the database', async () => {
-    const user = new CreateUserRequestDto();
+    const user = new MockCreateUser();
     user.eMail = 'tester@test.com';
     user.firstName = 'Max';
     user.lastName = 'Mustermann';
@@ -74,6 +76,8 @@ describe('UserController', () => {
     user.password = '1234';
     user.phoneNumber = '+49 173 55555';
     user.birthday = new Date('2002-02-18');
+    user.entryDate = new Date('2002-02-18');
+    user.description = 'Test';
 
     const responseMock = new OKResponseWithMessageDTO(true, 'User Created');
 
@@ -105,10 +109,12 @@ describe('UserController', () => {
     userDto.birthday = new Date('2002-02-18');
     userDto.eMail = 'tester@test.com';
     userDto.firstName = 'Max';
+    userDto.description = 'Test';
     userDto.lastName = 'Mustermann';
     userDto.profilePicture = '/profile-pictures/12341.png';
     userDto.phoneNumber = '+49 173 55555';
     userDto.coins = 0;
+    userDto.entryDate = new Date('2002-02-18');
 
     const result = await userController.getLoggedInUser(session);
 
@@ -117,7 +123,7 @@ describe('UserController', () => {
 
   it('should update the logged-in user', async () => {
     const updateDTO = new UpdateUserRequestDto();
-    updateDTO.eMail = 'tester@test.com';
+    updateDTO.description = 'Max will testen';
     updateDTO.firstName = 'Maxiii';
     updateDTO.lastName = 'Mustermanni';
     updateDTO.birthday = new Date('2002-02-18');
