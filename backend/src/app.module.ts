@@ -7,11 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './database/User';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthService } from './routes/auth.service/auth.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist'),
+    }),
+    MulterModule.register({
+      dest: './uploads'
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
@@ -19,10 +23,12 @@ import { AuthService } from './routes/auth.service/auth.service';
       entities: [User],
       synchronize: true,
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
+
+   /* ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads', 'profile-images'), // Pfad zu deinem Bilderordner
+      serveRoot: '/profile-images', // Der Pfad unter dem die Bilder verfügbar gemacht werden sollen
+    }),*/
+
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController, AuthController],

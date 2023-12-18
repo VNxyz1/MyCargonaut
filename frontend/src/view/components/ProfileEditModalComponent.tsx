@@ -78,7 +78,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
             userImage.append('image', image as any);
             console.log(userImage);
             // Hochladen des Profilbilds
-            const imgRes = await fetch('/user/upload-profile-image', {
+            const imgRes = await fetch('/user/upload', {
                 method: 'POST',
                 body: userImage,
             });

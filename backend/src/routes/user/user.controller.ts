@@ -8,10 +8,11 @@ import {
   Put,
   Session,
   UseGuards,
-
   UploadedFile,
-  UseInterceptors,
+  UseInterceptors, Param, Res,
 } from '@nestjs/common';
+
+
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from '../user.service/user.service';
 import { GetUserResponseDto } from './DTOs/GetUserResponseDTO';
@@ -20,30 +21,12 @@ import { ISession } from '../../utils/ISession';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { CreateUserRequestDto } from './DTOs/CreateUserRequestDTO';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
+import e, { Response } from 'express';
 
 
-import { Multer, MulterFile } from 'multer';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import {extname, join} from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as fs from 'fs';
-
-
-
-
-const storage = diskStorage({
-  destination: './uploads/profile-images',
-  filename: (req, file, callback) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const extension = extname(file.originalname);
-    callback(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
-  },
-});
-
-const multerConfig = {
-  storage: storage,
-};
-
 
 @ApiTags('user')
 @Controller('user')
@@ -81,20 +64,22 @@ export class UserController {
     try {
       await this.userService.postUser(body);
       return new OKResponseWithMessageDTO(true, 'User Created');
-    } catch (e) {
+    } catch (e: any) {
       if (e.errno == 19) {
         return new InternalServerErrorException('E-Mail bereits vergeben');
       }
     }
   }
 
+
+
   @Put()
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({ summary: 'Updates the Logged-In User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async updateUser(
-    @Session() session: ISession,
-    @Body() body: UpdateUserRequestDto,
+      @Session() session: ISession,
+      @Body() body: UpdateUserRequestDto,
   ) {
     const id = session.userData.id;
     await this.userService.updateLoggedInUser(id, body);
@@ -140,30 +125,43 @@ export class UserController {
 
 
 
-  @Post('upload-profile-image')
+  @Post('upload')
   @UseGuards(IsLoggedInGuard)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads/profile-images',
+      filename: (req, file, callback) => {
+        const uniquSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        const filename = `${uniquSuffix}${ext}`;
+        callback(null, filename);
+      },
+    }),
+  }))
   async uploadProfileImage(
       @Session() session: ISession,
-      @UploadedFile() file,
-  ): Promise<{ url: string }> {
+      @UploadedFile() file
+  ){
     try {
-      console.log(file);
-      const imagePathUpload = `./uploads/profile-images/${file.originalname}`;
-      fs.writeFileSync(imagePathUpload, file.buffer);
-
-      const serverBaseUrl = 'http://localhost:3000/uploads/profile-images';
-      const imageUrl = `${serverBaseUrl}/${file.originalname}`;
-      await this.userService.saveProfileImagePath(session.userData.id, imageUrl);
-
-      return { url: imageUrl };
+    this.userService.saveProfileImagePath(session.userData.id, file.filename);
+      return { imagePath: file.filename };
     } catch (error) {
-      console.error("Error uploading profile image:", error);
+      console.error('Error uploading profile image:', error);
       throw new InternalServerErrorException("Fehler beim Hochladen des Profilbilds");
     }
   }
 
-
-
-
+  
+  @Get('profile-image/:imagename')
+  findProfileImage(@Param('imagename') imagename: string, @Res() res: Response) {
+    try {
+      const imagePath = join(process.cwd(), 'uploads', 'profile-images', imagename);
+      console.log('Image Path:', imagePath);
+      res.sendFile(imagePath);
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(404).send('Image not found');
+    }
+  }
 }
