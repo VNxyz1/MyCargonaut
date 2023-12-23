@@ -21,7 +21,7 @@ Content-Type: application/json
 
 
 ### PUT Offer
-PUT localhost:3000/offer/1 HTTP/2
+PUT localhost:3000/offer/props/1 HTTP/2
 Content-Type: application/json
 
 {
@@ -39,3 +39,18 @@ Content-Type: application/json
   "description": "Das ist ein geupdateter Test!",
   "startDate": "2024-02-19"
 }
+
+### Get All Offers
+GET localhost:3000/offer HTTP/2
+
+
+### search offers
+GET localhost:3000/offer/search/test HTTP/2
+
+
+### Get own Offers
+GET localhost:3000/offer/own HTTP/2
+
+### Delete offer
+DELETE localhost:3000/offer/delete/1 HTTP/2
+

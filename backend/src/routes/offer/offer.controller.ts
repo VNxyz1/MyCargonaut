@@ -17,11 +17,8 @@ import {CreateOfferDto} from "./DTOs/CreateOfferDto";
 import {ISession} from "../../utils/ISession";
 import {IsLoggedInGuard} from "../../guards/auth/is-logged-in.guard";
 import {GetAllOffersResponseDto} from "./DTOs/GetAllOffersResponseDto";
-import {Offer} from "../../database/Offer";
-import {GetOfferResponseDto} from "./DTOs/GetOfferResponseDto";
-import {User} from "../../database/User";
-import {GetOtherUserDto} from "./DTOs/GetOtherUserDto";
 import {UpdateOfferRequestDto} from "./DTOs/UpdateOfferRequestDto";
+import {convertOfferToGetOfferDto} from "../utils/convertToOfferDto";
 
 @ApiTags('offer')
 @Controller('offer')
@@ -51,8 +48,8 @@ export class OfferController {
         const offerListDto = new GetAllOffersResponseDto();
         offerListDto.offerList = [];
         for (let offer of offerList) {
-            const converteOffer = this.convertOfferToGetOfferDto(offer);
-            offerListDto.offerList.push(converteOffer);
+            const convertOffer = convertOfferToGetOfferDto(offer);
+            offerListDto.offerList.push(convertOffer);
         }
 
         return offerListDto;
@@ -70,7 +67,7 @@ export class OfferController {
         const offerListDto = new GetAllOffersResponseDto();
         offerListDto.offerList = [];
         for (let offer of offerList) {
-            const converteOffer = this.convertOfferToGetOfferDto(offer);
+            const converteOffer = convertOfferToGetOfferDto(offer);
             offerListDto.offerList.push(converteOffer);
         }
 
@@ -87,7 +84,7 @@ export class OfferController {
         const offerListDto = new GetAllOffersResponseDto();
         offerListDto.offerList = [];
         for (let offer of offerList) {
-            const converteOffer = this.convertOfferToGetOfferDto(offer);
+            const converteOffer = convertOfferToGetOfferDto(offer);
             offerListDto.offerList.push(converteOffer);
         }
 
@@ -136,32 +133,6 @@ export class OfferController {
 
 
 
-    convertOfferToGetOfferDto(offer: Offer) {
-        const getOfferResponseDto: GetOfferResponseDto = {
-            id: offer.id,
-            provider: this.convertUserToOtherUser(offer.provider),
-            route: offer.route,
-            createdAt: offer.createdAt,
-            clients: offer.clients.map(client => this.convertUserToOtherUser(client)),
-            vehicle: offer.vehicle,
-            bookedSeats: offer.bookedSeats,
-            state: offer.state,
-            description: offer.description,
-            startDate: offer.startDate,
-        };
 
-        return getOfferResponseDto;
-    }
-
-    convertUserToOtherUser(user: User) {
-        const otherUserDto: GetOtherUserDto = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            profilePicture: user.profilePicture,
-        };
-
-        return otherUserDto;
-    }
 
 }

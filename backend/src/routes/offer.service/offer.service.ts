@@ -9,6 +9,7 @@ import {CreatePlzDto} from "../offer/DTOs/CreatePlzDto";
 import {Like} from "typeorm";
 import {UpdateOfferRequestDto} from "../offer/DTOs/UpdateOfferRequestDto";
 import {TripState} from "../../database/TripState";
+import {TransitRequest} from "../../database/TransitRequest";
 
 @Injectable()
 export class OfferService {
@@ -20,7 +21,10 @@ export class OfferService {
         private readonly offerRepository: Repository<Offer>,
         @InjectRepository(Plz)
         private readonly plzRepository: Repository<Plz>,
-    ) {}
+        @InjectRepository(TransitRequest)
+        private readonly transitRequestRepository: Repository<TransitRequest>,
+    ) {
+    }
 
     async postOffer(providerId: number, offerDto: CreateOfferDto) {
         const offer = this.offerRepository.create(offerDto);
@@ -46,13 +50,14 @@ export class OfferService {
     async getOffers(searchFor?: string) {
 
         if (searchFor) {
-            return await this.offerRepository.find({where: {description: Like(`%${searchFor}%`),}, relations: ["provider", "route", "clients"]})
+            return await this.offerRepository.find({where: {description: Like(`%${searchFor}%`),}, relations: ["provider", "route", "clients", "transitRequests"]})
         }
 
         return await this.offerRepository.createQueryBuilder('offer')
             .leftJoinAndSelect('offer.provider', 'provider')
             .leftJoinAndSelect('offer.route', 'route')
             .leftJoinAndSelect('offer.clients', 'clients')
+            .leftJoinAndSelect('offer.transitRequests', 'transitRequests')
             .getMany();
 
     }
@@ -62,6 +67,7 @@ export class OfferService {
             .leftJoinAndSelect('offer.provider', 'provider')
             .leftJoinAndSelect('offer.route', 'route')
             .leftJoinAndSelect('offer.clients', 'clients')
+            .leftJoinAndSelect('offer.transitRequests', 'transitRequests')
             .where('offer.provider.id = :userId', {
                 userId: userId
             })
@@ -69,7 +75,7 @@ export class OfferService {
     }
 
     async getOffer(id: number) {
-        const offer =  await this.offerRepository.findOne({where: {id: id}, relations: ["provider", "route", "clients"]});
+        const offer = await this.offerRepository.findOne({where: {id: id}, relations: ["provider", "route", "clients", "transitRequests"]});
         if (!offer) {
             throw new InternalServerErrorException("Offer was not found!");
         }
@@ -77,8 +83,7 @@ export class OfferService {
     }
 
 
-
-    private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto ) {
+    private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto) {
         const checkPlz = await this.checkIfPlzIsDuplicat(plzDto);
 
         if (!checkPlz) {
@@ -115,7 +120,17 @@ export class OfferService {
     }
 
     async deleteOffer(offer: Offer) {
-        await this.offerRepository.delete(offer)
+        for (const tR of offer.transitRequests) {
+            await this.transitRequestRepository.remove(tR);
+        }
+
+        const plzArr = await this.plzRepository.find({where: {}, relations: ['offers']});
+        for (const plz of plzArr) {
+            plz.offers = plz.offers.filter((o) => o.id !== offer.id);
+            await this.plzRepository.save(plz);
+        }
+
+        await this.offerRepository.remove(offer);
     }
 
 
