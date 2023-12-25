@@ -4,6 +4,8 @@ import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
+import {join} from "path";
+import {existsSync, unlinkSync} from "fs";
 
 @Injectable()
 export class UserService {
@@ -41,9 +43,10 @@ export class UserService {
     if (updateUserDto.lastName) {
       user.lastName = updateUserDto.lastName;
     }
+    /*
     if (updateUserDto.profilePicture) {
       user.profilePicture = updateUserDto.profilePicture;
-    }
+    }*/
 
     if (updateUserDto.description) {
       user.description = updateUserDto.description;
@@ -70,14 +73,28 @@ export class UserService {
     return await this.userRepository.find();
   }
 
+  
+  async removeOldImage(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
+    }
+    const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
+    if (existsSync(oldImagePath)) {
+      unlinkSync(oldImagePath);
+    } else {
+      throw new NotFoundException(`No existing image path found.`);
+    }
+  }
+  
   async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
+
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
     }
 
     user.profilePicture = imagePath;
-
     await this.userRepository.save(user);
   }
 }

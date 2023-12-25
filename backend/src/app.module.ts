@@ -23,12 +23,6 @@ import { MulterModule } from '@nestjs/platform-express';
       entities: [User],
       synchronize: true,
     }),
-
-   /* ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads', 'profile-images'), // Pfad zu deinem Bilderordner
-      serveRoot: '/profile-images', // Der Pfad unter dem die Bilder verfügbar gemacht werden sollen
-    }),*/
-
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [UserController, AuthController],
