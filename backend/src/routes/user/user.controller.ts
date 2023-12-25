@@ -19,11 +19,10 @@ import {ISession} from '../../utils/ISession';
 import {OKResponseWithMessageDTO} from '../../generalDTOs/OKResponseWithMessageDTO';
 import {CreateUserRequestDto} from './DTOs/CreateUserRequestDTO';
 import {UpdateUserRequestDto} from './DTOs/UpdateUserRequestDTO';
-import e, {Response} from 'express';
+import {Response} from 'express';
 import {diskStorage} from 'multer';
 import {extname, join} from 'path';
 import {FileInterceptor} from '@nestjs/platform-express';
-import {existsSync, unlinkSync} from 'fs';
 
 @ApiTags('user')
 @Controller('user')

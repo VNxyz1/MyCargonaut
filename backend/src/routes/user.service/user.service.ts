@@ -79,11 +79,12 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
     }
-    const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
-    if (existsSync(oldImagePath)) {
-      unlinkSync(oldImagePath);
-    } else {
-      throw new NotFoundException(`No existing image path found.`);
+
+    if (user.profilePicture.length > 0){
+      const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
+      if (existsSync(oldImagePath)) {
+        unlinkSync(oldImagePath);
+      }
     }
   }
   
