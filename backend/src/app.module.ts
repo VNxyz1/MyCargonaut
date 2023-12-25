@@ -7,11 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './database/User';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthService } from './routes/auth.service/auth.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist'),
+    }),
+    MulterModule.register({
+      dest: './uploads'
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',

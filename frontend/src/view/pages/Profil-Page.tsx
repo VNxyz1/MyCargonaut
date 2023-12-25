@@ -18,6 +18,7 @@ import Button from "react-bootstrap/Button";
 
 
 function ProfilPage() {
+    const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
@@ -75,6 +76,7 @@ function ProfilPage() {
                 if (res.ok) {
                     const data = await res.json();
                     setUserData(data);
+                    setProfileImageUrl(data.profilePicture);
                     console.log(data);
 
                     const bDate = calculateAge(new Date(data.birthday));
@@ -162,8 +164,10 @@ function ProfilPage() {
                 <Row>
                     <Col sm={4} id="prof-sidebar">
 
-                        <img src={userData && (userData as any).profilePicture ? (userData as any).profilePicture : placeholderImg} alt="User profile image"/>
-
+                        <img
+                            src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
+                            alt="User profile image"
+                        />
                         {userData && (
                             <>
                                 <p>{(userData as any).firstName} {(userData as any).lastName}</p>

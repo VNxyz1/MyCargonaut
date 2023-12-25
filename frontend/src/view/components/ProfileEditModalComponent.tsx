@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Modal, ModalProps} from "react-bootstrap";
+import {Image, Modal, ModalProps} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {useAuth} from "../../AuthContext";
@@ -25,8 +25,6 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
 
 
     useEffect(() => {
-        console.log("PROFIL EDIT COMPONENT LOADED");
-
         const fetchUserData = async () => {
             try {
                 const res = await fetch("/user", {
@@ -35,8 +33,6 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                 });
                 if (res.ok) {
                     const userData = await res.json();
-                    console.log(userData);
-
                     setFormData((prevFormData) => ({
                         ...prevFormData,
                         ...userData,
@@ -69,40 +65,74 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
 
         console.log(res);
 
+        if (image) {
+            console.log("name der datei " + image.name);
+        }
+
     }
 
 
     const editUser = async () => {
         try {
-            const response = await fetch("/user", {
-                method: "PUT",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify(formData),
+            const userImage = new FormData();
+            userImage.append('image', image as any);
+            console.log(userImage);
+            // Hochladen des Profilbilds
+            const imgRes = await fetch('/user/upload', {
+                method: 'POST',
+                body: userImage,
             });
-            if (!response.ok) {
-                const data = await response.json();
-                console.log(data);
+
+            if (!imgRes.ok) {
+                const imageData = await imgRes.json();
+                console.log('Image upload failed:', imageData);
+                return;
             } else {
-                const data = await response.json();
-                console.log(data);
+                console.log(imgRes)
             }
 
+            /*
+                        // Update des Benutzers mit dem neuen Profilbild-Pfad
+                        const response = await fetch("/user", {
+                            method: "PUT",
+                            headers: {
+                                "Content-type": "application/json"
+                            },
+                            body: JSON.stringify(formData),
+                        });
+                        if (!response.ok) {
+                            const data = await response.json();
+                            console.log('User update failed:', data);
+                        } else {
+                            const data = await response.json();
+                            console.log('User updated successfully:', data);
+                        }*/
         } catch (error) {
             console.error("Error:", error);
         }
     }
 
-    /*
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+    const [image, setImage] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-        if (file) {
-            setFormData((prevData) => ({ ...prevData, profilePicture: file }));
-            console.log(file);
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+
+            setImage(file);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setPreviewUrl(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
         }
-    };*/
+    };
+
+    const removeImage = () => {
+        setImage(null);
+        setPreviewUrl(null);
+    };
 
     return (
 
@@ -189,19 +219,30 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                         </Form.Group>
                     </Row>
 
+                    <Row>
+                        <Form.Group as={Col} className="sm-6"  controlId="profilePicture">
+                            <Form.Label>Profilbild</Form.Label>
+                            <Form.Control
+                                name="profilePicture"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+                        </Form.Group>
+
+                        <Col className="d-flex align-items-end" sm-6>
+                            {previewUrl && (
+                                <div className="image-preview-container">
+                                    <Image src={previewUrl} alt="Vehicle" roundedCircle  className="preview-image"  />
+                                    <Button variant="danger" onClick={removeImage}>Bild entfernen</Button>
+                                </div>
+                            )}
+                        </Col>
+                    </Row>
+
                     <p>Profilbild und Beschreibung fehlt noch - Mail und passwort  evtl. raus</p>
 
                     {/*
-                    <Form.Group controlId="profilePicture">
-                        <Form.Label>Profilbild</Form.Label>
-                        <Form.File
-                            name="profilePicture"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                        />
-                    </Form.Group>
-
-
                     <Form.Group controlId="description">
                         <Form.Label>Beschreibung</Form.Label>
                         <Form.Control

@@ -19,10 +19,12 @@ export class UpdateUserRequestDto {
   @ApiProperty({ required: false })
   lastName?: string;
 
+  /*
   @IsOptional()
   @IsString()
   @ApiProperty()
   profilePicture?: string;
+*/
 
   @IsOptional()
   @IsPhoneNumber()
