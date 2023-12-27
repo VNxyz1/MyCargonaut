@@ -58,13 +58,18 @@ export class UserService {
   async deleteLoggedInUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
 
-    user.phoneNumber = null;
+    await this.removeOldImage(user.id);
+
+    user.eMail = null;
+    user.password = null;
     user.firstName = '****';
     user.lastName = '****';
-    user.eMail = null;
-    user.profilePicture = '';
-    user.password = null;
     user.birthday = null;
+    user.coins = 0;
+    user.profilePicture = '';
+    user.phoneNumber = null;
+    user.entryDate = null;
+    user.description = '';
 
     await this.userRepository.save(user);
   }

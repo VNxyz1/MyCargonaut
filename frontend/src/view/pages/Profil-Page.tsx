@@ -6,16 +6,16 @@ import Col from 'react-bootstrap/Col';
 
 import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
-import MyTripsComponent from "../components/MyTripsComponent";
-import MyTransportsComponent from "../components/MyTransportsComponent";
-import MyVehiclesComponent from "../components/MyVehiclesComponent";
-import ProfileEditModal from "../components/ProfileEditModalComponent";
-import VehicleAddModal from "../components/VehicleAddModalComponent";
+import MyTripsComponent from "../components/Profile/MyTripsComponent";
+import MyTransportsComponent from "../components/Profile/MyTransportsComponent";
+import MyVehiclesComponent from "../components/Profile/MyVehiclesComponent";
+import MyRatingsComponent from "../components/Profile/MyRatingsComponent";
+import ProfileEditModal from "../components/Profile/ProfileEditModalComponent";
+import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
 import {useAuth} from '../../AuthContext';
 import {useNavigate} from "react-router-dom";
 import {Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-
 
 function ProfilPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
@@ -24,6 +24,9 @@ function ProfilPage() {
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
     const [userData, setUserData] = useState(null);
     const [userAge, setUserAge] = useState<number | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const entryDate = new Date((userData as any)?.entryDate);
+    const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
 
@@ -35,6 +38,8 @@ function ProfilPage() {
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
+                case "Bewertungen":
+                return <MyRatingsComponent/>;
             default:
                 return null;
         }
@@ -54,9 +59,7 @@ function ProfilPage() {
         if (isNaN(birthDate.getTime())) {
             return null;
         }
-
         let age = currentDate.getFullYear() - birthDate.getFullYear();
-
         if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
             age--;
         }
@@ -64,43 +67,35 @@ function ProfilPage() {
     };
 
     useEffect(() => {
-
-        console.log("PROFIL - GET USER " + isAuthenticated);
-
-        const getLoggedInUser = async () => {
-            try {
-                const res = await fetch("/user", {
-                    method: "GET",
-                    headers: {},
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserData(data);
-                    setProfileImageUrl(data.profilePicture);
-                    console.log(data);
-
-                    const bDate = calculateAge(new Date(data.birthday));
-                    setUserAge(bDate);
-                } else {
-                    console.error("Error fetching logged in user");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-
-
         if (isAuthenticated) {
             getLoggedInUser();
         } else {
             navigate('/login');
-            console.log(" EINLOGGEN UM PROFIL ZUSEHEN!!")
         }
     }, [isAuthenticated, navigate]);
 
+    const getLoggedInUser = async () => {
+        try {
+            const res = await fetch("/user", {
+                method: "GET",
+                headers: {},
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUserData(data);
+                setProfileImageUrl(data.profilePicture);
+
+                const bDate = calculateAge(new Date(data.birthday));
+                setUserAge(bDate);
+            } else {
+                console.error("Error fetching user data");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
     const handleLogout = async () => {
-
         try {
             const response = await fetch("/auth/logout", {
                 method: "POST",
@@ -108,20 +103,20 @@ function ProfilPage() {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
+                /*const data = await response.json();
+                console.log(data);*/
                 logout();
                 navigate('/');
-            } else {
+            } /*else {
                 const data = await response.json();
                 console.log(data);
-            }
+            }*/
         } catch (error) {
             console.error("Error:", error);
         }
     };
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
 
     const handleShowDeleteModal = () => {
         setShowDeleteModal(true);
@@ -136,8 +131,6 @@ function ProfilPage() {
         handleCloseDeleteModal();
     };
 
-    //TODO dazugehörende User Inserate löschen
-    //TODO User wird nicht in der Datenbank entfernt sondern nur zurückgesetzt
     const deleteUser = async () => {
         try {
             const response = await fetch("/user", {
@@ -158,29 +151,55 @@ function ProfilPage() {
         }
     }
 
+    const deleteImage = async () => {
+        try {
+            const response = await fetch("/user/remove-profile-image", {
+                method: "DELETE",
+                headers: {"Content-type": "application/json"},
+            });
+            if (response.ok) {
+                const res = await response.json();
+                console.log(res);
+                getLoggedInUser();
+            } else {
+                const res = await response.json();
+                console.log(res);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+
     return (
         <>
             <Container className="content-container">
                 <Row>
                     <Col sm={4} id="prof-sidebar">
-
                         <img
                             src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
                             alt="User profile image"
                         />
+
+                        <div className="profil_navi">
+                            <span><i className="icon-pen-to-square"></i> Bild ändern</span>
+                            {profileImageUrl && (
+                                <span onClick={deleteImage}><i className="icon-trash"></i> Bild löschen</span>
+                            )}
+                        </div>
+
                         {userData && (
                             <>
                                 <p>{(userData as any).firstName} {(userData as any).lastName}</p>
                                 <p>{(userData as any).coins} Coins</p>
                                 <p>{userAge} Jahre alt</p>
-
+                                <p>{(userData as any).description.length > 0 ? (userData as any).description : 'Keine Beschreibung vorhanden'}</p>
+                                <p>Mitglied seit: {formattedEntryDate}</p>
                             </>
                         )}
 
                         <p style={{color: '#aeaeae'}}>4,7 40 Ratings (statisch - nicht implementiert)</p>
-                        <p style={{color: '#aeaeae'}}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch - nicht implementiert)</p>
                         <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
-                        <p style={{color: '#aeaeae'}}>Mitglied seit 15.07.2021(statisch - nicht implementiert)</p>
 
                         <div className="prof-side-btn-wrapper">
                             <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
@@ -211,6 +230,7 @@ function ProfilPage() {
                             <span onClick={() => setCurrentSection("Meine Fahrten")} className={currentSection === "Meine Fahrten" ? "active" : ""}> Meine Fahrten </span>
                             <span onClick={() => setCurrentSection("Meine Transporte")} className={currentSection === "Meine Transporte" ? "active" : ""}> Meine Transporte </span>
                             <span onClick={() => setCurrentSection("Meine Fahrzeuge")} className={currentSection === "Meine Fahrzeuge" ? "active" : ""}> Meine Fahrzeuge </span>
+                            <span onClick={() => setCurrentSection("Bewertungen")} className={currentSection === "Bewertungen" ? "active" : ""}> Bewertungen </span>
                         </div>
 
                         {renderSectionContent()}
@@ -219,7 +239,6 @@ function ProfilPage() {
                 </Row>
             </Container>
 
-            {/* Modalfenster für Profil bearbeiten  TODO: ADD USER EDIT FUNKTION*/}
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
             <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)}/>
 
