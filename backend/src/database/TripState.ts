@@ -1,6 +1,6 @@
 export enum TripState {
-    request,
-    offer,
-    inTransit,
-    finished
+  request,
+  offer,
+  inTransit,
+  finished,
 }

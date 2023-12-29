@@ -1,27 +1,33 @@
-import {ArrayMinSize, IsArray, IsISO8601, IsNotEmpty, IsOptional, IsString} from "class-validator";
-import {ApiProperty} from "@nestjs/swagger";
-import {CreatePlzDto} from "./CreatePlzDto";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsISO8601,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { CreateRoutePartDto } from './CreateRoutePartDto';
 
 export class UpdateOfferRequestDto {
+  @IsArray()
+  @ArrayMinSize(2)
+  @IsOptional()
+  @ApiProperty({
+    required: false,
+    type: [CreateRoutePartDto],
+    minimum: 2,
+  })
+  route?: CreateRoutePartDto[];
 
-    @IsArray()
-    @ArrayMinSize(2)
-    @IsOptional()
-    @ApiProperty({
-        required: false,
-        type: [CreatePlzDto],
-        minimum: 2
-    })
-    route?: CreatePlzDto[];
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  description?: string;
 
-    @IsString()
-    @IsNotEmpty()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    description?: string;
-
-    @IsISO8601()
-    @IsOptional()
-    @ApiProperty({ required: false })
-    startDate?: Date;
+  @IsISO8601()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  startDate?: Date;
 }

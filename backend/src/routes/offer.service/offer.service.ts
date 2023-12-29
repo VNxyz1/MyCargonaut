@@ -1,136 +1,177 @@
-import {Injectable, InternalServerErrorException} from '@nestjs/common';
-import {CreateOfferDto} from "../offer/DTOs/CreateOfferDto";
-import {InjectRepository} from "@nestjs/typeorm";
-import {User} from "../../database/User";
-import {Repository} from "typeorm";
-import {Offer} from "../../database/Offer";
-import {Plz} from "../../database/Plz";
-import {CreatePlzDto} from "../offer/DTOs/CreatePlzDto";
-import {Like} from "typeorm";
-import {UpdateOfferRequestDto} from "../offer/DTOs/UpdateOfferRequestDto";
-import {TripState} from "../../database/TripState";
-import {TransitRequest} from "../../database/TransitRequest";
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateOfferDto } from '../offer/DTOs/CreateOfferDto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../../database/User';
+import { Repository } from 'typeorm';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { Like } from 'typeorm';
+import { UpdateOfferRequestDto } from '../offer/DTOs/UpdateOfferRequestDto';
+import { TripState } from '../../database/TripState';
+import { TransitRequest } from '../../database/TransitRequest';
+import { RoutePart } from '../../database/RoutePart';
 
 @Injectable()
 export class OfferService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Offer)
+    private readonly offerRepository: Repository<Offer>,
+    @InjectRepository(Plz)
+    private readonly plzRepository: Repository<Plz>,
+    @InjectRepository(TransitRequest)
+    private readonly transitRequestRepository: Repository<TransitRequest>,
+    @InjectRepository(RoutePart)
+    private readonly routePartRepository: Repository<RoutePart>,
+  ) {}
 
-    constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-        @InjectRepository(Offer)
-        private readonly offerRepository: Repository<Offer>,
-        @InjectRepository(Plz)
-        private readonly plzRepository: Repository<Plz>,
-        @InjectRepository(TransitRequest)
-        private readonly transitRequestRepository: Repository<TransitRequest>,
-    ) {
+  async postOffer(providerId: number, offerDto: CreateOfferDto) {
+    const offer = new Offer();
+    offer.vehicle = offerDto.vehicle;
+    offer.bookedSeats = offerDto.bookedSeats;
+    offer.description = offerDto.description;
+    offer.startDate = offerDto.startDate;
+
+    // @ts-expect-error needs to stay for unit testing purpose
+    if (offerDto.createdAt) {
+      // @ts-expect-error needs to stay for unit testing purpose
+      offer.createdAt = offerDto.createdAt;
     }
 
-    async postOffer(providerId: number, offerDto: CreateOfferDto) {
-        const offer = this.offerRepository.create(offerDto);
+    offer.provider = await this.userRepository.findOne({
+      where: { id: providerId },
+    });
 
-        offer.provider = await this.userRepository.findOne({where: {id: providerId}});
+    offer.state = TripState.offer;
 
-        offer.state = TripState.offer;
+    const offerDb = await this.offerRepository.save(offer);
 
-        const offerDb = await this.offerRepository.save(offer)
-
-        for (let plzDto of offerDto.route) {
-            await this.createPlzAndPush(offerDb, plzDto);
-        }
-        return offerDb
+    for (const routePartDto of offerDto.route) {
+      const plz = await this.createPlz(routePartDto.plz);
+      await this.createRoutePart(offerDb, plz, routePartDto.position);
     }
 
-    async checkIfPlzIsDuplicate(plzDto: CreatePlzDto): Promise<Plz | null> {
-        return await this.plzRepository.findOne({where: {plz: plzDto.plz}, relations: ["offers"]});
+    return offerDb;
+  }
+
+  async checkIfPlzIsDuplicate(plz: string): Promise<Plz | null> {
+    return await this.plzRepository.findOne({
+      where: { plz },
+      relations: ['routeParts'],
+    });
+  }
+
+  async getOffers(searchFor?: string) {
+    if (searchFor) {
+      return await this.offerRepository.find({
+        where: { description: Like(`%${searchFor}%`) },
+        relations: ['provider', 'route', 'clients', 'transitRequests'],
+      });
     }
 
+    return await this.offerRepository.find({
+      relations: ['provider', 'route', 'clients', 'transitRequests'],
+    });
+  }
 
-    async getOffers(searchFor?: string) {
+  async getOffersOfUser(userId: number) {
+    return await this.offerRepository.find({
+      where: { provider: { id: userId } },
+      relations: ['provider', 'route', 'clients', 'transitRequests'],
+    });
+  }
 
-        if (searchFor) {
-            return await this.offerRepository.find({where: {description: Like(`%${searchFor}%`),}, relations: ["provider", "route", "clients", "transitRequests"]})
-        }
-
-        return await this.offerRepository.createQueryBuilder('offer')
-            .leftJoinAndSelect('offer.provider', 'provider')
-            .leftJoinAndSelect('offer.route', 'route')
-            .leftJoinAndSelect('offer.clients', 'clients')
-            .leftJoinAndSelect('offer.transitRequests', 'transitRequests')
-            .getMany();
-
+  async getOffer(id: number) {
+    const offer = await this.offerRepository.findOne({
+      where: { id: id },
+      relations: ['provider', 'route', 'clients', 'transitRequests'],
+    });
+    if (!offer) {
+      throw new InternalServerErrorException('Offer was not found!');
     }
 
-    async getOffersOfUser(userId: number) {
-        return await this.offerRepository.createQueryBuilder('offer')
-            .leftJoinAndSelect('offer.provider', 'provider')
-            .leftJoinAndSelect('offer.route', 'route')
-            .leftJoinAndSelect('offer.clients', 'clients')
-            .leftJoinAndSelect('offer.transitRequests', 'transitRequests')
-            .where('offer.provider.id = :userId', {
-                userId: userId
-            })
-            .getMany();
+    return offer;
+  }
+
+  private async createPlz(plz: string) {
+    const checkPlz = await this.checkIfPlzIsDuplicate(plz);
+
+    if (!checkPlz) {
+      const newPlz = new Plz();
+      newPlz.plz = plz;
+      return await this.plzRepository.save(newPlz);
+    }
+    return checkPlz;
+  }
+
+  async updateOffer(updateData: UpdateOfferRequestDto, offer: Offer) {
+    if (updateData.description) {
+      offer.description = updateData.description;
     }
 
-    async getOffer(id: number) {
-        const offer = await this.offerRepository.findOne({where: {id: id}, relations: ["provider", "route", "clients", "transitRequests"]});
-        if (!offer) {
-            throw new InternalServerErrorException("Offer was not found!");
-        }
-        return offer
+    if (updateData.startDate) {
+      offer.startDate = updateData.startDate;
+    }
+    await this.offerRepository.save(offer);
+
+    if (updateData.route) {
+      const routeArr = await this.routePartRepository.find({
+        where: { offer: { id: offer.id } },
+        relations: ['offer', 'plz'],
+      });
+      for (const routePart of routeArr) {
+        await this.routePartRepository.delete(routePart.id);
+      }
+
+      for (const createRoutePartDto of updateData.route) {
+        const plz = await this.createPlz(createRoutePartDto.plz);
+        await this.createRoutePart(offer, plz, createRoutePartDto.position);
+      }
     }
 
+    return this.getOffer(offer.id);
+  }
 
-    private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto) {
-        const checkPlz = await this.checkIfPlzIsDuplicate(plzDto);
-
-        if (!checkPlz) {
-            const plz = new Plz();
-            plz.offers = [];
-            plz.offers.push(offer);
-            plz.plz = plzDto.plz;
-            await this.plzRepository.save(plz);
-        } else {
-            checkPlz.offers.push(offer);
-            offer.route.push(checkPlz);
-            await this.plzRepository.save(checkPlz);
-            await this.offerRepository.save(offer);
-        }
+  async deleteOffer(offer: Offer) {
+    for (const tR of offer.transitRequests) {
+      await this.transitRequestRepository.remove(tR);
     }
 
-    async updateOffer(updateData: UpdateOfferRequestDto, offer: Offer) {
-        if (updateData.route) {
-            offer.route = [];
-            for (let plzDto of updateData.route) {
-                await this.createPlzAndPush(offer, plzDto)
-            }
-        }
-
-        if (updateData.description) {
-            offer.description = updateData.description;
-        }
-
-        if (updateData.startDate) {
-            offer.startDate = updateData.startDate;
-        }
-
-        await this.offerRepository.save(offer);
+    const routeArr = await this.routePartRepository.find({
+      where: { offer: { id: offer.id } },
+      relations: ['offer', 'plz'],
+    });
+    for (const routePart of routeArr) {
+      await this.routePartRepository.delete(routePart.id);
     }
 
-    async deleteOffer(offer: Offer) {
-        for (const tR of offer.transitRequests) {
-            await this.transitRequestRepository.remove(tR);
-        }
+    await this.offerRepository.remove(offer);
+  }
 
-        const plzArr = await this.plzRepository.find({where: {}, relations: ['offers']});
-        for (const plz of plzArr) {
-            plz.offers = plz.offers.filter((o) => o.id !== offer.id);
-            await this.plzRepository.save(plz);
-        }
+  private async getAllPlzOfRoutePart(id: number) {
+    const plz = await this.plzRepository
+      .createQueryBuilder('plz')
+      .innerJoin('plz.routeParts', 'routePart')
+      .where('routePart.id = :id', { id })
+      .getMany();
 
-        await this.offerRepository.remove(offer);
+    if (!plz || plz.length === 0) {
+      throw new NotFoundException('No route for this offer was found.');
     }
 
+    return plz;
+  }
 
+  private async createRoutePart(offer: Offer, plz: Plz, position: number) {
+    const routePart = new RoutePart();
+    routePart.plz = plz;
+    routePart.position = position;
+    routePart.offer = offer;
+    return await this.routePartRepository.save(routePart);
+  }
 }

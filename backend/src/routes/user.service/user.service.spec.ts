@@ -2,18 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
 import { User } from '../../database/User';
-import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import {MockCreateUser} from "../user/Mocks/MockCreateUser";
-import {Offer} from "../../database/Offer";
-import {Plz} from "../../database/Plz";
-import {TransitRequest} from "../../database/TransitRequest";
-import {MockGetUser} from "../user/Mocks/MockGetUser";
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MockCreateUser } from '../user/Mocks/MockCreateUser';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { MockGetUser } from '../user/Mocks/MockGetUser';
 import * as fs from 'fs';
-import {UpdateUserRequestDto} from "../user/DTOs/UpdateUserRequestDTO";
-import mock = jest.mock;
-
-
+import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
+import { RoutePart } from '../../database/RoutePart';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -24,21 +21,18 @@ describe('UserService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.user.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
-      providers: [
-        UserService
-      ],
+      providers: [UserService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
   });
 
   afterAll(async () => {
-
     fs.unlink('./db/tmp.tester.user.service.sqlite', (err) => {
       if (err) {
         throw err;
@@ -51,7 +45,7 @@ describe('UserService', () => {
   });
 
   it('should create a new user', async () => {
-    const createUserDto = new MockCreateUser(true)
+    const createUserDto = new MockCreateUser(true);
 
     const result = await userService.postUser(createUserDto);
     expect(result).toHaveProperty('id');
@@ -59,7 +53,7 @@ describe('UserService', () => {
 
   it('should get user by id', async () => {
     const user = new MockGetUser(true);
-    user.password = "1234"
+    user.password = '1234';
 
     const result = await userService.getUserById(1);
 
@@ -67,18 +61,16 @@ describe('UserService', () => {
   });
 
   it('should throw NotFoundException when user is not found', async () => {
-
     await expect(userService.getUserById(9999)).rejects.toThrow(
       NotFoundException,
     );
   });
 
-
   it('should retrieve a list of all users', async () => {
     const result = await userService.getAllUsers();
     const resultMock: MockGetUser[] = [];
     const mockUser = new MockGetUser(true);
-    mockUser.password = "1234";
+    mockUser.password = '1234';
     resultMock.push(mockUser);
     expect(result).toEqual(resultMock);
   });
@@ -86,7 +78,7 @@ describe('UserService', () => {
   it('should update user information', async () => {
     const userId = 1;
     const updateUserDto: UpdateUserRequestDto = {
-      lastName: "ska dda"
+      lastName: 'ska dda',
     };
 
     const result = await userService.updateLoggedInUser(userId, updateUserDto);
@@ -114,6 +106,4 @@ describe('UserService', () => {
     const updatedCoins = await userService.getCoinBalanceOfUser(userId);
     expect(updatedCoins).toBe(initialCoins - coinsToSub);
   });
-
-
 });

@@ -11,6 +11,10 @@ import * as fs from 'fs';
 import { UserController } from '../user/user.controller';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { RoutePart } from '../../database/RoutePart';
 
 describe('AuthController', () => {
   let userController: UserController;
@@ -32,7 +36,7 @@ describe('AuthController', () => {
       entryDate: undefined,
       offers: [],
       trips: [],
-      requestedTransits: []
+      requestedTransits: [],
     },
   };
 
@@ -42,10 +46,10 @@ describe('AuthController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.auth.controller.sqlite',
-          entities: [User],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService],

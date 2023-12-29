@@ -11,12 +11,16 @@ import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
 import { MockCreateUser } from './Mocks/MockCreateUser';
-import {Offer} from "../../database/Offer";
-import {Plz} from "../../database/Plz";
-import {TransitRequest} from "../../database/TransitRequest";
-import {MockGetUser} from "./Mocks/MockGetUser";
-import {InternalServerErrorException, NotFoundException} from "@nestjs/common";
-import {MockSession} from "./Mocks/MockSession";
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { MockGetUser } from './Mocks/MockGetUser';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { MockSession } from './Mocks/MockSession';
+import { RoutePart } from '../../database/RoutePart';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -30,10 +34,10 @@ describe('UserController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.user.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService],
@@ -106,15 +110,13 @@ describe('UserController', () => {
     expect(result).toStrictEqual(responseMock);
   });
 
-
   it('should handle duplicate email error when creating a user', async () => {
     const user = new MockCreateUser();
 
-    const resMock = new InternalServerErrorException("E-Mail bereits vergeben");
+    const resMock = new InternalServerErrorException('E-Mail bereits vergeben');
 
-    expect(await userController.postUser(user)).toEqual(resMock)
+    expect(await userController.postUser(user)).toEqual(resMock);
   });
-
 
   it('should return an error when attempting to update a non-existing user', async () => {
     const invalidSession: ISession = new MockSession(true);
@@ -122,16 +124,16 @@ describe('UserController', () => {
 
     const updateDTO = new UpdateUserRequestDto();
     updateDTO.description = 'Max will testen';
-    const resMock = new NotFoundException("No User with this Id found.");
+    const resMock = new NotFoundException('No User with this Id found.');
     try {
       const res = await userController.updateUser(invalidSession, updateDTO);
-      expect(res).not.toEqual(new OKResponseWithMessageDTO(true, 'User Updated'))
+      expect(res).not.toEqual(
+        new OKResponseWithMessageDTO(true, 'User Updated'),
+      );
     } catch (e) {
-      expect(e).toEqual(resMock)
+      expect(e).toEqual(resMock);
     }
-
   });
-
 
   it('should delete the logged-in user', async () => {
     const responseMock = new OKResponseWithMessageDTO(true, 'User deleted.');

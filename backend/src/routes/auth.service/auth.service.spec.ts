@@ -6,6 +6,10 @@ import { AuthService } from './auth.service';
 import * as fs from 'fs';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { RoutePart } from '../../database/RoutePart';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -18,10 +22,10 @@ describe('AuthService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.auth.service.sqlite',
-          entities: [User],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
       providers: [UserService, AuthService],
     }).compile();

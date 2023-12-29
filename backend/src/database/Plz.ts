@@ -1,17 +1,17 @@
-import {Column, Entity, ManyToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {Offer} from "./Offer";
-import {ApiProperty} from "@nestjs/swagger";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { RoutePart } from './RoutePart';
 
 @Entity()
 export class Plz {
-    @PrimaryGeneratedColumn()
-    @ApiProperty()
-    id: number;
+  @PrimaryGeneratedColumn()
+  @ApiProperty()
+  id: number;
 
-    @Column()
-    @ApiProperty()
-    plz: string;
+  @Column()
+  @ApiProperty()
+  plz: string;
 
-    @ManyToMany(() => Offer, offer => offer.route)
-    offers: Offer[];
+  @OneToMany(() => RoutePart, (rP) => rP.plz)
+  routeParts: RoutePart[];
 }

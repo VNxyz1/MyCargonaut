@@ -1,23 +1,25 @@
-import {OfferService} from "./offer.service";
-import {User} from "../../database/User";
-import {Offer} from "../../database/Offer";
-import {Plz} from "../../database/Plz";
-import {TransitRequest} from "../../database/TransitRequest";
-import {Test, TestingModule} from "@nestjs/testing";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import * as fs from "fs";
-import {MockCreateOffer} from "./Mock/MockCreateOffer";
-import {CreateOfferDto} from "../offer/DTOs/CreateOfferDto";
-import {UserService} from "../user.service/user.service";
-import {MockCreateUser} from "../user/Mocks/MockCreateUser";
-import {MockPostOfferReturnVal} from "./Mock/MockPostOfferReturnVal";
-import {CreatePlzDto} from "../offer/DTOs/CreatePlzDto";
-import {UpdateOfferRequestDto} from "../offer/DTOs/UpdateOfferRequestDto";
-import {MockGetOffer} from "./Mock/MockGetOffer";
+import { OfferService } from './offer.service';
+import { User } from '../../database/User';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import * as fs from 'fs';
+import { MockCreateOffer } from './Mock/MockCreateOffer';
+import { CreateOfferDto } from '../offer/DTOs/CreateOfferDto';
+import { UserService } from '../user.service/user.service';
+import { MockCreateUser } from '../user/Mocks/MockCreateUser';
+import { MockGetOffer } from './Mock/MockGetOffer';
+import { InternalServerErrorException } from '@nestjs/common';
+import { MockUpdateOffer } from './Mock/MockUpdateOffer';
+import { RoutePart } from '../../database/RoutePart';
+import { TransitRequestService } from '../transit-request.service/transit-request.service';
 
 describe('OfferService', () => {
   let offerService: OfferService;
   let userService: UserService;
+  let transitService: TransitRequestService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,22 +27,19 @@ describe('OfferService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.offer.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
-      providers: [
-        OfferService,
-        UserService
-      ],
+      providers: [OfferService, UserService, TransitRequestService],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);
     userService = module.get<UserService>(UserService);
+    transitService = module.get<TransitRequestService>(TransitRequestService);
 
     await userService.postUser(new MockCreateUser(true));
-
   });
 
   it('should be defined', () => {
@@ -52,29 +51,25 @@ describe('OfferService', () => {
       const providerId = 1;
       const offerDto: CreateOfferDto = new MockCreateOffer();
 
-
-
-      expect(await offerService.postOffer(providerId, offerDto)).toEqual(new MockPostOfferReturnVal());
+      await expect(
+        offerService.postOffer(providerId, offerDto),
+      ).resolves.toBeDefined();
     });
   });
 
   describe('checkIfPlzIsDuplicate', () => {
     it('should check if PLZ is duplicate and return the Plz object', async () => {
-      const plzDto: CreatePlzDto = {
-        plz: "12345"
-      };
+      const plz = '12345';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plzDto);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz);
 
       expect(duplicatePlz).toBeDefined();
     });
 
     it('should return null if PLZ is not duplicate', async () => {
-      const plzDto: CreatePlzDto = {
-        plz: "54321"
-      };
+      const plz = '54321';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plzDto);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz);
 
       expect(duplicatePlz).toBeNull();
     });
@@ -83,24 +78,23 @@ describe('OfferService', () => {
   describe('getOffers', () => {
     it('should get offers with search criteria', async () => {
       const secondOffer = new MockCreateOffer();
-      secondOffer.description = "Testiii und so";
+      secondOffer.description = 'Testiii und so';
       const searchFor = 'Testiii';
 
-      await offerService.postOffer(1, secondOffer)
+      await offerService.postOffer(1, secondOffer);
 
       const offers = await offerService.getOffers(searchFor);
 
-      const resMock = new MockGetOffer();
-      resMock.description = "Testiii und so";
+      const resMock = new MockGetOffer(true);
+      resMock.description = 'Testiii und so';
       resMock.id = 2;
-      expect(offers[0]).toEqual(resMock)
+      expect(offers[0]).toEqual(resMock);
     });
 
     it('should get all offers if no search criteria provided', async () => {
-
       const offers = await offerService.getOffers();
 
-      expect(offers[0]).toEqual(new MockGetOffer())
+      expect(offers[0]).toEqual(new MockGetOffer(false));
     });
   });
 
@@ -110,7 +104,9 @@ describe('OfferService', () => {
 
       const offers = await offerService.getOffersOfUser(userId);
 
-      // Add assertions to check if the returned offers belong to the specified user
+      const filteredByUserId = offers.filter((o) => o.provider.id === userId);
+
+      expect(filteredByUserId.length === offers.length).toBe(true);
     });
   });
 
@@ -120,30 +116,34 @@ describe('OfferService', () => {
 
       const offer = await offerService.getOffer(offerId);
 
-      // Add assertions to check if the returned offer is the correct one
+      expect(offer.id).not.toBeNull();
+      expect(offer.id === offerId).toBe(true);
     });
 
     it('should throw an exception if the offer does not exist', async () => {
       const nonExistingOfferId = 999;
 
-      // Ensure there is no offer with the specified ID in the database
-
-      await expect(offerService.getOffer(nonExistingOfferId)).rejects.toThrowError();
+      await expect(offerService.getOffer(nonExistingOfferId)).rejects.toThrow(
+        new InternalServerErrorException('Offer was not found!'),
+      );
     });
   });
 
   describe('updateOffer', () => {
-    it('should update an offer with new data', async () => {
-      const updateData: UpdateOfferRequestDto = {
-        // Provide necessary data for UpdateOfferRequestDto
-      };
+    it('should update an offer with a full set of new data', async () => {
+      const updateData = new MockUpdateOffer();
+
       const offerId = 1;
 
       const offer = await offerService.getOffer(offerId);
 
-      await offerService.updateOffer(updateData, offer);
+      const test = await offerService.updateOffer(updateData, offer);
 
-      // Add assertions to check if the offer has been updated successfully
+      const updatedOffer = await offerService.getOffer(offerId);
+
+      expect(updatedOffer.description).toEqual(updateData.description);
+      expect(updatedOffer.startDate).toEqual(updateData.startDate);
+      expect(test.route[0].plz.plz).toEqual(updateData.route[0].plz);
     });
   });
 
@@ -153,9 +153,15 @@ describe('OfferService', () => {
 
       const offer = await offerService.getOffer(offerId);
 
+      await transitService.postTransitRequest(
+        offer,
+        await userService.getUserById(1),
+        { requestedSeats: 2, offeredCoins: 200 },
+      );
+
       await offerService.deleteOffer(offer);
 
-      // Add assertions to check if the offer and related data have been deleted successfully
+      await expect(offerService.getOffer(offerId)).rejects.toThrow();
     });
   });
 

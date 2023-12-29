@@ -1,7 +1,7 @@
-import {ApiProperty} from "@nestjs/swagger";
-import {GetTransitRequestDto} from "./getTransitRequestDto";
+import { ApiProperty } from '@nestjs/swagger';
+import { GetTransitRequestDto } from './getTransitRequestDto';
 
 export class GetAllPendingTransitRequestsResponseDTO {
-    @ApiProperty({type: [GetTransitRequestDto]})
-    transitRequests: GetTransitRequestDto[];
+  @ApiProperty({ type: [GetTransitRequestDto] })
+  transitRequests: GetTransitRequestDto[];
 }
