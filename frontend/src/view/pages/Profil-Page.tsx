@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -6,24 +6,31 @@ import Col from 'react-bootstrap/Col';
 
 import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
-import MyTripsComponent from "../components/MyTripsComponent";
-import MyTransportsComponent from "../components/MyTransportsComponent";
-import MyVehiclesComponent from "../components/MyVehiclesComponent";
-import ProfileEditModal from "../components/ProfileEditModalComponent";
-import VehicleAddModal from "../components/VehicleAddModalComponent";
+import MyTripsComponent from "../components/Profile/MyTripsComponent";
+import MyTransportsComponent from "../components/Profile/MyTransportsComponent";
+import MyVehiclesComponent from "../components/Profile/MyVehiclesComponent";
+import MyRatingsComponent from "../components/Profile/MyRatingsComponent";
+import ProfileEditModal from "../components/Profile/ProfileEditModalComponent";
+import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
 import {useAuth} from '../../AuthContext';
 import {useNavigate} from "react-router-dom";
-import {Modal} from "react-bootstrap";
+import {Image, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-
+import Form from "react-bootstrap/Form";
 
 function ProfilPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
+    const [showEditImageModal, setShowEditImageModal] = useState(false);
+    const [image, setImage] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [showDeleteProfileModal, setShowDeleteProfileModal] = useState(false);
     const [userData, setUserData] = useState(null);
     const [userAge, setUserAge] = useState<number | null>(null);
+    const entryDate = new Date((userData as any)?.entryDate);
+    const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
 
@@ -35,6 +42,8 @@ function ProfilPage() {
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
+            case "Bewertungen":
+                return <MyRatingsComponent/>;
             default:
                 return null;
         }
@@ -54,9 +63,7 @@ function ProfilPage() {
         if (isNaN(birthDate.getTime())) {
             return null;
         }
-
         let age = currentDate.getFullYear() - birthDate.getFullYear();
-
         if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
             age--;
         }
@@ -64,43 +71,35 @@ function ProfilPage() {
     };
 
     useEffect(() => {
-
-        console.log("PROFIL - GET USER " + isAuthenticated);
-
-        const getLoggedInUser = async () => {
-            try {
-                const res = await fetch("/user", {
-                    method: "GET",
-                    headers: {},
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    setUserData(data);
-                    setProfileImageUrl(data.profilePicture);
-                    console.log(data);
-
-                    const bDate = calculateAge(new Date(data.birthday));
-                    setUserAge(bDate);
-                } else {
-                    console.error("Error fetching logged in user");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-
-
         if (isAuthenticated) {
             getLoggedInUser();
         } else {
             navigate('/login');
-            console.log(" EINLOGGEN UM PROFIL ZUSEHEN!!")
         }
     }, [isAuthenticated, navigate]);
 
+    const getLoggedInUser = async () => {
+        try {
+            const res = await fetch("/user", {
+                method: "GET",
+                headers: {},
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setUserData(data);
+                setProfileImageUrl(data.profilePicture);
+
+                const bDate = calculateAge(new Date(data.birthday));
+                setUserAge(bDate);
+            } else {
+                console.error("Error fetching user data");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
 
     const handleLogout = async () => {
-
         try {
             const response = await fetch("/auth/logout", {
                 method: "POST",
@@ -108,36 +107,109 @@ function ProfilPage() {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
+                /*const data = await response.json();
+                console.log(data);*/
                 logout();
                 navigate('/');
-            } else {
+            } /*else {
                 const data = await response.json();
                 console.log(data);
-            }
+            }*/
         } catch (error) {
             console.error("Error:", error);
         }
     };
 
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-    const handleShowDeleteModal = () => {
-        setShowDeleteModal(true);
+    /*-----Image-----*/
+    const handleShowEditImageModal = () => {
+        setShowEditImageModal(true);
     };
 
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false);
+    const handleCloseEditImageModal = () => {
+        setShowEditImageModal(false);
     };
 
-    const handleConfirmDeleteUser = () => {
-        deleteUser();
-        handleCloseDeleteModal();
+    const handleUploadImage = async () => {
+        if (image) {
+            await uploadImage();
+        }
+        handleCloseEditImageModal();
     };
 
-    //TODO dazugehörende User Inserate löschen
-    //TODO User wird nicht in der Datenbank entfernt sondern nur zurückgesetzt
+    const uploadImage = async () => {
+        try {
+            const userImage = new FormData();
+            userImage.append('image', image as any);
+
+            const imgRes = await fetch('/user/upload', {
+                method: 'PUT',
+                body: userImage,
+            });
+
+            if (!imgRes.ok) {
+                const imageData = await imgRes.json();
+                console.log('Image upload failed:', imageData);
+                return;
+            } else {
+                console.log(imgRes)
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+
+            setImage(file);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setPreviewUrl(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeImage = () => {
+        setImage(null);
+        setPreviewUrl(null);
+    };
+
+    const deleteImage = async () => {
+        try {
+            const response = await fetch("/user/remove-profile-image", {
+                method: "DELETE",
+                headers: {"Content-type": "application/json"},
+            });
+            if (response.ok) {
+                /*const res = await response.json();
+                console.log(res);*/
+                getLoggedInUser();
+            }/* else {
+                const res = await response.json();
+                console.log(res);
+            }*/
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    /*-----Profil-----*/
+    const handleShowDeleteProfileModal = () => {
+        setShowDeleteProfileModal(true);
+    };
+
+    const handleCloseDeleteProfileModal = () => {
+        setShowDeleteProfileModal(false);
+    };
+
+    const handleConfirmDeleteUser = async () => {
+        await deleteUser();
+        handleCloseDeleteProfileModal();
+    };
+
     const deleteUser = async () => {
         try {
             const response = await fetch("/user", {
@@ -145,53 +217,92 @@ function ProfilPage() {
                 headers: {"Content-type": "application/json"},
             });
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
+                /*const data = await response.json();
+                console.log(data);*/
                 logout();
                 navigate('/');
-            } else {
+            } /*else {
                 const data = await response.json();
                 console.log(data);
-            }
+            }*/
         } catch (error) {
             console.error("Error:", error);
         }
     }
+
 
     return (
         <>
             <Container className="content-container">
                 <Row>
                     <Col sm={4} id="prof-sidebar">
-
                         <img
                             src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
                             alt="User profile image"
                         />
+
+                        <div className="profil_navi">
+                            <span onClick={handleShowEditImageModal}><i className="icon-pen-to-square"></i></span>
+                            {profileImageUrl && (
+                                <span onClick={deleteImage}><i className="icon-trash"></i></span>
+                            )}
+                        </div>
+
                         {userData && (
                             <>
                                 <p>{(userData as any).firstName} {(userData as any).lastName}</p>
                                 <p>{(userData as any).coins} Coins</p>
                                 <p>{userAge} Jahre alt</p>
-
+                                <p>{(userData as any).description.length > 0 ? (userData as any).description : 'Keine Beschreibung vorhanden'}</p>
+                                <p>Mitglied seit: {formattedEntryDate}</p>
                             </>
                         )}
 
                         <p style={{color: '#aeaeae'}}>4,7 40 Ratings (statisch - nicht implementiert)</p>
-                        <p style={{color: '#aeaeae'}}>Das ist eine unglaublich spannende Beschreibung über die Persönlichkeit dieser Person.(statisch - nicht implementiert)</p>
                         <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
-                        <p style={{color: '#aeaeae'}}>Mitglied seit 15.07.2021(statisch - nicht implementiert)</p>
 
                         <div className="prof-side-btn-wrapper">
                             <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
                             <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
                             <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
-                            <span onClick={openProfileEditModal}><i className="icon-pen-to-square"></i> Profil bearbeiten</span>
-                            <span onClick={handleShowDeleteModal}><i className="icon-trash"></i> Profil löschen</span>
+                            <span onClick={openProfileEditModal}><i className="icon-gear"></i> Profil bearbeiten</span>
+                            <span onClick={handleShowDeleteProfileModal}><i className="icon-trash"></i> Profil löschen</span>
                             <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
-                        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                        <Modal show={showEditImageModal} onHide={handleCloseEditImageModal} centered>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Bild aktualisieren</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Row>
+                                    <Form.Group as={Col} className="sm-6" controlId="profilePicture">
+                                        <Form.Label>Profilbild</Form.Label>
+                                        <Form.Control
+                                            name="profilePicture"
+                                            type="file"
+                                            accept=".jpg, .jpeg, .png"
+                                            onChange={handleImageChange}
+                                        />
+                                    </Form.Group>
+                                </Row>
+                                <Row>
+                                    <Col className="d-flex align-items-end" sm-6>
+                                        {previewUrl && (
+                                            <div className="image-preview-container">
+                                                <Image src={previewUrl} alt="Vehicle" roundedCircle className="preview-image"/>
+                                                <Button variant="danger" onClick={removeImage}>Bild entfernen</Button>
+                                            </div>
+                                        )}
+                                    </Col>
+                                </Row>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button className="mainButton" onClick={handleUploadImage}>Bild Speichern</Button>
+                            </Modal.Footer>
+                        </Modal>
+
+                        <Modal show={showDeleteProfileModal} onHide={handleCloseDeleteProfileModal} centered>
                             <Modal.Header closeButton>
                                 <Modal.Title>Profil löschen</Modal.Title>
                             </Modal.Header>
@@ -200,9 +311,10 @@ function ProfilPage() {
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="danger" onClick={handleConfirmDeleteUser}> Profil löschen </Button>
-                                <Button variant="secondary" onClick={handleCloseDeleteModal}> Abbrechen </Button>
+                                <Button variant="secondary" onClick={handleCloseDeleteProfileModal}> Abbrechen </Button>
                             </Modal.Footer>
                         </Modal>
+
 
                     </Col>
 
@@ -211,6 +323,7 @@ function ProfilPage() {
                             <span onClick={() => setCurrentSection("Meine Fahrten")} className={currentSection === "Meine Fahrten" ? "active" : ""}> Meine Fahrten </span>
                             <span onClick={() => setCurrentSection("Meine Transporte")} className={currentSection === "Meine Transporte" ? "active" : ""}> Meine Transporte </span>
                             <span onClick={() => setCurrentSection("Meine Fahrzeuge")} className={currentSection === "Meine Fahrzeuge" ? "active" : ""}> Meine Fahrzeuge </span>
+                            <span onClick={() => setCurrentSection("Bewertungen")} className={currentSection === "Bewertungen" ? "active" : ""}> Bewertungen </span>
                         </div>
 
                         {renderSectionContent()}
@@ -219,7 +332,6 @@ function ProfilPage() {
                 </Row>
             </Container>
 
-            {/* Modalfenster für Profil bearbeiten  TODO: ADD USER EDIT FUNKTION*/}
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
             <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)}/>
 

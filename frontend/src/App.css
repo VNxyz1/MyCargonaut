@@ -64,7 +64,6 @@ body {
 .navigation {
     z-index: 9000;
     position: sticky;
-    box-shadow: var(--shadow_default);
 }
 
 .navi_content {
@@ -271,7 +270,7 @@ body {
 #prof-sidebar img{
     height: 100px;
     width: 100px;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 50px;
 }
 /*_____NumberFieldSpinner______*/

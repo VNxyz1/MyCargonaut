@@ -110,6 +110,8 @@ export class UserController {
             userDto.coins = user.coins;
             userDto.profilePicture = user.profilePicture;
             userDto.phoneNumber = user.phoneNumber;
+            userDto.description = user.description;
+            userDto.entryDate = user.entryDate;
             return userDto;
         });
         return usersDtos;
