@@ -14,11 +14,15 @@ import {Plz} from "./database/Plz";
 import {TransitRequest} from "./database/TransitRequest";
 import { TransitRequestService } from './routes/transit-request.service/transit-request.service';
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend', 'dist'),
+    }),
+    MulterModule.register({
+      dest: './uploads'
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',

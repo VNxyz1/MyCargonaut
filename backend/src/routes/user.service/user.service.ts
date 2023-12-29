@@ -4,6 +4,8 @@ import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
+import {join} from "path";
+import {existsSync, unlinkSync} from "fs";
 
 @Injectable()
 export class UserService {
@@ -41,9 +43,11 @@ export class UserService {
     if (updateUserDto.lastName) {
       user.lastName = updateUserDto.lastName;
     }
+    /*
     if (updateUserDto.profilePicture) {
       user.profilePicture = updateUserDto.profilePicture;
     }
+    */
 
     if (updateUserDto.description) {
       user.description = updateUserDto.description;
@@ -55,13 +59,18 @@ export class UserService {
   async deleteLoggedInUser(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
 
-    user.phoneNumber = null;
+    await this.removeOldImage(user.id);
+
+    user.eMail = null;
+    user.password = null;
     user.firstName = '****';
     user.lastName = '****';
-    user.eMail = null;
-    user.profilePicture = '';
-    user.password = null;
     user.birthday = null;
+    user.coins = 0;
+    user.profilePicture = '';
+    user.phoneNumber = null;
+    user.entryDate = null;
+    user.description = '';
 
     await this.userRepository.save(user);
   }
@@ -84,5 +93,31 @@ export class UserService {
     const user = await this.getUserById(id);
     user.coins -= coins;
     await this.userRepository.save(user)
+  }
+
+
+  async removeOldImage(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
+    }
+
+    if (user.profilePicture.length > 0){
+      const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
+      if (existsSync(oldImagePath)) {
+        unlinkSync(oldImagePath);
+      }
+    }
+  }
+
+  async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
+    }
+
+    user.profilePicture = imagePath;
+    await this.userRepository.save(user);
   }
 }

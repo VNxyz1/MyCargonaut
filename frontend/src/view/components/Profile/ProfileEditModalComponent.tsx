@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Modal, ModalProps} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {useAuth} from "../../AuthContext";
+import {useAuth} from "../../../AuthContext";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
@@ -17,16 +17,10 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         firstName: '',
         lastName: '',
         phoneNumber: '',
-        eMail: '',
-        password: '',
-        profilePicture: null,
         description: '',
     });
 
-
     useEffect(() => {
-        console.log("PROFIL EDIT COMPONENT LOADED");
-
         const fetchUserData = async () => {
             try {
                 const res = await fetch("/user", {
@@ -35,8 +29,6 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                 });
                 if (res.ok) {
                     const userData = await res.json();
-                    console.log(userData);
-
                     setFormData((prevFormData) => ({
                         ...prevFormData,
                         ...userData,
@@ -52,25 +44,18 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         if (isAuthenticated) {
             fetchUserData();
         }
-    }, []);
-
+    }, [isAuthenticated]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFormData((prevData) => ({...prevData, [name]: value}));
     };
 
-
     const handleSubmit = async (event: any) => {
         event.preventDefault();
-        console.log(formData);
-
         const res = await editUser();
-
         console.log(res);
-
     }
-
 
     const editUser = async () => {
         try {
@@ -83,29 +68,17 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
             });
             if (!response.ok) {
                 const data = await response.json();
-                console.log(data);
+                console.log('User update failed:', data);
             } else {
                 const data = await response.json();
-                console.log(data);
+                console.log('User updated successfully:', data);
             }
-
         } catch (error) {
             console.error("Error:", error);
         }
     }
 
-    /*
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            setFormData((prevData) => ({ ...prevData, profilePicture: file }));
-            console.log(file);
-        }
-    };*/
-
     return (
-
         <Modal
             {...props}
             size="lg"
@@ -160,47 +133,9 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                                 name="phoneNumber"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
-                                required
                             />
                         </Form.Group>
                     </Row>
-                    <Row>
-                        <Form.Group as={Col} className="sm-6" controlId="eMail">
-                            <Form.Label>E-Mail</Form.Label>
-                            <Form.Control
-                                type="email"
-                                name="eMail"
-                                placeholder={"E-Mail"}
-                                value={formData.eMail}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-
-                        <Form.Group as={Col} className="sm-6" controlId="password">
-                            <Form.Label>Passwort</Form.Label>
-                            <Form.Control
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Form.Group>
-                    </Row>
-
-                    <p>Profilbild und Beschreibung fehlt noch - Mail und passwort  evtl. raus</p>
-
-                    {/*
-                    <Form.Group controlId="profilePicture">
-                        <Form.Label>Profilbild</Form.Label>
-                        <Form.File
-                            name="profilePicture"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                        />
-                    </Form.Group>
-
 
                     <Form.Group controlId="description">
                         <Form.Label>Beschreibung</Form.Label>
@@ -208,11 +143,10 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                             as="textarea"
                             rows={3}
                             name="description"
-                            value={""}
+                            value={formData.description}
                             onChange={handleChange}
                         />
                     </Form.Group>
-                    */}
 
                     <Button type="submit" className="mainButton"> Speichern </Button>
                 </Form>
