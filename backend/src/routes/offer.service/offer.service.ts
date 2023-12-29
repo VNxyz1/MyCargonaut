@@ -31,7 +31,6 @@ export class OfferService {
 
         offer.provider = await this.userRepository.findOne({where: {id: providerId}});
 
-        offer.createdAt = new Date();
         offer.state = TripState.offer;
 
         const offerDb = await this.offerRepository.save(offer)
@@ -39,10 +38,10 @@ export class OfferService {
         for (let plzDto of offerDto.route) {
             await this.createPlzAndPush(offerDb, plzDto);
         }
-
+        return offerDb
     }
 
-    async checkIfPlzIsDuplicat(plzDto: CreatePlzDto): Promise<Plz | null> {
+    async checkIfPlzIsDuplicate(plzDto: CreatePlzDto): Promise<Plz | null> {
         return await this.plzRepository.findOne({where: {plz: plzDto.plz}, relations: ["offers"]});
     }
 
@@ -84,7 +83,7 @@ export class OfferService {
 
 
     private async createPlzAndPush(offer: Offer, plzDto: CreatePlzDto) {
-        const checkPlz = await this.checkIfPlzIsDuplicat(plzDto);
+        const checkPlz = await this.checkIfPlzIsDuplicate(plzDto);
 
         if (!checkPlz) {
             const plz = new Plz();

@@ -14,6 +14,10 @@ export class TransitRequest {
     @Column()
     offeredCoins: number;
 
+    @ApiProperty()
+    @Column()
+    requestedSeats: number;
+
     @ApiProperty({type: User})
     @ManyToOne(() => User)
     requester: User;

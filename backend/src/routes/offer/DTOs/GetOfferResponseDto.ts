@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {GetOtherUserDto} from "./GetOtherUserDto";
 import {Plz} from "../../../database/Plz";
+import {TransitRequest} from "../../../database/TransitRequest";
 
 export class GetOfferResponseDto {
 
@@ -33,5 +34,8 @@ export class GetOfferResponseDto {
 
     @ApiProperty()
     startDate: Date;
+
+    @ApiProperty({description: "only available for providers"})
+    transitRequests: TransitRequest[];
 
 }

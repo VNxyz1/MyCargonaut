@@ -21,7 +21,7 @@ Content-Type: application/json
 
 
 ### PUT Offer
-PUT localhost:3000/offer/props/1 HTTP/2
+PUT localhost:3000/offer/props/3 HTTP/2
 Content-Type: application/json
 
 {
@@ -52,5 +52,5 @@ GET localhost:3000/offer/search/test HTTP/2
 GET localhost:3000/offer/own HTTP/2
 
 ### Delete offer
-DELETE localhost:3000/offer/delete/1 HTTP/2
+DELETE localhost:3000/offer/delete/2 HTTP/2
 

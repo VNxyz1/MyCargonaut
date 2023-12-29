@@ -42,3 +42,17 @@ Content-Type: application/json
   "birthday": "2002-02-18",
   "phoneNumber": "+49 173 55555"
 }
+
+
+### POST third User
+POST localhost:3000/user HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "bruh@gmail.com",
+  "firstName" : "Bruh",
+  "lastName": "Scetta",
+  "password": "1234",
+  "birthday": "2002-02-18",
+  "phoneNumber": "+49 173 55555"
+}

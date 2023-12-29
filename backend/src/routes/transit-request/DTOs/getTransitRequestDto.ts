@@ -15,4 +15,7 @@ export class GetTransitRequestDto {
     @ApiProperty()
     offeredCoins: number;
 
+    @ApiProperty()
+    requestedSeats: number;
+
 }

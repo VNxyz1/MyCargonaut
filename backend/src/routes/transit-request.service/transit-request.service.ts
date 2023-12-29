@@ -5,6 +5,8 @@ import {Repository} from "typeorm";
 import {Offer} from "../../database/Offer";
 import {Plz} from "../../database/Plz";
 import {TransitRequest} from "../../database/TransitRequest";
+import {PutTransitRequestRequestDto} from "../transit-request/DTOs/PutTransitRequestRequestDto";
+import {PostTransitRequestRequestDto} from "../transit-request/DTOs/PostTransitRequestRequestDto";
 
 @Injectable()
 export class TransitRequestService {
@@ -20,7 +22,7 @@ export class TransitRequestService {
         private readonly transitRequestRepository: Repository<TransitRequest>,
     ) {}
 
-    async postTransitRequest(offer: Offer, requestingUser: User, coinOffer: number) {
+    async postTransitRequest(offer: Offer, requestingUser: User, request: PostTransitRequestRequestDto) {
         const transitRequestCheck = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
 
         if(transitRequestCheck) {
@@ -29,14 +31,15 @@ export class TransitRequestService {
 
         let transitRequest = this.transitRequestRepository.create();
         transitRequest.requester = requestingUser;
-        transitRequest.offeredCoins = coinOffer;
+        transitRequest.offeredCoins = request.offeredCoins;
+        transitRequest.requestedSeats = request.requestedSeats;
         transitRequest.offer = offer;
         transitRequest = await this.transitRequestRepository.save(transitRequest);
         offer.transitRequests.push(transitRequest)
         await this.offerRepository.save(offer);
     }
 
-    async putTransitRequest(offer: Offer, requestingUser: User, coinOffer: number) {
+    async putTransitRequest(offer: Offer, requestingUser: User, updatedRequest: PutTransitRequestRequestDto) {
 
         let transitRequest = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
 
@@ -44,7 +47,14 @@ export class TransitRequestService {
             throw new NotFoundException("No matching request found")
         }
 
-        transitRequest.offeredCoins = coinOffer;
+        if(updatedRequest.offeredCoins) {
+            transitRequest.offeredCoins = updatedRequest.offeredCoins;
+        }
+
+        if(updatedRequest.requestedSeats) {
+            transitRequest.requestedSeats = updatedRequest.requestedSeats;
+        }
+
         transitRequest = await this.transitRequestRepository.save(transitRequest);
         offer.transitRequests.push(transitRequest)
         await this.offerRepository.save(offer);
@@ -64,6 +74,49 @@ export class TransitRequestService {
             throw new NotFoundException("No pending transit requests found")
         }
         return transitRequests
+    }
+
+    async getTransitRequestById(id: number) {
+        const tR = await this.transitRequestRepository.findOne({
+            where: {id},
+            relations: ["offer", "requester"]
+        });
+
+        if(!tR) {
+            throw new NotFoundException("No pending transit requests found")
+        }
+
+        return tR
+    }
+
+    async acceptTransitRequest(tR: TransitRequest) {
+        const offer = await this.offerRepository.findOne({where: {id: tR.offer.id}, relations:["transitRequests"]});
+        const client = await this.userRepository.findOne({where: {id: tR.requester.id}, relations:["requestedTransits"]});
+
+        offer.clients.push(client);
+        offer.transitRequests = offer.transitRequests.filter((tranReq)=> tranReq.id !== tR.id);
+        offer.bookedSeats += tR.requestedSeats;
+
+        await this.offerRepository.save(offer);
+
+        client.requestedTransits = client.requestedTransits.filter((rT)=> rT.id !== tR.id);
+
+        await this.userRepository.save(client);
+
+        await this.transitRequestRepository.delete(tR.id);
+    }
+
+    async delete(tR: TransitRequest) {
+        const offer = await this.offerRepository.findOne({where: {id: tR.offer.id}, relations:["transitRequests"]});
+        const client = await this.userRepository.findOne({where: {id: tR.requester.id}, relations:["requestedTransits"]});
+
+        offer.transitRequests = offer.transitRequests.filter((tranReq)=> tranReq.id !== tR.id);
+        await this.offerRepository.save(offer);
+
+        client.requestedTransits = client.requestedTransits.filter((rT)=> rT.id !== tR.id);
+        await this.userRepository.save(client);
+
+        await this.transitRequestRepository.delete(tR.id);
     }
 
     private async findTransitRequestWithOfferAndRequester(requestingUser: User, offer: Offer) {

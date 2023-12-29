@@ -6,6 +6,6 @@ export class CreatePlzDto {
     @IsNumber()
     @IsOptional()
     @ApiProperty()
-    plz: number;
+    plz: string;
 
 }

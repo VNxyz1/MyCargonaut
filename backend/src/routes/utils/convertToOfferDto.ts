@@ -14,6 +14,7 @@ export const convertOfferToGetOfferDto = (offer: Offer) => {
     getOfferResponseDto.state = offer.state;
     getOfferResponseDto.description = offer.description;
     getOfferResponseDto.startDate = offer.startDate;
+    getOfferResponseDto.transitRequests = offer.transitRequests;
 
     return getOfferResponseDto;
 }

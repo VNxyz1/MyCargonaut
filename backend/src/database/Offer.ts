@@ -15,7 +15,7 @@ export class Offer {
     @JoinTable()
     route: Plz[];
 
-    @Column()
+    @Column({default: new Date().toISOString()})
     createdAt: Date;
 
     @ManyToMany(() => User, user => user.trips, { eager: true })

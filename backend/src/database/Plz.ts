@@ -10,7 +10,7 @@ export class Plz {
 
     @Column()
     @ApiProperty()
-    plz: number;
+    plz: string;
 
     @ManyToMany(() => Offer, offer => offer.route)
     offers: Offer[];

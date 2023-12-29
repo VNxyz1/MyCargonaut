@@ -26,7 +26,7 @@ export class UserService {
   }
 
   async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.getUserById(id);
 
     if (updateUserDto.birthday) {
       user.birthday = updateUserDto.birthday;
@@ -68,5 +68,21 @@ export class UserService {
 
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.find();
+  }
+
+  async getCoinBalanceOfUser(id: number) {
+    const user = await this.getUserById(id);
+    return user.coins
+  }
+
+  async increaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins += coins;
+    await this.userRepository.save(user)
+  }
+  async decreaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins -= coins;
+    await this.userRepository.save(user)
   }
 }
