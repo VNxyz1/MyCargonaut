@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Image, Modal, ModalProps} from "react-bootstrap";
+import {Modal, ModalProps} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import {useAuth} from "../../../AuthContext";
@@ -17,13 +17,8 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         firstName: '',
         lastName: '',
         phoneNumber: '',
-        eMail: '',
-        password: '',
-        profilePicture: null,
         description: '',
     });
-    const [image, setImage] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -51,31 +46,16 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         }
     }, [isAuthenticated]);
 
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFormData((prevData) => ({...prevData, [name]: value}));
     };
 
-
     const handleSubmit = async (event: any) => {
         event.preventDefault();
-        console.log(formData);
-
-        if (image) {
-            console.log("name der datei " + image.name);
-            const resImg = await editImage();
-            console.log(resImg);
-        }
-
         const res = await editUser();
-
         console.log(res);
-
-
-
     }
-
 
     const editUser = async () => {
         try {
@@ -93,60 +73,12 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                 const data = await response.json();
                 console.log('User updated successfully:', data);
             }
-
-
         } catch (error) {
             console.error("Error:", error);
         }
     }
-
-
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files[0]) {
-            const file = event.target.files[0];
-
-            setImage(file);
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setPreviewUrl(e.target?.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const removeImage = () => {
-        setImage(null);
-        setPreviewUrl(null);
-    };
-
-
-    const editImage = async () => {
-        try {
-            const userImage = new FormData();
-            userImage.append('image', image as any);
-            console.log(userImage);
-            // Hochladen des Profilbilds
-            const imgRes = await fetch('/user/upload', {
-                method: 'PUT',
-                body: userImage,
-            });
-
-            if (!imgRes.ok) {
-                const imageData = await imgRes.json();
-                console.log('Image upload failed:', imageData);
-                return;
-            } else {
-                console.log(imgRes)
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
 
     return (
-
         <Modal
             {...props}
             size="lg"
@@ -201,30 +133,8 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                                 name="phoneNumber"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
-                                required
                             />
                         </Form.Group>
-                    </Row>
-
-                    <Row>
-                        <Form.Group as={Col} className="sm-6" controlId="profilePicture">
-                            <Form.Label>Profilbild</Form.Label>
-                            <Form.Control
-                                name="profilePicture"
-                                type="file"
-                                accept=".jpg, .jpeg, .png"
-                                onChange={handleImageChange}
-                            />
-                        </Form.Group>
-
-                        <Col className="d-flex align-items-end" sm-6>
-                            {previewUrl && (
-                                <div className="image-preview-container">
-                                    <Image src={previewUrl} alt="Vehicle" roundedCircle className="preview-image"/>
-                                    <Button variant="danger" onClick={removeImage}>Bild entfernen</Button>
-                                </div>
-                            )}
-                        </Col>
                     </Row>
 
                     <Form.Group controlId="description">
@@ -237,7 +147,6 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                             onChange={handleChange}
                         />
                     </Form.Group>
-
 
                     <Button type="submit" className="mainButton"> Speichern </Button>
                 </Form>

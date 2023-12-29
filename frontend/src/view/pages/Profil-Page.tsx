@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -14,17 +14,21 @@ import ProfileEditModal from "../components/Profile/ProfileEditModalComponent";
 import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
 import {useAuth} from '../../AuthContext';
 import {useNavigate} from "react-router-dom";
-import {Modal} from "react-bootstrap";
+import {Image, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 function ProfilPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
+    const [showEditImageModal, setShowEditImageModal] = useState(false);
+    const [image, setImage] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [showDeleteProfileModal, setShowDeleteProfileModal] = useState(false);
     const [userData, setUserData] = useState(null);
     const [userAge, setUserAge] = useState<number | null>(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const entryDate = new Date((userData as any)?.entryDate);
     const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
@@ -38,7 +42,7 @@ function ProfilPage() {
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
-                case "Bewertungen":
+            case "Bewertungen":
                 return <MyRatingsComponent/>;
             default:
                 return null;
@@ -116,19 +120,94 @@ function ProfilPage() {
         }
     };
 
-
-
-    const handleShowDeleteModal = () => {
-        setShowDeleteModal(true);
+    /*-----Image-----*/
+    const handleShowEditImageModal = () => {
+        setShowEditImageModal(true);
     };
 
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false);
+    const handleCloseEditImageModal = () => {
+        setShowEditImageModal(false);
     };
 
-    const handleConfirmDeleteUser = () => {
-        deleteUser();
-        handleCloseDeleteModal();
+    const handleUploadImage = async () => {
+        if (image) {
+            await uploadImage();
+        }
+        handleCloseEditImageModal();
+    };
+
+    const uploadImage = async () => {
+        try {
+            const userImage = new FormData();
+            userImage.append('image', image as any);
+
+            const imgRes = await fetch('/user/upload', {
+                method: 'PUT',
+                body: userImage,
+            });
+
+            if (!imgRes.ok) {
+                const imageData = await imgRes.json();
+                console.log('Image upload failed:', imageData);
+                return;
+            } else {
+                console.log(imgRes)
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+
+            setImage(file);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setPreviewUrl(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeImage = () => {
+        setImage(null);
+        setPreviewUrl(null);
+    };
+
+    const deleteImage = async () => {
+        try {
+            const response = await fetch("/user/remove-profile-image", {
+                method: "DELETE",
+                headers: {"Content-type": "application/json"},
+            });
+            if (response.ok) {
+                /*const res = await response.json();
+                console.log(res);*/
+                getLoggedInUser();
+            }/* else {
+                const res = await response.json();
+                console.log(res);
+            }*/
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    /*-----Profil-----*/
+    const handleShowDeleteProfileModal = () => {
+        setShowDeleteProfileModal(true);
+    };
+
+    const handleCloseDeleteProfileModal = () => {
+        setShowDeleteProfileModal(false);
+    };
+
+    const handleConfirmDeleteUser = async () => {
+        await deleteUser();
+        handleCloseDeleteProfileModal();
     };
 
     const deleteUser = async () => {
@@ -138,33 +217,14 @@ function ProfilPage() {
                 headers: {"Content-type": "application/json"},
             });
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
+                /*const data = await response.json();
+                console.log(data);*/
                 logout();
                 navigate('/');
-            } else {
+            } /*else {
                 const data = await response.json();
                 console.log(data);
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
-    const deleteImage = async () => {
-        try {
-            const response = await fetch("/user/remove-profile-image", {
-                method: "DELETE",
-                headers: {"Content-type": "application/json"},
-            });
-            if (response.ok) {
-                const res = await response.json();
-                console.log(res);
-                getLoggedInUser();
-            } else {
-                const res = await response.json();
-                console.log(res);
-            }
+            }*/
         } catch (error) {
             console.error("Error:", error);
         }
@@ -182,9 +242,9 @@ function ProfilPage() {
                         />
 
                         <div className="profil_navi">
-                            <span><i className="icon-pen-to-square"></i> Bild ändern</span>
+                            <span onClick={handleShowEditImageModal}><i className="icon-pen-to-square"></i></span>
                             {profileImageUrl && (
-                                <span onClick={deleteImage}><i className="icon-trash"></i> Bild löschen</span>
+                                <span onClick={deleteImage}><i className="icon-trash"></i></span>
                             )}
                         </div>
 
@@ -205,12 +265,44 @@ function ProfilPage() {
                             <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
                             <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
                             <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
-                            <span onClick={openProfileEditModal}><i className="icon-pen-to-square"></i> Profil bearbeiten</span>
-                            <span onClick={handleShowDeleteModal}><i className="icon-trash"></i> Profil löschen</span>
+                            <span onClick={openProfileEditModal}><i className="icon-gear"></i> Profil bearbeiten</span>
+                            <span onClick={handleShowDeleteProfileModal}><i className="icon-trash"></i> Profil löschen</span>
                             <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
-                        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                        <Modal show={showEditImageModal} onHide={handleCloseEditImageModal} centered>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Bild aktualisieren</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Row>
+                                    <Form.Group as={Col} className="sm-6" controlId="profilePicture">
+                                        <Form.Label>Profilbild</Form.Label>
+                                        <Form.Control
+                                            name="profilePicture"
+                                            type="file"
+                                            accept=".jpg, .jpeg, .png"
+                                            onChange={handleImageChange}
+                                        />
+                                    </Form.Group>
+                                </Row>
+                                <Row>
+                                    <Col className="d-flex align-items-end" sm-6>
+                                        {previewUrl && (
+                                            <div className="image-preview-container">
+                                                <Image src={previewUrl} alt="Vehicle" roundedCircle className="preview-image"/>
+                                                <Button variant="danger" onClick={removeImage}>Bild entfernen</Button>
+                                            </div>
+                                        )}
+                                    </Col>
+                                </Row>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button className="mainButton" onClick={handleUploadImage}>Bild Speichern</Button>
+                            </Modal.Footer>
+                        </Modal>
+
+                        <Modal show={showDeleteProfileModal} onHide={handleCloseDeleteProfileModal} centered>
                             <Modal.Header closeButton>
                                 <Modal.Title>Profil löschen</Modal.Title>
                             </Modal.Header>
@@ -219,9 +311,10 @@ function ProfilPage() {
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button variant="danger" onClick={handleConfirmDeleteUser}> Profil löschen </Button>
-                                <Button variant="secondary" onClick={handleCloseDeleteModal}> Abbrechen </Button>
+                                <Button variant="secondary" onClick={handleCloseDeleteProfileModal}> Abbrechen </Button>
                             </Modal.Footer>
                         </Modal>
+
 
                     </Col>
 
