@@ -12,7 +12,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
 import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { ISession } from '../../utils/ISession';
@@ -39,8 +39,13 @@ export class TransitRequestController {
 
   @Post(':id')
   @UseGuards(IsLoggedInGuard)
-  @ApiOperation({ summary: 'Sends a Transit request' })
+  @ApiOperation({
+    summary: 'Sends a Transit request',
+    description: `Allows a logged-in user to send a transit request for a specific offer.`
+  })
   @ApiResponse({ type: OKResponseWithMessageDTO })
+  @ApiResponse({ status: 200, type: OKResponseWithMessageDTO, description: 'The record has been successfully created.'})
+  @ApiResponse({ status: 403, type: ForbiddenException, description: 'Forbidden: Cannot request your own offer.'})
   async postTransitRequest(
     @Session() session: ISession,
     @Param('id', ParseIntPipe) offerId: number,
@@ -66,7 +71,12 @@ export class TransitRequestController {
   @Get('all')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'gets all pending transit requests, the logged in user sent',
+    summary: 'Gets all pending transit requests sent by the logged-in user',
+  })
+  @ApiResponse({
+    status: 200,
+    type: GetAllPendingTransitRequestsResponseDTO,
+    description: 'Returns a list of pending transit requests.',
   })
   @ApiResponse({ type: GetAllPendingTransitRequestsResponseDTO })
   async getPendingTransitrequestOfLoggedInUser(@Session() session: ISession) {
@@ -93,9 +103,18 @@ export class TransitRequestController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary: 'Updates the offered coins and/or requested seats of a Transit request',
-    description: '"id" means the id of the offer to which the request is made.',
+    description: `Allows the requester to update the offered coins and/or requested seats of their transit request.`,
   })
-  @ApiResponse({ type: OKResponseWithMessageDTO })
+  @ApiResponse({
+    status: 200,
+    type: OKResponseWithMessageDTO,
+    description: 'Request was updated successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    type: BadRequestException,
+    description: 'Bad Request: Provide at least one of both props.',
+  })
   async putTransitRequest(
     @Session() session: ISession,
     @Param('id', ParseIntPipe) offerId: number,
@@ -125,11 +144,19 @@ export class TransitRequestController {
   @Put('accept/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Accepts a Transit Request and deletes it in the database.',
-    description: `"id" means the id of the TransitRequest.
-                       This rout only works for the provider of an offer.`,
+    summary: 'Accepts a Transit Request and processes the transaction',
+    description: `Allows the provider to accept a transit request, updating coin balances accordingly.`,
   })
-  @ApiResponse({ type: OKResponseWithMessageDTO })
+  @ApiResponse({
+    status: 200,
+    type: OKResponseWithMessageDTO,
+    description: 'Request was accepted successfully.',
+  })
+  @ApiResponse({
+    status: 403,
+    type: ForbiddenException,
+    description: 'Forbidden: Cannot mark this request as accepted.',
+  })
   async acceptRequest(
     @Session() session: ISession,
     @Param('id', ParseIntPipe) tRId: number,
@@ -170,10 +197,19 @@ export class TransitRequestController {
   @Delete(':id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Deletes a transit request. Only if the logged in user is the requester.',
-    description: '"id" means the id of the TransitRequest.',
+    summary: 'Deletes a transit request if the logged-in user is the requester',
+    description: `Allows the requester to delete their transit request.`,
   })
-  @ApiResponse({ type: OKResponseWithMessageDTO })
+  @ApiResponse({
+    status: 200,
+    type: OKResponseWithMessageDTO,
+    description: 'Request was deleted successfully.',
+  })
+  @ApiResponse({
+    status: 403,
+    type: ForbiddenException,
+    description: 'Forbidden: Cannot delete this request.',
+  })
   async deleteTransitRequest(
     @Session() session: ISession,
     @Param('id', ParseIntPipe) tRId: number,
