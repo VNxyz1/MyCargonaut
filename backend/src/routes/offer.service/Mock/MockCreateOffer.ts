@@ -10,7 +10,7 @@ export class MockCreateOffer {
 
   description: string = 'Test Description';
 
-  startDate: Date = new Date('2023-01-02T00:00:00.000Z');
+  startDate: string = "2023-01-02";
 
   bookedSeats: number = 1;
 

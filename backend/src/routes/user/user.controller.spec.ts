@@ -28,7 +28,7 @@ describe('UserController', () => {
   let userForThisTest: User;
   const session: ISession = new MockSession();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({

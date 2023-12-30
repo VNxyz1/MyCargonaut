@@ -1,7 +1,6 @@
 import {
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
 } from '@nestjs/common';
 import { CreateOfferDto } from '../offer/DTOs/CreateOfferDto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,7 +34,7 @@ export class OfferService {
     offer.vehicle = offerDto.vehicle;
     offer.bookedSeats = offerDto.bookedSeats;
     offer.description = offerDto.description;
-    offer.startDate = offerDto.startDate;
+    offer.startDate = new Date(offerDto.startDate);
 
     // @ts-expect-error needs to stay for unit testing purpose
     if (offerDto.createdAt) {
@@ -151,20 +150,6 @@ export class OfferService {
     }
 
     await this.offerRepository.remove(offer);
-  }
-
-  private async getAllPlzOfRoutePart(id: number) {
-    const plz = await this.plzRepository
-      .createQueryBuilder('plz')
-      .innerJoin('plz.routeParts', 'routePart')
-      .where('routePart.id = :id', { id })
-      .getMany();
-
-    if (!plz || plz.length === 0) {
-      throw new NotFoundException('No route for this offer was found.');
-    }
-
-    return plz;
   }
 
   private async createRoutePart(offer: Offer, plz: Plz, position: number) {

@@ -17,8 +17,17 @@ export class MockCreateUser {
 
   entryDate: Date;
 
-  constructor(asProvider?: boolean) {
+  constructor(asProvider?: boolean, user?: User) {
     this.eMail = 'tester@test.com';
+    if(user === User.first) {
+      this.eMail = 'testerEins@test.com';
+    } else if(user === User.second) {
+      this.eMail = 'testerZwei@test.com';
+
+    } else if(user === User.third) {
+      this.eMail = 'testerDrei@test.com';
+    }
+
     this.entryDate = new Date('2021-02-18');
     this.firstName = 'Max';
     this.lastName = 'Mustermann';
@@ -33,4 +42,10 @@ export class MockCreateUser {
       this.phoneNumber = '+49 173 55555';
     }
   }
+}
+
+enum User {
+  first,
+  second,
+  third
 }

@@ -30,7 +30,7 @@ export class CreateOfferDto {
 
   @IsISO8601()
   @ApiProperty()
-  startDate: Date;
+  startDate: string;
 
   @IsNumber()
   @IsNotEmpty()

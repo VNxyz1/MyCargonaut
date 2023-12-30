@@ -16,7 +16,7 @@ describe('AuthService', () => {
   let userService: UserService;
   let userForThisTest: User;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({

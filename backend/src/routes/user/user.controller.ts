@@ -78,7 +78,8 @@ export class UserController {
     @Body() body: UpdateUserRequestDto,
   ) {
     const id = session.userData.id;
-    await this.userService.updateLoggedInUser(id, body);
+    session.userData = await this.userService.updateLoggedInUser(id, body);
+
     return new OKResponseWithMessageDTO(true, 'User Updated');
   }
 

@@ -1,5 +1,4 @@
 import { User } from '../../../database/User';
-import { MockGetUser } from './MockGetUser';
 
 export class MockSession {
   isLoggedIn?: boolean;
@@ -10,7 +9,6 @@ export class MockSession {
 
     if (running) {
       this.isLoggedIn = true;
-      this.userData = new MockGetUser(true) as User;
     }
   }
 }
