@@ -92,7 +92,7 @@ export class TransitRequestController {
   @Put('update-params/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Updates the offered coins of a Transit request',
+    summary: 'Updates the offered coins and/or requested seats of a Transit request',
     description: '"id" means the id of the offer to which the request is made.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
@@ -170,7 +170,7 @@ export class TransitRequestController {
   @Delete(':id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Updates the offered coins of a Transit request',
+    summary: 'Deletes a transit request. Only if the logged in user is the requester.',
     description: '"id" means the id of the TransitRequest.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
