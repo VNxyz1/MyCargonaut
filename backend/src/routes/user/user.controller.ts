@@ -13,18 +13,18 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {UserService} from '../user.service/user.service';
-import {GetUserResponseDto} from './DTOs/GetUserResponseDTO';
-import {IsLoggedInGuard} from '../../guards/auth/is-logged-in.guard';
-import {ISession} from '../../utils/ISession';
-import {OKResponseWithMessageDTO} from '../../generalDTOs/OKResponseWithMessageDTO';
-import {CreateUserRequestDto} from './DTOs/CreateUserRequestDTO';
-import {UpdateUserRequestDto} from './DTOs/UpdateUserRequestDTO';
-import {Response} from 'express';
-import {diskStorage} from 'multer';
-import {extname, join} from 'path';
-import {FileInterceptor} from '@nestjs/platform-express';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UserService } from '../user.service/user.service';
+import { GetUserResponseDto } from './DTOs/GetUserResponseDTO';
+import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
+import { ISession } from '../../utils/ISession';
+import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
+import { CreateUserRequestDto } from './DTOs/CreateUserRequestDTO';
+import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
+import { Response } from 'express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('user')
 @Controller('user')

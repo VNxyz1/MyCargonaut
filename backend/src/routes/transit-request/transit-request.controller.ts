@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -45,9 +46,13 @@ export class TransitRequestController {
     @Param('id', ParseIntPipe) offerId: number,
     @Body() body: PostTransitRequestRequestDto,
   ) {
-
     const offer: Offer = await this.offerService.getOffer(offerId);
     const requestingUserId = session.userData.id;
+    if (requestingUserId === offer.provider.id) {
+      throw new ForbiddenException(
+        'You are not allowed to make a request to your own offer',
+      );
+    }
     const requestingUser: User =
       await this.userService.getUserById(requestingUserId);
     await this.transitRequestService.postTransitRequest(
@@ -96,6 +101,12 @@ export class TransitRequestController {
     @Param('id', ParseIntPipe) offerId: number,
     @Body() body: PutTransitRequestRequestDto,
   ) {
+    if (!body.requestedSeats && !body.offeredCoins) {
+      throw new BadRequestException(
+        'Please provide at least one of both props',
+      );
+    }
+
     const offer: Offer = await this.offerService.getOffer(offerId);
     const requestingUserId = session.userData.id;
 
@@ -170,10 +181,8 @@ export class TransitRequestController {
     const tR = await this.transitRequestService.getTransitRequestById(tRId);
 
     const requestingUserId = session.userData.id;
-    const requestingUser: User =
-      await this.userService.getUserById(requestingUserId);
 
-    if (!this.loggedInUserIsRequestingUser(requestingUser, tR)) {
+    if (!this.loggedInUserIsRequestingUser(requestingUserId, tR)) {
       throw new ForbiddenException(
         'You are not allowed to delete this Request.',
       );
@@ -183,7 +192,7 @@ export class TransitRequestController {
     return new OKResponseWithMessageDTO(true, 'Request was deleted');
   }
 
-  loggedInUserIsRequestingUser(user: User, tR: TransitRequest): boolean {
-    return tR.requester.id === user.id;
+  loggedInUserIsRequestingUser(userId: number, tR: TransitRequest): boolean {
+    return tR.requester.id === userId;
   }
 }

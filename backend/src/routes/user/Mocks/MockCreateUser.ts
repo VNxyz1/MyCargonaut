@@ -19,12 +19,11 @@ export class MockCreateUser {
 
   constructor(asProvider?: boolean, user?: User) {
     this.eMail = 'tester@test.com';
-    if(user === User.first) {
+    if (user === User.first) {
       this.eMail = 'testerEins@test.com';
-    } else if(user === User.second) {
+    } else if (user === User.second) {
       this.eMail = 'testerZwei@test.com';
-
-    } else if(user === User.third) {
+    } else if (user === User.third) {
       this.eMail = 'testerDrei@test.com';
     }
 
@@ -47,5 +46,5 @@ export class MockCreateUser {
 enum User {
   first,
   second,
-  third
+  third,
 }

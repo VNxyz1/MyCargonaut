@@ -84,6 +84,12 @@ export class UserService {
     return user.coins;
   }
 
+  async setCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins = coins;
+    await this.userRepository.save(user);
+  }
+
   async increaseCoinBalanceOfUser(id: number, coins: number) {
     const user = await this.getUserById(id);
     user.coins += coins;
