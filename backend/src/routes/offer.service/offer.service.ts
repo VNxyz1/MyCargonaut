@@ -14,16 +14,16 @@ import { RoutePart } from '../../database/RoutePart';
 @Injectable()
 export class OfferService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Offer)
-    private readonly offerRepository: Repository<Offer>,
-    @InjectRepository(Plz)
-    private readonly plzRepository: Repository<Plz>,
-    @InjectRepository(TransitRequest)
-    private readonly transitRequestRepository: Repository<TransitRequest>,
-    @InjectRepository(RoutePart)
-    private readonly routePartRepository: Repository<RoutePart>,
+      @InjectRepository(User)
+      private readonly userRepository: Repository<User>,
+      @InjectRepository(Offer)
+      private readonly offerRepository: Repository<Offer>,
+      @InjectRepository(Plz)
+      private readonly plzRepository: Repository<Plz>,
+      @InjectRepository(TransitRequest)
+      private readonly transitRequestRepository: Repository<TransitRequest>,
+      @InjectRepository(RoutePart)
+      private readonly routePartRepository: Repository<RoutePart>,
   ) {}
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
@@ -66,26 +66,26 @@ export class OfferService {
     if (searchFor) {
       return await this.offerRepository.find({
         where: { description: Like(`%${searchFor}%`) },
-        relations: ['provider', 'route', 'clients', 'transitRequests'],
+        relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
       });
     }
 
     return await this.offerRepository.find({
-      relations: ['provider', 'route', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
     });
   }
 
   async getOffersOfUser(userId: number) {
     return await this.offerRepository.find({
       where: { provider: { id: userId } },
-      relations: ['provider', 'route', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
     });
   }
 
   async getOffer(id: number) {
     const offer = await this.offerRepository.findOne({
       where: { id: id },
-      relations: ['provider', 'route', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
     });
     if (!offer) {
       throw new InternalServerErrorException('Offer was not found!');
