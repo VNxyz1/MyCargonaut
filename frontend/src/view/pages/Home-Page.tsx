@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 
 import transporter from "../../assets/img/home_transport.png";
 import pakete from "../../assets/img/home_package.png";
+import skyline from "../../assets/img/skyline_weiß.png";
 import {Link} from "react-router-dom";
 
 
@@ -17,6 +18,7 @@ function HomePage() {
                     <h1 className="homeTitel">Fahrt <strong>teilen</strong> - Kosten  <strong>sparen</strong></h1>
                     <h1 className="homeTitel">Finde deine ideale Fahrgemeinschaft!</h1>
                 </Container>
+                <img className="home_header_skyline" src={skyline}></img>
             </div>
 
 
