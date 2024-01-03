@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from '../user.service/user.service';
-import { GetUserResponseDto } from './DTOs/GetUserResponseDTO';
 import { ISession } from '../../utils/ISession';
 import { User } from '../../database/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,39 +10,34 @@ import { AuthService } from '../auth.service/auth.service';
 import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
-import { MockCreateUser } from './DTOs/MockCreateUser';
+import { MockCreateUser } from './Mocks/MockCreateUser';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { MockGetUser } from './Mocks/MockGetUser';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { MockSession } from './Mocks/MockSession';
+import { RoutePart } from '../../database/RoutePart';
 
 describe('UserController', () => {
   let userController: UserController;
   let authController: AuthController;
   let userForThisTest: User;
-  const session: ISession = {
-    isLoggedIn: false,
-    userData: {
-      id: 0,
-      eMail: '',
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      password: '',
-      profilePicture: '',
-      birthday: undefined,
-      coins: 0,
-      description: '',
-      entryDate: undefined,
-    },
-  };
+  const session: ISession = new MockSession();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.user.controller.sqlite',
-          entities: [User],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService],
@@ -68,16 +62,7 @@ describe('UserController', () => {
   });
 
   it('should post a user to the database', async () => {
-    const user = new MockCreateUser();
-    user.eMail = 'tester@test.com';
-    user.firstName = 'Max';
-    user.lastName = 'Mustermann';
-    user.profilePicture = '/profile-pictures/12341.png';
-    user.password = '1234';
-    user.phoneNumber = '+49 173 55555';
-    user.birthday = new Date('2002-02-18');
-    user.entryDate = new Date('2002-02-18');
-    user.description = 'Test';
+    const user = new MockCreateUser(true);
 
     const responseMock = new OKResponseWithMessageDTO(true, 'User Created');
 
@@ -104,21 +89,11 @@ describe('UserController', () => {
   });
 
   it('should get logged-in user', async () => {
-    const userDto = new GetUserResponseDto();
-    userDto.id = 1;
-    userDto.birthday = new Date('2002-02-18');
-    userDto.eMail = 'tester@test.com';
-    userDto.firstName = 'Max';
-    userDto.description = 'Test';
-    userDto.lastName = 'Mustermann';
-    userDto.profilePicture = '/profile-pictures/12341.png';
-    userDto.phoneNumber = '+49 173 55555';
-    userDto.coins = 0;
-    userDto.entryDate = new Date('2002-02-18');
+    const userDto = new MockGetUser(true);
 
     const result = await userController.getLoggedInUser(session);
 
-    expect(result).toStrictEqual(userDto);
+    expect(result).toEqual(userDto);
   });
 
   it('should update the logged-in user', async () => {
@@ -133,6 +108,31 @@ describe('UserController', () => {
     const result = await userController.updateUser(session, updateDTO);
 
     expect(result).toStrictEqual(responseMock);
+  });
+
+  it('should handle duplicate email error when creating a user', async () => {
+    const user = new MockCreateUser();
+
+    const resMock = new InternalServerErrorException('E-Mail bereits vergeben');
+
+    expect(await userController.postUser(user)).toEqual(resMock);
+  });
+
+  it('should return an error when attempting to update a non-existing user', async () => {
+    const invalidSession: ISession = new MockSession(true);
+    invalidSession.userData.id = 9999;
+
+    const updateDTO = new UpdateUserRequestDto();
+    updateDTO.description = 'Max will testen';
+    const resMock = new NotFoundException('No User with this Id found.');
+    try {
+      const res = await userController.updateUser(invalidSession, updateDTO);
+      expect(res).not.toEqual(
+        new OKResponseWithMessageDTO(true, 'User Updated'),
+      );
+    } catch (e) {
+      expect(e).toEqual(resMock);
+    }
   });
 
   it('should delete the logged-in user', async () => {
