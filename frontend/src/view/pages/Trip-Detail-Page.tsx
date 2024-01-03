@@ -32,6 +32,7 @@ function TripDetailPage(
             lastName: "",
             profilePicture: "",
             description: "",
+            entryDate: new Date(),
         },
         route: [],
         startDate: new Date(),
@@ -49,12 +50,12 @@ function TripDetailPage(
 
 
     return (
-        <Container fluid="lg">
-            <Row>
-                <Col md={7} xxl={8} className="d-flex justify-content-center justify-content-xl-end">
+        <Container fluid="md">
+            <Row className="d-flex justify-content-center">
+                <Col md={8} className="d-flex justify-content-center justify-content-xl-end">
                     <DetailComponent offer={offer}/>
                 </Col>
-                <Col xxl={"auto"} className="d-flex justify-content-center justify-content-xl-start">
+                <Col md={3} className="d-flex justify-content-center justify-content-xl-start">
                     <DetailSidebar offer={offer}/>
                 </Col>
             </Row>

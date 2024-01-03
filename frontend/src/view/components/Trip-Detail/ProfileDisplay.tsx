@@ -29,11 +29,11 @@ function ProfileDisplay(
     return (
         <>
             <Row>
-                <Col>
+                <Col xs={"auto"}>
                     <img src={props.user.profilePicture ?
                         `http://localhost:3000/user/profile-image/${props.user.profilePicture}` :
                         placeholderImg}
-                         style={{height: "100px", width: "100px", objectFit: "cover", borderRadius: "50px"}}
+                         style={{height: "60px", width: "60px", objectFit: "cover", borderRadius: "50px"}}
                          alt="Profilbild"/>
                 </Col>
                 <Col>
