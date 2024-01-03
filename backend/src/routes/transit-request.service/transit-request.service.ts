@@ -41,6 +41,7 @@ export class TransitRequestService {
     transitRequest.requester = requestingUser;
     transitRequest.offeredCoins = request.offeredCoins;
     transitRequest.requestedSeats = request.requestedSeats;
+    transitRequest.text = request.text;
     transitRequest.offer = offer;
     transitRequest = await this.transitRequestRepository.save(transitRequest);
     offer.transitRequests.push(transitRequest);
@@ -67,6 +68,10 @@ export class TransitRequestService {
 
     if (updatedRequest.requestedSeats) {
       transitRequest.requestedSeats = updatedRequest.requestedSeats;
+    }
+
+    if (updatedRequest.text) {
+      transitRequest.text = updatedRequest.text;
     }
 
     transitRequest = await this.transitRequestRepository.save(transitRequest);

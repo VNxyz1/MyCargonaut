@@ -158,7 +158,7 @@ describe('OfferService', () => {
       await transitService.postTransitRequest(
         offer,
         await userService.getUserById(1),
-        { requestedSeats: 2, offeredCoins: 200 },
+        { requestedSeats: 2, offeredCoins: 200, text: "Ich hab sonst nix dabei." },
       );
 
       await offerService.deleteOffer(offer);

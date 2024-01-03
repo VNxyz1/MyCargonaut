@@ -93,6 +93,7 @@ export class TransitRequestController {
       tRDto.id = tR.id;
       tRDto.offeredCoins = tR.offeredCoins;
       tRDto.requestedSeats = tR.requestedSeats;
+      tRDto.text = tR.text;
       return tRDto;
     });
 
