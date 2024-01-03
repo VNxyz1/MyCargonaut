@@ -3,7 +3,7 @@ import {Offer} from "./Offer.ts";
 
 export interface TransitRequest {
 
-  id: number;
+  id?: number;
 
   offeredCoins: number;
 
@@ -11,7 +11,7 @@ export interface TransitRequest {
 
   text: string
 
-  requester: User;
+  requester?: User;
 
-  offer: Offer;
+  offer?: Offer;
 }

@@ -28,7 +28,7 @@ Content-Type: application/json
 
 
 ### PUT Offer
-PUT localhost:3000/offer/props/2 HTTP/2
+PUT localhost:3000/offer/props/1 HTTP/2
 Content-Type: application/json
 
 {
