@@ -28,6 +28,7 @@ export const convertUserToOtherUser = (user: User) => {
   otherUserDto.firstName = user.firstName;
   otherUserDto.lastName = user.lastName;
   otherUserDto.profilePicture = user.profilePicture;
+  otherUserDto.entryDate = user.entryDate;
 
   return otherUserDto;
 };
