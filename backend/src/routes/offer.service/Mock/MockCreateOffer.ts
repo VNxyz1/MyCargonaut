@@ -2,8 +2,12 @@ import { CreateRoutePartDto } from '../../offer/DTOs/CreateRoutePartDto';
 
 export class MockCreateOffer {
   route: CreateRoutePartDto[] = [
-    { plz: '12345', position: 1 },
-    { plz: '67890', position: 2 },
+    { plz: '12345',
+      location: 'test',
+      position: 1 },
+    { plz: '67890',
+      location: 'test',
+      position: 2 },
   ];
 
   vehicle: string = 'Test Vehicle';

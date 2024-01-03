@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import {IsNumber, IsOptional, IsString} from 'class-validator';
 
 export class PutTransitRequestRequestDto {
   @ApiProperty()
@@ -11,4 +11,9 @@ export class PutTransitRequestRequestDto {
   @IsOptional()
   @IsNumber()
   requestedSeats?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  text?: string;
 }

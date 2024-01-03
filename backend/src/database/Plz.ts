@@ -12,6 +12,10 @@ export class Plz {
   @ApiProperty()
   plz: string;
 
+  @Column()
+  @ApiProperty()
+  location: string;
+
   @OneToMany(() => RoutePart, (rP) => rP.plz)
   routeParts: RoutePart[];
 }

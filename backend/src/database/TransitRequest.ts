@@ -17,6 +17,10 @@ export class TransitRequest {
   @Column()
   requestedSeats: number;
 
+  @ApiProperty()
+  @Column()
+  text: string;
+
   @ApiProperty({ type: User })
   @ManyToOne(() => User)
   requester: User;

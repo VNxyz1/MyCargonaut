@@ -14,16 +14,16 @@ import { RoutePart } from '../../database/RoutePart';
 @Injectable()
 export class OfferService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Offer)
-    private readonly offerRepository: Repository<Offer>,
-    @InjectRepository(Plz)
-    private readonly plzRepository: Repository<Plz>,
-    @InjectRepository(TransitRequest)
-    private readonly transitRequestRepository: Repository<TransitRequest>,
-    @InjectRepository(RoutePart)
-    private readonly routePartRepository: Repository<RoutePart>,
+      @InjectRepository(User)
+      private readonly userRepository: Repository<User>,
+      @InjectRepository(Offer)
+      private readonly offerRepository: Repository<Offer>,
+      @InjectRepository(Plz)
+      private readonly plzRepository: Repository<Plz>,
+      @InjectRepository(TransitRequest)
+      private readonly transitRequestRepository: Repository<TransitRequest>,
+      @InjectRepository(RoutePart)
+      private readonly routePartRepository: Repository<RoutePart>,
   ) {}
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
@@ -48,16 +48,16 @@ export class OfferService {
     const offerDb = await this.offerRepository.save(offer);
 
     for (const routePartDto of offerDto.route) {
-      const plz = await this.createPlz(routePartDto.plz);
+      const plz = await this.createPlz(routePartDto.plz, routePartDto.location);
       await this.createRoutePart(offerDb, plz, routePartDto.position);
     }
 
     return offerDb;
   }
 
-  async checkIfPlzIsDuplicate(plz: string): Promise<Plz | null> {
+  async checkIfPlzIsDuplicate(plz: string, location: string): Promise<Plz | null> {
     return await this.plzRepository.findOne({
-      where: { plz },
+      where: { plz, location },
       relations: ['routeParts'],
     });
   }
@@ -94,12 +94,13 @@ export class OfferService {
     return offer;
   }
 
-  private async createPlz(plz: string) {
-    const checkPlz = await this.checkIfPlzIsDuplicate(plz);
+  private async createPlz(plz: string, location: string) {
+    const checkPlz = await this.checkIfPlzIsDuplicate(plz, location);
 
     if (!checkPlz) {
       const newPlz = new Plz();
       newPlz.plz = plz;
+      newPlz.location = location;
       return await this.plzRepository.save(newPlz);
     }
     return checkPlz;
@@ -125,7 +126,7 @@ export class OfferService {
       }
 
       for (const createRoutePartDto of updateData.route) {
-        const plz = await this.createPlz(createRoutePartDto.plz);
+        const plz = await this.createPlz(createRoutePartDto.plz, createRoutePartDto.location);
         await this.createRoutePart(offer, plz, createRoutePartDto.position);
       }
     }

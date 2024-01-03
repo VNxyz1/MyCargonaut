@@ -13,6 +13,9 @@ export class GetTransitRequestDto {
   offer: GetOfferResponseDto;
 
   @ApiProperty()
+  text: string;
+
+  @ApiProperty()
   offeredCoins: number;
 
   @ApiProperty()

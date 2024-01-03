@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import {IsNumber, IsString} from 'class-validator';
 
 export class PostTransitRequestRequestDto {
   @ApiProperty()
@@ -9,4 +9,8 @@ export class PostTransitRequestRequestDto {
   @ApiProperty()
   @IsNumber()
   requestedSeats: number;
+
+  @ApiProperty()
+  @IsString()
+  text: string;
 }
