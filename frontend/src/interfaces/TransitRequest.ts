@@ -9,6 +9,8 @@ export interface TransitRequest {
 
   requestedSeats: number;
 
+  text: string
+
   requester: User;
 
   offer: Offer;

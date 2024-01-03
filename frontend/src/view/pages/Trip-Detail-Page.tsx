@@ -2,6 +2,8 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {Offer} from "../../interfaces/Offer.ts";
 import DetailComponent from "../components/Trip-Detail/Detail-Component.tsx";
+import {Col, Container, Row} from "react-bootstrap";
+import DetailSidebar from "../components/Trip-Detail/Trip-Detail-Sidebar.tsx";
 
 function TripDetailPage(
     props: {
@@ -47,9 +49,16 @@ function TripDetailPage(
 
 
     return (
-        <>
-            <DetailComponent offer={offer}/>
-        </>
+        <Container fluid="lg">
+            <Row>
+                <Col md={7} xxl={8} className="d-flex justify-content-center justify-content-xl-end">
+                    <DetailComponent offer={offer}/>
+                </Col>
+                <Col xxl={"auto"} className="d-flex justify-content-center justify-content-xl-start">
+                    <DetailSidebar offer={offer}/>
+                </Col>
+            </Row>
+        </Container>
     )
 }
 

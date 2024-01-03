@@ -9,4 +9,5 @@ export interface UserLight {
 
     description: string;
 
+    entryDate: Date;
 }

@@ -16,7 +16,7 @@ function LoginForm() {
     const [feedback, setFeedback] = useState<string | undefined>(undefined);
     const [loginData, setLoginData] = useState<LoginDataProps>({eMail: "", password: ""});
 
-    const handleSubmit = async (event: any) => {
+    const handleSubmit = async (event: { preventDefault: () => void; stopPropagation: () => void; }) => {
         event.preventDefault();
         event.stopPropagation();
         const res = await postLogin();

@@ -6,14 +6,17 @@ Content-Type: application/json
   "route": [
     {
       "plz": "63679",
+      "location": "Nidda",
       "position": 1
     },
     {
       "plz": "64002",
+      "location": "Hää",
       "position": 2
     },
     {
       "plz": "35290",
+      "location": "Gießen",
       "position": 3
     }
   ],
@@ -32,14 +35,18 @@ Content-Type: application/json
   "route": [
     {
       "plz": 63673,
+      "location": "Nidda",
       "position": 1
     },
     {
       "plz": 63679,
+      "location": "Nidda",
       "position": 2
     },
     {
-      "plz": 30390
+      "plz": 30390,
+      "location": "Gießen",
+      "position": 3
     }
   ],
   "description": "Das ist ein geupdateter Test!",
