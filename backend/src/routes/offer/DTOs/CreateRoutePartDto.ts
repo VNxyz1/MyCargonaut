@@ -6,6 +6,10 @@ export class CreateRoutePartDto {
   @ApiProperty()
   plz: string;
 
+  @IsString()
+  @ApiProperty()
+  location: string;
+
   @IsNumber()
   @ApiProperty()
   position: number;

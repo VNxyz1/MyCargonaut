@@ -2,14 +2,17 @@ export class MockPostOffer {
   route = [
     {
       plz: '63679',
+      location: 'test',
       position: 1,
     },
     {
       plz: '64002',
+      location: 'test',
       position: 2,
     },
     {
       plz: '35290',
+      location: 'test',
       position: 3,
     },
   ];

@@ -60,16 +60,18 @@ describe('OfferService', () => {
   describe('checkIfPlzIsDuplicate', () => {
     it('should check if PLZ is duplicate and return the Plz object', async () => {
       const plz = '12345';
+      const location = 'test';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz, location);
 
       expect(duplicatePlz).toBeDefined();
     });
 
     it('should return null if PLZ is not duplicate', async () => {
       const plz = '54321';
+      const location = 'test';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz, location);
 
       expect(duplicatePlz).toBeNull();
     });
