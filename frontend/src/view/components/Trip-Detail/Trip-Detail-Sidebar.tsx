@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import ProfileDisplay from "./ProfileDisplay.tsx";
 import TransitRequestModal from "./Transit-Request-Modal.tsx";
+import NotLoggedInModal from "../Login-Regist/Not-Logged-In-Modal.tsx";
 
 
 function DetailSidebar(
@@ -12,17 +13,49 @@ function DetailSidebar(
     }
 ) {
     const [showTransitRequestModal, setShowTransitRequestModal] = useState(false);
+    const [showNotLoggedInModal, setShowNotLoggedInModal] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
 
     useEffect(() => {
+        const item = localStorage.getItem('isAuthenticated');
+        if(item) {
+            setIsLoggedIn(JSON.parse(item));
+        }
 
     }, []);
 
 
-    const handleOpen = () => setShowTransitRequestModal(true);
+    const handleOpenRequestModal = () => {
+        if(isLoggedIn) {
+            setShowTransitRequestModal(true);
+        } else {
+            setShowNotLoggedInModal(true);
+        }
+    }
+
+    const handleOpenChatPage = () => {
+        if(isLoggedIn) {
+            //todo
+            alert("not implemented");
+        } else {
+            setShowNotLoggedInModal(true);
+        }
+    }
+
+    const handleAddToWatchlist = () => {
+        if(isLoggedIn) {
+            //todo
+            alert("not implemented");
+        } else {
+            setShowNotLoggedInModal(true);
+        }
+    }
+
     const handleClose = () => {
         setShowTransitRequestModal(false);
+        setShowNotLoggedInModal(false);
         console.log("closed")
     }
 
@@ -32,13 +65,13 @@ function DetailSidebar(
             <div className="mt-4" style={{width: "100%"}}>
                 <Card>
                     <Card.Header>
-                        <Button onClick={handleOpen} type="submit" className="mainButton w-100 mb-2">
+                        <Button onClick={handleOpenRequestModal} className="mainButton w-100 mb-2">
                             Angebot machen
                         </Button>
-                        <Button type="submit" className="mainButton w-100 mb-2">
+                        <Button onClick={handleOpenChatPage} className="mainButton w-100 mb-2">
                             Nachricht schreiben
                         </Button>
-                        <Button type="submit" className="mainButton w-100 mb-2">
+                        <Button onClick={handleAddToWatchlist} className="mainButton w-100 mb-2">
                             Zur Merkliste hinzufügen
                         </Button>
                     </Card.Header>
@@ -53,6 +86,7 @@ function DetailSidebar(
 
             </div>
             <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.offer.id}/>
+            <NotLoggedInModal show={showNotLoggedInModal} onClose={handleClose}/>
         </>
 
     )
