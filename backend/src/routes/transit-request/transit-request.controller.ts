@@ -12,7 +12,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
 import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { ISession } from '../../utils/ISession';
@@ -41,11 +41,19 @@ export class TransitRequestController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary: 'Sends a Transit request',
-    description: `Allows a logged-in user to send a transit request for a specific offer.`
+    description: `Allows a logged-in user to send a transit request for a specific offer.`,
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  @ApiResponse({ status: 200, type: OKResponseWithMessageDTO, description: 'The record has been successfully created.'})
-  @ApiResponse({ status: 403, type: ForbiddenException, description: 'Forbidden: Cannot request your own offer.'})
+  @ApiResponse({
+    status: 200,
+    type: OKResponseWithMessageDTO,
+    description: 'The record has been successfully created.',
+  })
+  @ApiResponse({
+    status: 403,
+    type: ForbiddenException,
+    description: 'Forbidden: Cannot request your own offer.',
+  })
   async postTransitRequest(
     @Session() session: ISession,
     @Param('id', ParseIntPipe) offerId: number,
@@ -103,7 +111,8 @@ export class TransitRequestController {
   @Put('update-params/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Updates the offered coins and/or requested seats of a Transit request',
+    summary:
+      'Updates the offered coins and/or requested seats of a Transit request',
     description: `Allows the requester to update the offered coins and/or requested seats of their transit request.`,
   })
   @ApiResponse({

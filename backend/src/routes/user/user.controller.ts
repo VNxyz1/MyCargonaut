@@ -4,7 +4,8 @@ import {
   Delete,
   Get,
   InternalServerErrorException,
-  Param, ParseIntPipe,
+  Param,
+  ParseIntPipe,
   Post,
   Put,
   Res,
@@ -25,8 +26,8 @@ import { Response } from 'express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {convertUserToOtherUser} from "../utils/convertToOfferDto";
-import {GetOtherUserDto} from "../offer/DTOs/GetOtherUserDto";
+import { convertUserToOtherUser } from '../utils/convertToOfferDto';
+import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
 
 @ApiTags('user')
 @Controller('user')
@@ -50,7 +51,7 @@ export class UserController {
     userDto.coins = user.coins;
     userDto.entryDate = user.entryDate;
     userDto.description = user.description;
-    userDto.requestedTransits = user.requestedTransits
+    userDto.requestedTransits = user.requestedTransits;
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
@@ -61,10 +62,7 @@ export class UserController {
   @Get('/other/:id')
   @ApiOperation({ summary: 'Gets the "public version" of a User by ID' })
   @ApiResponse({ type: GetOtherUserDto })
-  async getUser(
-      @Param('id', ParseIntPipe) userId: number,
-      @Session() session: ISession
-  ) {
+  async getUser(@Param('id', ParseIntPipe) userId: number) {
     const user = await this.userService.getUserById(userId);
     return convertUserToOtherUser(user);
   }

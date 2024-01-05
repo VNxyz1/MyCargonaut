@@ -1,137 +1,132 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
-import {User} from '../../database/User';
-import {Repository} from 'typeorm';
-import {CreateUserRequestDto} from '../user/DTOs/CreateUserRequestDTO';
-import {UpdateUserRequestDto} from '../user/DTOs/UpdateUserRequestDTO';
-import {join} from 'path';
-import {existsSync, unlinkSync} from 'fs';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../../database/User';
+import { Repository } from 'typeorm';
+import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
+import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-    ) {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async getUserById(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['offers', 'trips', 'requestedTransits'],
+    });
+    if (user == null) {
+      throw new NotFoundException(`No User with this Id found.`);
+    }
+    return user;
+  }
+
+  async postUser(createUserDto: CreateUserRequestDto) {
+    const user = this.userRepository.create(createUserDto);
+    return await this.userRepository.save(user);
+  }
+
+  async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
+    const user = await this.getUserById(id);
+
+    if (updateUserDto.birthday) {
+      user.birthday = updateUserDto.birthday;
+    }
+    if (updateUserDto.phoneNumber) {
+      user.phoneNumber = updateUserDto.phoneNumber;
     }
 
-    async getUserById(id: number) {
-        const user = await this.userRepository.findOne({
-            where: {id},
-            relations: [
-                'offers',
-                'trips',
-                'requestedTransits'
-            ]
-        });
-        if (user == null) {
-            throw new NotFoundException(`No User with this Id found.`);
-        }
-        return user;
+    if (updateUserDto.firstName) {
+      user.firstName = updateUserDto.firstName;
+    }
+    if (updateUserDto.lastName) {
+      user.lastName = updateUserDto.lastName;
     }
 
-    async postUser(createUserDto: CreateUserRequestDto) {
-        const user = this.userRepository.create(createUserDto);
-        return await this.userRepository.save(user);
+    if (updateUserDto.description) {
+      user.description = updateUserDto.description;
     }
 
-    async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
-        const user = await this.getUserById(id);
+    return this.userRepository.save(user);
+  }
 
-        if (updateUserDto.birthday) {
-            user.birthday = updateUserDto.birthday;
-        }
-        if (updateUserDto.phoneNumber) {
-            user.phoneNumber = updateUserDto.phoneNumber;
-        }
+  async deleteLoggedInUser(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
 
-        if (updateUserDto.firstName) {
-            user.firstName = updateUserDto.firstName;
-        }
-        if (updateUserDto.lastName) {
-            user.lastName = updateUserDto.lastName;
-        }
+    await this.removeOldImage(user.id);
 
-        if (updateUserDto.description) {
-            user.description = updateUserDto.description;
-        }
+    user.eMail = null;
+    user.password = null;
+    user.firstName = '****';
+    user.lastName = '****';
+    user.birthday = null;
+    user.coins = 0;
+    user.profilePicture = '';
+    user.phoneNumber = null;
+    user.entryDate = null;
+    user.description = '';
 
-        return this.userRepository.save(user);
+    await this.userRepository.save(user);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.find();
+  }
+
+  async getCoinBalanceOfUser(id: number) {
+    const user = await this.getUserById(id);
+    return user.coins;
+  }
+
+  async setCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins = coins;
+    await this.userRepository.save(user);
+  }
+
+  async increaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins += coins;
+    await this.userRepository.save(user);
+  }
+
+  async decreaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins -= coins;
+    await this.userRepository.save(user);
+  }
+
+  async removeOldImage(userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
     }
 
-    async deleteLoggedInUser(id: number) {
-        const user = await this.userRepository.findOne({where: {id}});
+    if (user.profilePicture.length > 0) {
+      const oldImagePath = join(
+        process.cwd(),
+        'uploads',
+        'profile-images',
+        user.profilePicture,
+      );
+      if (existsSync(oldImagePath)) {
+        unlinkSync(oldImagePath);
+      }
+    }
+  }
 
-        await this.removeOldImage(user.id);
+  async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
-        user.eMail = null;
-        user.password = null;
-        user.firstName = '****';
-        user.lastName = '****';
-        user.birthday = null;
-        user.coins = 0;
-        user.profilePicture = '';
-        user.phoneNumber = null;
-        user.entryDate = null;
-        user.description = '';
-
-        await this.userRepository.save(user);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found.`);
     }
 
-    async getAllUsers(): Promise<User[]> {
-        return await this.userRepository.find();
-    }
-
-    async getCoinBalanceOfUser(id: number) {
-        const user = await this.getUserById(id);
-        return user.coins;
-    }
-
-    async setCoinBalanceOfUser(id: number, coins: number) {
-        const user = await this.getUserById(id);
-        user.coins = coins;
-        await this.userRepository.save(user);
-    }
-
-    async increaseCoinBalanceOfUser(id: number, coins: number) {
-        const user = await this.getUserById(id);
-        user.coins += coins;
-        await this.userRepository.save(user);
-    }
-
-    async decreaseCoinBalanceOfUser(id: number, coins: number) {
-        const user = await this.getUserById(id);
-        user.coins -= coins;
-        await this.userRepository.save(user);
-    }
-
-    async removeOldImage(userId: number): Promise<void> {
-        const user = await this.userRepository.findOne({where: {id: userId}});
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found.`);
-        }
-
-        if (user.profilePicture.length > 0) {
-            const oldImagePath = join(
-                process.cwd(),
-                'uploads',
-                'profile-images',
-                user.profilePicture,
-            );
-            if (existsSync(oldImagePath)) {
-                unlinkSync(oldImagePath);
-            }
-        }
-    }
-
-    async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
-        const user = await this.userRepository.findOne({where: {id: userId}});
-
-        if (!user) {
-            throw new NotFoundException(`User with ID ${userId} not found.`);
-        }
-
-        user.profilePicture = imagePath;
-        await this.userRepository.save(user);
-    }
+    user.profilePicture = imagePath;
+    await this.userRepository.save(user);
+  }
 }

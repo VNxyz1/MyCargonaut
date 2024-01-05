@@ -1,3 +1,5 @@
+import { TransitRequest } from '../../../database/TransitRequest';
+
 export class MockGetUser {
   id: number;
 
@@ -21,6 +23,8 @@ export class MockGetUser {
 
   coins: number;
 
+  requestedTransits: TransitRequest[];
+
   constructor(asProvider?: boolean) {
     this.id = 1;
     this.entryDate = new Date('2021-02-18');
@@ -32,6 +36,7 @@ export class MockGetUser {
     this.profilePicture = '';
     this.phoneNumber = '';
     this.coins = 0;
+    this.requestedTransits = [];
 
     if (asProvider) {
       this.profilePicture = '/profile-pictures/12341.png';

@@ -62,7 +62,10 @@ describe('OfferService', () => {
       const plz = '12345';
       const location = 'test';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz, location);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(
+        plz,
+        location,
+      );
 
       expect(duplicatePlz).toBeDefined();
     });
@@ -71,7 +74,10 @@ describe('OfferService', () => {
       const plz = '54321';
       const location = 'test';
 
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(plz, location);
+      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(
+        plz,
+        location,
+      );
 
       expect(duplicatePlz).toBeNull();
     });
@@ -158,7 +164,11 @@ describe('OfferService', () => {
       await transitService.postTransitRequest(
         offer,
         await userService.getUserById(1),
-        { requestedSeats: 2, offeredCoins: 200, text: "Ich hab sonst nix dabei." },
+        {
+          requestedSeats: 2,
+          offeredCoins: 200,
+          text: 'Ich hab sonst nix dabei.',
+        },
       );
 
       await offerService.deleteOffer(offer);

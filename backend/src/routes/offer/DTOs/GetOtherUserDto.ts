@@ -1,4 +1,4 @@
-import {IsInt, IsISO8601, IsNotEmpty, IsString} from 'class-validator';
+import { IsInt, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetOtherUserDto {

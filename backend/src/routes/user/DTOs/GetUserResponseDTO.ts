@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {TransitRequest} from "../../../database/TransitRequest";
+import { TransitRequest } from '../../../database/TransitRequest';
 
 export class GetUserResponseDto {
-
   @ApiProperty()
   id: number;
 
@@ -34,7 +33,7 @@ export class GetUserResponseDto {
   entryDate: Date;
 
   @ApiProperty({
-    type: [TransitRequest]
+    type: [TransitRequest],
   })
   requestedTransits: TransitRequest[];
 }
