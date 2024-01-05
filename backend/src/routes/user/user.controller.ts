@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   InternalServerErrorException,
   Param,
@@ -71,13 +72,21 @@ export class UserController {
   @ApiOperation({ summary: 'Creates a new User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateUserRequestDto) {
+    const age = this.calcAge(new Date(body.birthday));
+    if (age < 18) {
+      throw new ForbiddenException(
+        'You have to be at least 18 years old to create an account.',
+      );
+    }
+
     try {
       await this.userService.postUser(body);
       return new OKResponseWithMessageDTO(true, 'User Created');
     } catch (e: any) {
       if (e.errno == 19) {
-        return new InternalServerErrorException('E-Mail bereits vergeben');
+        return new InternalServerErrorException('E-Mail bereits vergeben!');
       }
+      return e;
     }
   }
 
@@ -207,5 +216,16 @@ export class UserController {
       console.error('Error removing profile image:', error);
       throw new InternalServerErrorException('Error removing profile image');
     }
+  }
+
+  private calcAge(birthdate: Date) {
+    const aktuellesDatum = new Date();
+
+    const differenzInMillisekunden =
+      aktuellesDatum.getTime() - birthdate.getTime();
+
+    return Math.floor(
+      differenzInMillisekunden / (1000 * 60 * 60 * 24 * 365.25),
+    );
   }
 }

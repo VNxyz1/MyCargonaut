@@ -42,7 +42,7 @@ Content-Type: application/json
   "firstName" : "maxi",
   "lastName": "Musterfrau",
   "password": "1234",
-  "birthday": "2002-02-18",
+  "birthday": "2006-01-05",
   "phoneNumber": "+49 173 55555"
 }
 

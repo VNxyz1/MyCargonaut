@@ -16,6 +16,7 @@ import { Plz } from '../../database/Plz';
 import { TransitRequest } from '../../database/TransitRequest';
 import { MockGetUser } from './Mocks/MockGetUser';
 import {
+  ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
@@ -73,6 +74,17 @@ describe('UserController', () => {
     expect(result).toStrictEqual(responseMock);
   });
 
+  it('should not allow to post a underage user', async () => {
+    const user = new MockCreateUser(true);
+    user.birthday = new Date();
+
+    await expect(userController.postUser(user)).rejects.toThrow(
+      new ForbiddenException(
+        'You have to be at least 18 years old to create an account.',
+      ),
+    );
+  });
+
   it('should log in the created user', async () => {
     const responseMock = new OKResponseWithMessageDTO(
       true,
@@ -113,7 +125,9 @@ describe('UserController', () => {
   it('should handle duplicate email error when creating a user', async () => {
     const user = new MockCreateUser();
 
-    const resMock = new InternalServerErrorException('E-Mail bereits vergeben');
+    const resMock = new InternalServerErrorException(
+      'E-Mail bereits vergeben!',
+    );
 
     expect(await userController.postUser(user)).toEqual(resMock);
   });
