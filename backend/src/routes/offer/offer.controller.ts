@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -20,6 +21,7 @@ import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 import { UpdateOfferRequestDto } from './DTOs/UpdateOfferRequestDto';
 import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
+import { User } from '../../database/User';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -31,6 +33,8 @@ export class OfferController {
   @ApiOperation({ summary: 'Creates a new Offer' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateOfferDto, @Session() session: ISession) {
+    this.userHasProfilePicAndPhoneNumber(session.userData);
+
     const userId = session.userData.id;
     await this.offerService.postOffer(userId, body);
     return new OKResponseWithMessageDTO(true, 'Offer Created');
@@ -61,8 +65,8 @@ export class OfferController {
     const offerListDto = new GetAllOffersResponseDto();
     offerListDto.offerList = [];
     for (const offer of offerList) {
-      const converteOffer = convertOfferToGetOfferDto(offer);
-      offerListDto.offerList.push(converteOffer);
+      const convertOffer = convertOfferToGetOfferDto(offer);
+      offerListDto.offerList.push(convertOffer);
     }
 
     return offerListDto;
@@ -70,7 +74,8 @@ export class OfferController {
 
   @Get('search/:searchString')
   @ApiOperation({
-    summary: 'gets offers, filtered by a string (searches in the description)',
+    summary:
+      'gets offers, filtered by a string (searches in the description, plz, location)',
   })
   @ApiResponse({ type: GetAllOffersResponseDto })
   async getFilteredOffers(@Param('searchString') searchString: string) {
@@ -78,8 +83,8 @@ export class OfferController {
     const offerListDto = new GetAllOffersResponseDto();
     offerListDto.offerList = [];
     for (const offer of offerList) {
-      const converteOffer = convertOfferToGetOfferDto(offer);
-      offerListDto.offerList.push(converteOffer);
+      const convertOffer = convertOfferToGetOfferDto(offer);
+      offerListDto.offerList.push(convertOffer);
     }
 
     return offerListDto;
@@ -123,5 +128,20 @@ export class OfferController {
     }
     await this.offerService.deleteOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Offer Deleted');
+  }
+
+  userHasProfilePicAndPhoneNumber(user: User) {
+    let bothExisting: boolean;
+    if (user.profilePicture && user.phoneNumber) {
+      bothExisting = user.profilePicture !== '' && user.phoneNumber !== '';
+    }
+
+    if (!bothExisting) {
+      throw new ForbiddenException(
+        'Add a profile picture and phone number to your profile to proceed.',
+      );
+    }
+
+    return bothExisting;
   }
 }

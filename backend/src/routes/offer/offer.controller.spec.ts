@@ -60,7 +60,7 @@ describe('OfferController', () => {
     expect(offerController).toBeDefined();
   });
 
-  describe('get offers', () => {
+  describe('post offers', () => {
     it('should create a new offer', async () => {
       runTestAsProvider();
       const result = await postNewOffer();
@@ -70,6 +70,14 @@ describe('OfferController', () => {
       );
     });
 
+    it('should throw an error, because the user is not a provider', async () => {
+      runTestAsClient();
+
+      await expect(postNewOffer()).rejects.toThrow();
+    });
+  });
+
+  describe('get offers', () => {
     it('should get all offers as not registered user', async () => {
       runTestAsLoggedOutUser();
       const result = await offerController.getAllOffers();
@@ -99,6 +107,28 @@ describe('OfferController', () => {
       const result = await offerController.getOffersOfLoggedInUser(session);
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
+    });
+
+    it('should get offers that contain "Schotten" as location of a routePath', async () => {
+      runTestAsClient();
+      const result = await offerController.getFilteredOffers('Schotten');
+      const filtered = result.offerList[0].route.find(
+        (rP) => rP.plz.location === 'Schotten',
+      );
+
+      expect(result.offerList).toBeDefined();
+      expect(filtered.plz.location).toBe('Schotten');
+    });
+
+    it('should get offers that contain "63679" as plz of a routePath', async () => {
+      runTestAsClient();
+      const result = await offerController.getFilteredOffers('63679');
+      const filtered = result.offerList[0].route.find(
+        (rP) => rP.plz.plz === '63679',
+      );
+
+      expect(result.offerList).toBeDefined();
+      expect(filtered.plz.plz).toBe('63679');
     });
   });
 

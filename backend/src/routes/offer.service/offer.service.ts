@@ -68,7 +68,11 @@ export class OfferService {
   async getOffers(searchFor?: string) {
     if (searchFor) {
       return await this.offerRepository.find({
-        where: { description: Like(`%${searchFor}%`) },
+        where: [
+          { description: Like(`%${searchFor}%`) },
+          { route: { plz: { location: Like(`%${searchFor}%`) } } },
+          { route: { plz: { plz: Like(`%${searchFor}%`) } } },
+        ],
         relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
       });
     }
