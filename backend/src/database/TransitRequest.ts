@@ -2,6 +2,7 @@ import { Offer } from './Offer';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
 import { ApiProperty } from '@nestjs/swagger';
+import {GetUserResponseDto} from "../routes/user/DTOs/GetUserResponseDTO";
 
 @Entity()
 export class TransitRequest {
@@ -21,9 +22,10 @@ export class TransitRequest {
   @Column()
   text: string;
 
-  @ApiProperty({ type: User })
-  @ManyToOne(() => User)
+  @ApiProperty({ type: GetUserResponseDto })
+  @ManyToOne(() => User, { lazy: true, eager: false })
   requester: User;
+
 
   @ApiProperty({ type: Offer })
   @ManyToOne(() => Offer)
