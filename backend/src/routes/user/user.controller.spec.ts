@@ -64,12 +64,10 @@ describe('UserController', () => {
 
   it('should post a user to the database', async () => {
     const user = new MockCreateUser(true);
-
+    userForThisTest = new MockCreateUser(true) as User;
     const responseMock = new OKResponseWithMessageDTO(true, 'User Created');
 
     const result = await userController.postUser(user);
-
-    userForThisTest = user as User;
 
     expect(result).toStrictEqual(responseMock);
   });

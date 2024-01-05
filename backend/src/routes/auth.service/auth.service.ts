@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
-import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 
 @Injectable()
 export class AuthService {
@@ -11,17 +10,15 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async logIn(logInDto: LogInRequestDto): Promise<User> {
-    const password: string = logInDto.password;
+  async getUserByEMail(eMail: string) {
     const user = await this.userRepository.findOne({
-      where: { eMail: logInDto.eMail, password },
+      where: { eMail: eMail },
     });
-    if (user !== null) {
-      return user;
-    } else {
-      throw new NotFoundException(
-        `There is no combination of this email and password.`,
-      );
+
+    if (!user) {
+      throw new NotFoundException(`There is no user with this email.`);
     }
+
+    return user;
   }
 }

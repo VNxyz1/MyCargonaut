@@ -29,6 +29,7 @@ import { extname, join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
+import { hash } from '../utils/hash';
 
 @ApiTags('user')
 @Controller('user')
@@ -78,6 +79,8 @@ export class UserController {
         'You have to be at least 18 years old to create an account.',
       );
     }
+
+    body.password = await hash(body.password);
 
     try {
       await this.userService.postUser(body);
