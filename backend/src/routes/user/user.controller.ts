@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   InternalServerErrorException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Res,
@@ -25,6 +27,9 @@ import { Response } from 'express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { convertUserToOtherUser } from '../utils/convertToOfferDto';
+import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
+import { hash } from '../utils/hash';
 
 @ApiTags('user')
 @Controller('user')
@@ -48,6 +53,7 @@ export class UserController {
     userDto.coins = user.coins;
     userDto.entryDate = user.entryDate;
     userDto.description = user.description;
+    userDto.requestedTransits = user.requestedTransits;
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
@@ -55,17 +61,35 @@ export class UserController {
     return userDto;
   }
 
+  @Get('/other/:id')
+  @ApiOperation({ summary: 'Gets the "public version" of a User by ID' })
+  @ApiResponse({ type: GetOtherUserDto })
+  async getUser(@Param('id', ParseIntPipe) userId: number) {
+    const user = await this.userService.getUserById(userId);
+    return convertUserToOtherUser(user);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Creates a new User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateUserRequestDto) {
+    const age = this.calcAge(new Date(body.birthday));
+    if (age < 18) {
+      throw new ForbiddenException(
+        'You have to be at least 18 years old to create an account.',
+      );
+    }
+
+    body.password = await hash(body.password);
+
     try {
       await this.userService.postUser(body);
       return new OKResponseWithMessageDTO(true, 'User Created');
     } catch (e: any) {
       if (e.errno == 19) {
-        return new InternalServerErrorException('E-Mail bereits vergeben');
+        return new InternalServerErrorException('E-Mail bereits vergeben!');
       }
+      return e;
     }
   }
 
@@ -195,5 +219,16 @@ export class UserController {
       console.error('Error removing profile image:', error);
       throw new InternalServerErrorException('Error removing profile image');
     }
+  }
+
+  private calcAge(birthdate: Date) {
+    const aktuellesDatum = new Date();
+
+    const differenzInMillisekunden =
+      aktuellesDatum.getTime() - birthdate.getTime();
+
+    return Math.floor(
+      differenzInMillisekunden / (1000 * 60 * 60 * 24 * 365.25),
+    );
   }
 }

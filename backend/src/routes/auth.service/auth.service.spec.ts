@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import * as fs from 'fs';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
-import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 import { Offer } from '../../database/Offer';
 import { Plz } from '../../database/Plz';
 import { TransitRequest } from '../../database/TransitRequest';
@@ -68,9 +67,6 @@ describe('AuthService', () => {
   }
 
   async function logInTheTempUser() {
-    const loginDTO = new LogInRequestDto();
-    loginDTO.eMail = userForThisTest.eMail;
-    loginDTO.password = userForThisTest.password;
-    return await authService.logIn(loginDTO);
+    return await authService.getUserByEMail(userForThisTest.eMail);
   }
 });

@@ -1,6 +1,9 @@
 ### Get Logged In User
 GET localhost:3000/user HTTP/2
 
+### Get other User
+GET localhost:3000/user/other/1 HTTP/2
+
 ### POST User
 POST localhost:3000/user HTTP/2
 Content-Type: application/json
@@ -39,7 +42,7 @@ Content-Type: application/json
   "firstName" : "maxi",
   "lastName": "Musterfrau",
   "password": "1234",
-  "birthday": "2002-02-18",
+  "birthday": "2006-01-05",
   "phoneNumber": "+49 173 55555"
 }
 

@@ -14,16 +14,16 @@ import { RoutePart } from '../../database/RoutePart';
 @Injectable()
 export class OfferService {
   constructor(
-      @InjectRepository(User)
-      private readonly userRepository: Repository<User>,
-      @InjectRepository(Offer)
-      private readonly offerRepository: Repository<Offer>,
-      @InjectRepository(Plz)
-      private readonly plzRepository: Repository<Plz>,
-      @InjectRepository(TransitRequest)
-      private readonly transitRequestRepository: Repository<TransitRequest>,
-      @InjectRepository(RoutePart)
-      private readonly routePartRepository: Repository<RoutePart>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Offer)
+    private readonly offerRepository: Repository<Offer>,
+    @InjectRepository(Plz)
+    private readonly plzRepository: Repository<Plz>,
+    @InjectRepository(TransitRequest)
+    private readonly transitRequestRepository: Repository<TransitRequest>,
+    @InjectRepository(RoutePart)
+    private readonly routePartRepository: Repository<RoutePart>,
   ) {}
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
@@ -55,7 +55,10 @@ export class OfferService {
     return offerDb;
   }
 
-  async checkIfPlzIsDuplicate(plz: string, location: string): Promise<Plz | null> {
+  async checkIfPlzIsDuplicate(
+    plz: string,
+    location: string,
+  ): Promise<Plz | null> {
     return await this.plzRepository.findOne({
       where: { plz, location },
       relations: ['routeParts'],
@@ -126,7 +129,10 @@ export class OfferService {
       }
 
       for (const createRoutePartDto of updateData.route) {
-        const plz = await this.createPlz(createRoutePartDto.plz, createRoutePartDto.location);
+        const plz = await this.createPlz(
+          createRoutePartDto.plz,
+          createRoutePartDto.location,
+        );
         await this.createRoutePart(offer, plz, createRoutePartDto.position);
       }
     }

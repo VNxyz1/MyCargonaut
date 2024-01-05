@@ -52,7 +52,7 @@ describe('UserService', () => {
   });
 
   it('should get user by id', async () => {
-    const user = new MockGetUser(true);
+    const user = new MockGetUser(true, true);
     user.password = '1234';
 
     const result = await userService.getUserById(1);
@@ -71,6 +71,7 @@ describe('UserService', () => {
     const resultMock: MockGetUser[] = [];
     const mockUser = new MockGetUser(true);
     mockUser.password = '1234';
+    mockUser.requestedTransits = undefined;
     resultMock.push(mockUser);
     expect(result).toEqual(resultMock);
   });

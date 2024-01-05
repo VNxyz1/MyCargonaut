@@ -15,7 +15,10 @@ export class UserService {
   ) {}
 
   async getUserById(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['offers', 'trips', 'requestedTransits'],
+    });
     if (user == null) {
       throw new NotFoundException(`No User with this Id found.`);
     }
@@ -43,11 +46,6 @@ export class UserService {
     if (updateUserDto.lastName) {
       user.lastName = updateUserDto.lastName;
     }
-    /*
-    if (updateUserDto.profilePicture) {
-      user.profilePicture = updateUserDto.profilePicture;
-    }
-    */
 
     if (updateUserDto.description) {
       user.description = updateUserDto.description;
@@ -95,6 +93,7 @@ export class UserService {
     user.coins += coins;
     await this.userRepository.save(user);
   }
+
   async decreaseCoinBalanceOfUser(id: number, coins: number) {
     const user = await this.getUserById(id);
     user.coins -= coins;

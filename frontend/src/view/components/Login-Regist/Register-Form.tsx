@@ -159,16 +159,19 @@ function RegisterForm() {
 
 
     const isOldEnough = () => {
-        const birthdate = new Date(registerData.birthday as any);
-        const currentDate = new Date();
-        const age = currentDate.getFullYear() - birthdate.getFullYear();
+        if (registerData.birthday) {
+            const birthdate = new Date(registerData.birthday);
+            const currentDate = new Date();
+            const inMilliseconds = currentDate.getTime() - birthdate.getTime();
 
-        if (age < 18) {
-            setAgeError("Du musst mindestens 18 Jahre alt sein.");
-            return false;
-        } else {
-            setAgeError(null);
-            return true;
+            const age = Math.floor(inMilliseconds / (1000 * 60 * 60 * 24 * 365.25),);
+            if (age < 18) {
+                setAgeError("Du musst mindestens 18 Jahre alt sein.");
+                return false;
+            } else {
+                setAgeError(null);
+                return true;
+            }
         }
     };
 
@@ -264,7 +267,7 @@ function RegisterForm() {
                             </InputGroup>
                             {passwordErrors &&
                                 passwordErrors.map((error, index) => (
-                                    <div key={index} >
+                                    <div key={index}>
                                         <Form.Text style={{color: 'red'}}>{error}</Form.Text>
                                     </div>
                                 ))}
@@ -296,7 +299,8 @@ function RegisterForm() {
 
                         <Form.Group className="mb-3" controlId="dataPolicyCheck">
                             <Form.Check type="checkbox" label={
-                                <span>Mit der Anmeldung bestätige ich, dass ich die <Link to="/privacy" target="_blank" rel="noopener noreferrer">Datenschutzhinweise </Link> akzeptiere und mindestens 18 Jahre alt bin. </span>
+                                <span>Mit der Anmeldung bestätige ich, dass ich die <Link to="/privacy" target="_blank"
+                                                                                          rel="noopener noreferrer">Datenschutzhinweise </Link> akzeptiere und mindestens 18 Jahre alt bin. </span>
                             } required/>
                         </Form.Group>
 

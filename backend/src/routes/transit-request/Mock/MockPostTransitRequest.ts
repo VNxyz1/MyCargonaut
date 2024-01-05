@@ -3,5 +3,5 @@ export class MockPostTransitRequest {
 
   requestedSeats: number = 1;
 
-  text: string = "Ich hab sonst nix dabei.";
+  text: string = 'Ich hab sonst nix dabei.';
 }
