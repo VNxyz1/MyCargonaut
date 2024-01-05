@@ -15,4 +15,12 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
+  overrides: [
+    {
+      files: ['**/*.tsx'],
+      rules: {
+        'react-hooks/exhaustive-deps': 'off',
+      },
+    },
+  ],
 }

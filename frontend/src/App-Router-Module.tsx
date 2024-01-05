@@ -9,8 +9,34 @@ import FooterComponent from "./view/components/FooterComponent.tsx";
 import SearchTransportPage from "./view/pages/Search-Transport-Page.tsx";
 import SearchCargoPage from "./view/pages/Search-Cargo-Page";
 import MessagesPage from "./view/pages/Messages-Page";
+import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
+import {useEffect, useState} from "react";
+import {Offer} from "./interfaces/Offer.ts";
 
 function RoutesComponent() {
+    const [offers, setOffers] = useState<Offer[]>([]);
+
+
+    useEffect(() => {
+        const getAllPublicOffers = async ()  => {
+            try {
+                const res = await fetch("/offer");
+                if (res.ok) {
+                    const data = await res.json();
+                    setOffers(data.offerList);
+                    console.log(data.offerList);
+                } else {
+                    console.error("Error fetching offers");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        getAllPublicOffers()
+            .catch(console.error);
+    }, []);
+
 
     return (
         <BrowserRouter>
@@ -24,6 +50,7 @@ function RoutesComponent() {
                 <Route path="/search-transport" element={<SearchTransportPage />} />
                 <Route path="/search-cargo" element={<SearchCargoPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/trip/:id" element={<TripDetailPage offers={offers} />} />
             </Routes>
             <FooterComponent />
         </BrowserRouter>

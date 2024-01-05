@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {AuthProvider} from './AuthContext.tsx';
 
 
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <AuthProvider>
