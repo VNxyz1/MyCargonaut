@@ -1,6 +1,9 @@
 ### Get Logged In User
 GET localhost:3000/user HTTP/2
 
+### Get other User
+GET localhost:3000/user/other/1 HTTP/2
+
 ### POST User
 POST localhost:3000/user HTTP/2
 Content-Type: application/json
