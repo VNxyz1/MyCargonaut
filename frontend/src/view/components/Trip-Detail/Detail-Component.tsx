@@ -52,7 +52,7 @@ function DetailComponent(
 
     return (
         <div className="mt-4" style={{ width: "100%" }} >
-            <div className="mb-3" style={{overflow: "hidden", height: "22rem"}}>
+            <div className="mb-3" style={{overflow: "hidden", height: "22rem", borderRadius: "0.5rem"}}>
                 <Image src={transporter} alt="placeholder img"
                        style={{width: "100%", height: "100%", objectFit: "cover"}}/>
             </div>
