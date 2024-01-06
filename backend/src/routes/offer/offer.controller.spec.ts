@@ -19,10 +19,12 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user.service/user.service';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { MockUpdateOffer } from '../offer.service/Mock/MockUpdateOffer';
-import { InternalServerErrorException } from '@nestjs/common';
+import {BadRequestException, InternalServerErrorException} from '@nestjs/common';
+import {TripState} from "../../database/TripState";
 
 describe('OfferController', () => {
   let offerController: OfferController;
+  let offerService: OfferService;
   let userController: UserController;
   let userService: UserService;
   let providerForThisTest: User;
@@ -47,6 +49,7 @@ describe('OfferController', () => {
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
+    offerService = module.get<OfferService>(OfferService);
 
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
@@ -233,6 +236,59 @@ describe('OfferController', () => {
       await expect(
         offerController.deleteOffer(session, Number(invalidOfferId)),
       ).rejects.toThrow('SQLITE_ERROR: no such column: NaN');
+    });
+  });
+
+
+  describe('set offer as booked up route', () => {
+    it('should reject the request', async () => {
+      runTestAsProvider();
+      await postNewOffer();
+
+      runTestAsClient();
+      const offerId = 3;
+
+      await expect(offerController.setOfferAsBookedUp(session, offerId))
+          .rejects
+          .toThrow(new BadRequestException('You are not the Provider of this Offer!'))
+    });
+
+    it('should set the offer as booked up', async () => {
+      runTestAsProvider();
+
+      const offerId = 3;
+
+      await expect(offerController.setOfferAsBookedUp(session, offerId))
+          .resolves
+          .toEqual(new OKResponseWithMessageDTO(true, 'Offer is set as booked up'));
+
+      const offer = await offerService.getOffer(offerId);
+      expect(offer.state).toBe(TripState.bookedUp);
+    });
+  });
+
+
+  describe('reopen offer route', () => {
+    it('should reject the request', async () => {
+      runTestAsClient();
+      const offerId = 3;
+
+      await expect(offerController.reopenOffer(session, offerId))
+          .rejects
+          .toThrow(new BadRequestException('You are not the Provider of this Offer!'))
+    });
+
+    it('should reopen the offer', async () => {
+      runTestAsProvider();
+
+      const offerId = 3;
+
+      await expect(offerController.reopenOffer(session, offerId))
+          .resolves
+          .toEqual(new OKResponseWithMessageDTO(true, 'Offer is reopened'));
+
+      const offer = await offerService.getOffer(offerId);
+      expect(offer.state).toBe(TripState.offer);
     });
   });
 

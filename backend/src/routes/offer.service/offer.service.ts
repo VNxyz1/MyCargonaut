@@ -160,6 +160,13 @@ export class OfferService {
     await this.offerRepository.remove(offer);
   }
 
+  async saveOffer(offer: Offer) {
+    const updatedOffer = await this.offerRepository.save(offer);
+    if (!updatedOffer) {
+      throw new InternalServerErrorException("The offer could not be saved.")
+    }
+  }
+
   private async createRoutePart(offer: Offer, plz: Plz, position: number) {
     const routePart = new RoutePart();
     routePart.plz = plz;

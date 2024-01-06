@@ -22,6 +22,7 @@ import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 import { UpdateOfferRequestDto } from './DTOs/UpdateOfferRequestDto';
 import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
 import { User } from '../../database/User';
+import {TripState} from "../../database/TripState";
 
 @ApiTags('offer')
 @Controller('offer')
@@ -129,6 +130,54 @@ export class OfferController {
     await this.offerService.deleteOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Offer Deleted');
   }
+
+  @Put('booked-up/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary:
+        'Sets the selected Offer as "booked up". Only if the Logged in User is the Provider',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async setOfferAsBookedUp(
+      @Session() session: ISession,
+      @Param('id', ParseIntPipe) offerId: number,
+  ) {
+    const userId = session.userData.id;
+    const offer = await this.offerService.getOffer(offerId);
+    if (offer.provider.id !== userId) {
+      throw new BadRequestException('You are not the Provider of this Offer!');
+    }
+
+    offer.state = TripState.bookedUp;
+
+    await this.offerService.saveOffer(offer);
+    return new OKResponseWithMessageDTO(true, 'Offer is set as booked up');
+  }
+
+
+  @Put('reopen/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary:
+        'Reopens the selected offer. Only if the Logged in User is the Provider',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async reopenOffer(
+      @Session() session: ISession,
+      @Param('id', ParseIntPipe) offerId: number,
+  ) {
+    const userId = session.userData.id;
+    const offer = await this.offerService.getOffer(offerId);
+    if (offer.provider.id !== userId) {
+      throw new BadRequestException('You are not the Provider of this Offer!');
+    }
+
+    offer.state = TripState.offer;
+
+    await this.offerService.saveOffer(offer);
+    return new OKResponseWithMessageDTO(true, 'Offer is reopened');
+  }
+
 
   userHasProfilePicAndPhoneNumber(user: User) {
     let bothExisting: boolean;
