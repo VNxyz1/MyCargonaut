@@ -34,17 +34,17 @@ Content-Type: application/json
 {
   "route": [
     {
-      "plz": 63673,
+      "plz": "63673",
       "location": "Nidda",
       "position": 1
     },
     {
-      "plz": 63679,
+      "plz": "63679",
       "location": "Nidda",
       "position": 2
     },
     {
-      "plz": 30390,
+      "plz": "30390",
       "location": "Gießen",
       "position": 3
     }
@@ -67,3 +67,6 @@ GET localhost:3000/offer/own HTTP/2
 ### Delete offer
 DELETE localhost:3000/offer/delete/2 HTTP/2
 
+
+### Test Search
+GET localhost:3000/offer/search?search=gießen&fromPLZ=31234&toPLZ=65678&seats=2&date=2020-12-12&rating=4

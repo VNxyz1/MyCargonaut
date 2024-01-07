@@ -68,7 +68,11 @@ export class OfferService {
   async getOffers(searchFor?: string) {
     if (searchFor) {
       return await this.offerRepository.find({
-        where: { description: Like(`%${searchFor}%`) },
+        where: [
+          { description: Like(`%${searchFor}%`) },
+          { route: { plz: { location: Like(`%${searchFor}%`) } } },
+          { route: { plz: { plz: Like(`%${searchFor}%`) } } },
+        ],
         relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
       });
     }
@@ -154,6 +158,13 @@ export class OfferService {
     }
 
     await this.offerRepository.remove(offer);
+  }
+
+  async saveOffer(offer: Offer) {
+    const updatedOffer = await this.offerRepository.save(offer);
+    if (!updatedOffer) {
+      throw new InternalServerErrorException('The offer could not be saved.');
+    }
   }
 
   private async createRoutePart(offer: Offer, plz: Plz, position: number) {
