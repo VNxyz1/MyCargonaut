@@ -32,31 +32,7 @@ describe('OfferController', () => {
   let session: ISession = new MockSession(true);
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.offer.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
-      ],
-      controllers: [UserController, AuthController, OfferController],
-      providers: [UserService, AuthService, OfferService],
-    }).compile();
-
-    userController = module.get<UserController>(UserController);
-    userService = module.get<UserService>(UserService);
-    offerController = module.get<OfferController>(OfferController);
-    offerService = module.get<OfferService>(OfferService);
-
-    // create users for testing
-    await userController.postUser(new MockCreateUser(true, 0));
-    providerForThisTest = await userService.getUserById(1);
-
-    await userController.postUser(new MockCreateUser(false, 1));
-    userForThisTest = await userService.getUserById(2);
+    await setup();
   });
 
   it('should be defined', () => {
@@ -111,49 +87,8 @@ describe('OfferController', () => {
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
-
-    it('should get offers that contain "Schotten" as location of a routePath', async () => {
-      runTestAsClient();
-      const result = await offerController.getFilteredOffers('Schotten');
-      const filtered = result.offerList[0].route.find(
-        (rP) => rP.plz.location === 'Schotten',
-      );
-
-      expect(result.offerList).toBeDefined();
-      expect(filtered.plz.location).toBe('Schotten');
-    });
-
-    it('should get offers that contain "63679" as plz of a routePath', async () => {
-      runTestAsClient();
-      const result = await offerController.getFilteredOffers('63679');
-      const filtered = result.offerList[0].route.find(
-        (rP) => rP.plz.plz === '63679',
-      );
-
-      expect(result.offerList).toBeDefined();
-      expect(filtered.plz.plz).toBe('63679');
-    });
   });
 
-  describe('get filtered offers route', () => {
-    it('should get filtered offers', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'test';
-      const result = await offerController.getFilteredOffers(searchString);
-      expect(result.offerList).toBeDefined();
-      expect(
-        result.offerList[0].description.toLowerCase().includes(searchString),
-      ).toBe(true);
-    });
-
-    it('should return an empty list when no matching offers are found', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'nonexistent';
-      const result = await offerController.getFilteredOffers(searchString);
-      expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(0);
-    });
-  });
 
   describe('update properties route', () => {
     it('should update the selected offer', async () => {
@@ -292,12 +227,99 @@ describe('OfferController', () => {
     });
   });
 
-  afterAll(async () => {
-    fs.unlink('./db/tmp.tester.offer.controller.sqlite', (err) => {
-      if (err) {
-        throw err;
-      }
+
+  describe('get filtered offers route', () => {
+
+
+    it('should get filtered offers', async () => {
+
+      await deleteDbMock();
+      await setup();
+      runTestAsProvider();
+      await postNewOffer(true);
+      await postNewOffer();
+
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const result = await offerController.getFilteredOffers(searchString, "63679", "64002");
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(1);
+      expect(
+          result.offerList[0].description.toLowerCase().includes(searchString),
+      ).toBe(true);
     });
+
+
+    it('should return an empty list', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const result = await offerController.getFilteredOffers(undefined, "35390", "64002");
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+
+    it('should get filtered offers v2', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const result = await offerController.getFilteredOffers(undefined, "64002", "63679");
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(1);
+    });
+
+    it('should return an empty list', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const result = await offerController.getFilteredOffers(undefined, "64002", "64002");
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+
+    /*
+    it('should get filtered offers', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const result = await offerController.getFilteredOffers(searchString);
+      expect(result.offerList).toBeDefined();
+      expect(
+        result.offerList[0].description.toLowerCase().includes(searchString),
+      ).toBe(true);
+    });
+
+    it('should return an empty list when no matching offers are found', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'nonexistent';
+      const result = await offerController.getFilteredOffers(searchString);
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+
+
+    it('should get offers that contain "Schotten" as location of a routePath', async () => {
+      runTestAsClient();
+      const result = await offerController.getFilteredOffers('Schotten');
+      const filtered = result.offerList[0].route.find(
+          (rP) => rP.plz.location === 'Schotten',
+      );
+
+      expect(result.offerList).toBeDefined();
+      expect(filtered.plz.location).toBe('Schotten');
+    });
+
+    it('should get offers that contain "63679" as plz of a routePath', async () => {
+      runTestAsClient();
+      const result = await offerController.getFilteredOffers('63679');
+      const filtered = result.offerList[0].route.find(
+          (rP) => rP.plz.plz === '63679',
+      );
+
+      expect(result.offerList).toBeDefined();
+      expect(filtered.plz.plz).toBe('63679');
+    });
+     */
+  });
+
+  afterAll(async () => {
+    await deleteDbMock();
   });
 
   const runTestAsProvider = () => {
@@ -314,8 +336,50 @@ describe('OfferController', () => {
     session = new MockSession();
   };
 
-  const postNewOffer = async () => {
-    const createOfferDto = new MockPostOffer();
+  const postNewOffer = async (alt?: boolean) => {
+    let createOfferDto: MockPostOffer;
+    if(alt) {
+      createOfferDto = new MockPostOffer(alt);
+    } else {
+      createOfferDto = new MockPostOffer();
+    }
     return await offerController.postUser(createOfferDto, session);
   };
+
+
+  const setup = async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'sqlite',
+          database: './db/tmp.tester.offer.controller.sqlite',
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          synchronize: true,
+        }),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+      ],
+      controllers: [UserController, AuthController, OfferController],
+      providers: [UserService, AuthService, OfferService],
+    }).compile();
+
+    userController = module.get<UserController>(UserController);
+    userService = module.get<UserService>(UserService);
+    offerController = module.get<OfferController>(OfferController);
+    offerService = module.get<OfferService>(OfferService);
+
+    // create users for testing
+    await userController.postUser(new MockCreateUser(true, 0));
+    providerForThisTest = await userService.getUserById(1);
+
+    await userController.postUser(new MockCreateUser(false, 1));
+    userForThisTest = await userService.getUserById(2);
+  }
+
+  const deleteDbMock = async () => {
+    fs.unlink('./db/tmp.tester.offer.controller.sqlite', (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+  }
 });

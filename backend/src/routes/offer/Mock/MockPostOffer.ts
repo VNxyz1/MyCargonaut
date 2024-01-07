@@ -20,4 +20,27 @@ export class MockPostOffer {
   description = 'Das ist ein Test!';
   startDate = '2024-02-18';
   bookedSeats = 1;
+
+
+  constructor(alt?: boolean) {
+    if (alt) {
+      this.route = [
+        {
+          plz: '63679',
+          location: 'Schotten',
+          position: 3,
+        },
+        {
+          plz: '64002',
+          location: 'Nidda',
+          position: 1,
+        },
+        {
+          plz: '35390',
+          location: 'Gießen',
+          position: 2,
+        },
+      ]
+    }
+  }
 }
