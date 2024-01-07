@@ -163,7 +163,7 @@ export class OfferService {
   async saveOffer(offer: Offer) {
     const updatedOffer = await this.offerRepository.save(offer);
     if (!updatedOffer) {
-      throw new InternalServerErrorException("The offer could not be saved.")
+      throw new InternalServerErrorException('The offer could not be saved.');
     }
   }
 

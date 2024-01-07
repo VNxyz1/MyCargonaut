@@ -19,8 +19,11 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user.service/user.service';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { MockUpdateOffer } from '../offer.service/Mock/MockUpdateOffer';
-import {BadRequestException, InternalServerErrorException} from '@nestjs/common';
-import {TripState} from "../../database/TripState";
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { TripState } from '../../database/TripState';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -88,7 +91,6 @@ describe('OfferController', () => {
       expect(result.offerList.length).toBe(0);
     });
   });
-
 
   describe('update properties route', () => {
     it('should update the selected offer', async () => {
@@ -174,7 +176,6 @@ describe('OfferController', () => {
     });
   });
 
-
   describe('set offer as booked up route', () => {
     it('should reject the request', async () => {
       runTestAsProvider();
@@ -183,9 +184,11 @@ describe('OfferController', () => {
       runTestAsClient();
       const offerId = 3;
 
-      await expect(offerController.setOfferAsBookedUp(session, offerId))
-          .rejects
-          .toThrow(new BadRequestException('You are not the Provider of this Offer!'))
+      await expect(
+        offerController.setOfferAsBookedUp(session, offerId),
+      ).rejects.toThrow(
+        new BadRequestException('You are not the Provider of this Offer!'),
+      );
     });
 
     it('should set the offer as booked up', async () => {
@@ -193,24 +196,27 @@ describe('OfferController', () => {
 
       const offerId = 3;
 
-      await expect(offerController.setOfferAsBookedUp(session, offerId))
-          .resolves
-          .toEqual(new OKResponseWithMessageDTO(true, 'Offer is set as booked up'));
+      await expect(
+        offerController.setOfferAsBookedUp(session, offerId),
+      ).resolves.toEqual(
+        new OKResponseWithMessageDTO(true, 'Offer is set as booked up'),
+      );
 
       const offer = await offerService.getOffer(offerId);
       expect(offer.state).toBe(TripState.bookedUp);
     });
   });
 
-
   describe('reopen offer route', () => {
     it('should reject the request', async () => {
       runTestAsClient();
       const offerId = 3;
 
-      await expect(offerController.reopenOffer(session, offerId))
-          .rejects
-          .toThrow(new BadRequestException('You are not the Provider of this Offer!'))
+      await expect(
+        offerController.reopenOffer(session, offerId),
+      ).rejects.toThrow(
+        new BadRequestException('You are not the Provider of this Offer!'),
+      );
     });
 
     it('should reopen the offer', async () => {
@@ -218,21 +224,19 @@ describe('OfferController', () => {
 
       const offerId = 3;
 
-      await expect(offerController.reopenOffer(session, offerId))
-          .resolves
-          .toEqual(new OKResponseWithMessageDTO(true, 'Offer is reopened'));
+      await expect(
+        offerController.reopenOffer(session, offerId),
+      ).resolves.toEqual(
+        new OKResponseWithMessageDTO(true, 'Offer is reopened'),
+      );
 
       const offer = await offerService.getOffer(offerId);
       expect(offer.state).toBe(TripState.offer);
     });
   });
 
-
   describe('get filtered offers route', () => {
-
-
     it('should get filtered offers', async () => {
-
       await deleteDbMock();
       await setup();
       runTestAsProvider();
@@ -241,81 +245,103 @@ describe('OfferController', () => {
 
       runTestAsLoggedOutUser();
       const searchString = 'test';
-      const result = await offerController.getFilteredOffers(searchString, "63679", "64002");
+      const result = await offerController.getFilteredOffers(
+        searchString,
+        '63679',
+        '64002',
+      );
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
-      expect(
-          result.offerList[0].description.toLowerCase().includes(searchString),
-      ).toBe(true);
-    });
-
-
-    it('should return an empty list', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'test';
-      const result = await offerController.getFilteredOffers(undefined, "35390", "64002");
-      expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(0);
-    });
-
-    it('should get filtered offers v2', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'test';
-      const result = await offerController.getFilteredOffers(undefined, "64002", "63679");
-      expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(1);
-    });
-
-    it('should return an empty list', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'test';
-      const result = await offerController.getFilteredOffers(undefined, "64002", "64002");
-      expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(0);
-    });
-
-    /*
-    it('should get filtered offers', async () => {
-      runTestAsLoggedOutUser();
-      const searchString = 'test';
-      const result = await offerController.getFilteredOffers(searchString);
-      expect(result.offerList).toBeDefined();
       expect(
         result.offerList[0].description.toLowerCase().includes(searchString),
       ).toBe(true);
     });
 
-    it('should return an empty list when no matching offers are found', async () => {
+    it('should return an empty list, because there is no connection between the two plz', async () => {
       runTestAsLoggedOutUser();
-      const searchString = 'nonexistent';
-      const result = await offerController.getFilteredOffers(searchString);
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        '35390',
+        '64002',
+      );
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
 
-
-    it('should get offers that contain "Schotten" as location of a routePath', async () => {
-      runTestAsClient();
-      const result = await offerController.getFilteredOffers('Schotten');
-      const filtered = result.offerList[0].route.find(
-          (rP) => rP.plz.location === 'Schotten',
+    it('should get filtered offers by route v2', async () => {
+      runTestAsLoggedOutUser();
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        '64002',
+        '63679',
       );
-
       expect(result.offerList).toBeDefined();
-      expect(filtered.plz.location).toBe('Schotten');
+      expect(result.offerList.length).toBe(1);
     });
 
-    it('should get offers that contain "63679" as plz of a routePath', async () => {
-      runTestAsClient();
-      const result = await offerController.getFilteredOffers('63679');
-      const filtered = result.offerList[0].route.find(
-          (rP) => rP.plz.plz === '63679',
+    it('should return an empty list, because there is no connection between the two plz', async () => {
+      runTestAsLoggedOutUser();
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        '64002',
+        '64002',
       );
-
       expect(result.offerList).toBeDefined();
-      expect(filtered.plz.plz).toBe('63679');
+      expect(result.offerList.length).toBe(0);
     });
-     */
+
+    it('should get two offers, filtered by date', async () => {
+      runTestAsLoggedOutUser();
+      const date = '2024-02-01';
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        date,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(2);
+      //is the list sorted:
+      expect(result.offerList[0].startDate.getTime()).toBeLessThanOrEqual(
+        result.offerList[1].startDate.getTime(),
+      );
+    });
+
+    it('should get one offer, filtered by date', async () => {
+      runTestAsLoggedOutUser();
+      const date = '2024-02-18';
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        date,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(1);
+    });
+
+    it('should get filtered offers with search string, route, and date', async () => {
+      runTestAsLoggedOutUser();
+      const searchString = 'test';
+      const date = '2024-01-01';
+      const result = await offerController.getFilteredOffers(
+        searchString,
+        '64002',
+        '63679',
+        undefined,
+        date,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(1);
+      expect(
+        result.offerList[0].description.toLowerCase().includes(searchString),
+      );
+      expect(result.offerList[0].startDate.getTime()).toBeGreaterThanOrEqual(
+        new Date(date).getTime(),
+      );
+    });
   });
 
   afterAll(async () => {
@@ -338,14 +364,13 @@ describe('OfferController', () => {
 
   const postNewOffer = async (alt?: boolean) => {
     let createOfferDto: MockPostOffer;
-    if(alt) {
+    if (alt) {
       createOfferDto = new MockPostOffer(alt);
     } else {
       createOfferDto = new MockPostOffer();
     }
     return await offerController.postUser(createOfferDto, session);
   };
-
 
   const setup = async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -373,7 +398,7 @@ describe('OfferController', () => {
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
-  }
+  };
 
   const deleteDbMock = async () => {
     fs.unlink('./db/tmp.tester.offer.controller.sqlite', (err) => {
@@ -381,5 +406,5 @@ describe('OfferController', () => {
         throw err;
       }
     });
-  }
+  };
 });

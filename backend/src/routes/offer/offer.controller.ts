@@ -13,18 +13,18 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {OfferService} from '../offer.service/offer.service';
-import {OKResponseWithMessageDTO} from '../../generalDTOs/OKResponseWithMessageDTO';
-import {CreateOfferDto} from './DTOs/CreateOfferDto';
-import {ISession} from '../../utils/ISession';
-import {IsLoggedInGuard} from '../../guards/auth/is-logged-in.guard';
-import {GetAllOffersResponseDto} from './DTOs/GetAllOffersResponseDto';
-import {UpdateOfferRequestDto} from './DTOs/UpdateOfferRequestDto';
-import {convertOfferToGetOfferDto} from '../utils/convertToOfferDto';
-import {User} from '../../database/User';
-import {TripState} from "../../database/TripState";
-import {Offer} from "../../database/Offer";
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OfferService } from '../offer.service/offer.service';
+import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
+import { CreateOfferDto } from './DTOs/CreateOfferDto';
+import { ISession } from '../../utils/ISession';
+import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
+import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
+import { UpdateOfferRequestDto } from './DTOs/UpdateOfferRequestDto';
+import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
+import { User } from '../../database/User';
+import { TripState } from '../../database/TripState';
+import { Offer } from '../../database/Offer';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -82,12 +82,12 @@ export class OfferController {
   })
   @ApiResponse({ type: GetAllOffersResponseDto })
   async getFilteredOffers(
-      @Query('search') searchString?: string,
-      @Query('fromPLZ') fromPLZ?: string,
-      @Query('toPLZ') toPLZ?: string,
-      @Query('seats', ParseIntPipe) seats?: number,
-      @Query('date') date?: string,
-      @Query('rating', ParseIntPipe) rating?: number,
+    @Query('search') searchString?: string,
+    @Query('fromPLZ') fromPLZ?: string,
+    @Query('toPLZ') toPLZ?: string,
+    @Query('seats', ParseIntPipe) seats?: number,
+    @Query('date') date?: string,
+    @Query('rating', ParseIntPipe) rating?: number,
   ) {
     let offerList: Offer[];
 
@@ -102,12 +102,12 @@ export class OfferController {
     }
 
     if (rating) {
-      offerList = this.filterOffersByRating(rating, offerList)
+      offerList = this.filterOffersByRating(rating, offerList);
     }
 
     if (date) {
-      const formattedDate = new Date(date)
-      offerList = this.filterAndSortByDate(formattedDate, offerList)
+      const formattedDate = new Date(date);
+      offerList = this.filterAndSortByDate(formattedDate, offerList);
     }
 
     if (fromPLZ && toPLZ) {
@@ -168,12 +168,12 @@ export class OfferController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary:
-        'Sets the selected Offer as "booked up". Only if the Logged in User is the Provider',
+      'Sets the selected Offer as "booked up". Only if the Logged in User is the Provider',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async setOfferAsBookedUp(
-      @Session() session: ISession,
-      @Param('id', ParseIntPipe) offerId: number,
+    @Session() session: ISession,
+    @Param('id', ParseIntPipe) offerId: number,
   ) {
     const userId = session.userData.id;
     const offer = await this.offerService.getOffer(offerId);
@@ -187,17 +187,16 @@ export class OfferController {
     return new OKResponseWithMessageDTO(true, 'Offer is set as booked up');
   }
 
-
   @Put('reopen/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary:
-        'Reopens the selected offer. Only if the Logged in User is the Provider',
+      'Reopens the selected offer. Only if the Logged in User is the Provider',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async reopenOffer(
-      @Session() session: ISession,
-      @Param('id', ParseIntPipe) offerId: number,
+    @Session() session: ISession,
+    @Param('id', ParseIntPipe) offerId: number,
   ) {
     const userId = session.userData.id;
     const offer = await this.offerService.getOffer(offerId);
@@ -210,7 +209,6 @@ export class OfferController {
     await this.offerService.saveOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Offer is reopened');
   }
-
 
   userHasProfilePicAndPhoneNumber(user: User) {
     let bothExisting: boolean;
@@ -256,23 +254,23 @@ export class OfferController {
   }
 
   filterOffersBySeats(seats: number, offers: Offer[]): Offer[] {
-    return offers.filter((o)=> {
-      return o.bookedSeats /* TODO: muss mit den sitzen des fahrzeugs verrechnet werden */ === seats
-    })
+    return offers.filter((o) => {
+      return (
+        o.bookedSeats /* TODO: muss mit den sitzen des fahrzeugs verrechnet werden */ ===
+        seats
+      );
+    });
   }
 
   filterOffersByRating(rating: number, offers: Offer[]): Offer[] {
-    return offers.filter((o)=> {
+    return offers.filter((o) => {
       /* TODO: implement logic */
-    })
+    });
   }
 
-
-
-  //TODO: test this function
   filterAndSortByDate(date: Date, offers: Offer[]) {
     const filteredOffers = offers.filter((o) => {
-      return o.startDate <= date;
+      return o.startDate >= date;
     });
 
     filteredOffers.sort((a, b) => {
@@ -283,6 +281,4 @@ export class OfferController {
 
     return filteredOffers;
   }
-
-
 }

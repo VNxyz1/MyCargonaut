@@ -21,7 +21,6 @@ export class MockPostOffer {
   startDate = '2024-02-18';
   bookedSeats = 1;
 
-
   constructor(alt?: boolean) {
     if (alt) {
       this.route = [
@@ -40,7 +39,8 @@ export class MockPostOffer {
           location: 'Gießen',
           position: 2,
         },
-      ]
+      ];
+      this.startDate = '2024-02-17';
     }
   }
 }
