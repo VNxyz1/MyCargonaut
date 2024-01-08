@@ -9,6 +9,7 @@ import {
 import { User } from './User';
 import { TransitRequest } from './TransitRequest';
 import { RoutePart } from './RoutePart';
+import { Rating } from './Rating';
 
 @Entity()
 export class Offer {
@@ -50,4 +51,7 @@ export class Offer {
     eager: true,
   })
   transitRequests: TransitRequest[];
+
+  @OneToMany(() => Rating, (rating) => rating.trip)
+  ratings: Rating[];
 }
