@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Logo from "../../assets/img/Logo.png";
 import { Link } from "react-router-dom";
-import { useAuth } from '../../AuthContext';
+import { useAuth } from '../../services/authService';
 import {useEffect, useState} from "react";
 
 function NavigationComponent() {

@@ -2,7 +2,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {useState} from "react";
-import {useAuth} from '../../../AuthContext';
+import {useAuth} from '../../../services/authService';
 import {useNavigate} from 'react-router-dom';
 
 interface LoginDataProps {

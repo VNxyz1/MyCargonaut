@@ -2,81 +2,55 @@ import React, {useState, useEffect} from 'react';
 import {Modal, ModalProps} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {useAuth} from "../../../AuthContext";
+import {useAuth} from "../../../services/authService";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import {User} from "../../../models/User";
+import { updateUser } from "../../../services/userService";
 
 interface ProfileEditModalComponentProps extends ModalProps {
     onHide: () => void;
+    userData: User | null;
 }
 
 const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (props) => {
     const {isAuthenticated} = useAuth();
-    const [formData, setFormData] = useState({
-        birthday: undefined,
+    const [formData, setFormData] = useState<User>({
         firstName: '',
         lastName: '',
+        birthday: new Date(),
         phoneNumber: '',
         description: '',
     });
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const res = await fetch("/user", {
-                    method: "GET",
-                    headers: {},
-                });
-                if (res.ok) {
-                    const userData = await res.json();
-                    setFormData((prevFormData) => ({
-                        ...prevFormData,
-                        ...userData,
-                    }));
-                } else {
-                    console.error("Error fetching user data");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-
-        if (isAuthenticated) {
-            fetchUserData();
+        if (isAuthenticated && props.userData) {
+            setFormData({
+                firstName: props.userData.firstName || '',
+                lastName: props.userData.lastName || '',
+                birthday: props.userData.birthday || new Date(),
+                phoneNumber: props.userData.phoneNumber || '',
+                description: props.userData.description || '',
+            });
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, props.userData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setFormData((prevData) => ({...prevData, [name]: value}));
     };
 
+    //TODO Ü18 Prüfung
     const handleSubmit = async (event: any) => {
         event.preventDefault();
-        const res = await editUser();
-        console.log(res);
-    }
+        const res = await updateUser(formData);
 
-    const editUser = async () => {
-        try {
-            const response = await fetch("/user", {
-                method: "PUT",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify(formData),
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                console.log('User update failed:', data);
-            } else {
-                const data = await response.json();
-                console.log('User updated successfully:', data);
-            }
-        } catch (error) {
-            console.error("Error:", error);
+        if (res.success) {
+            props.onHide();
+        } else {
+            console.error("Error updating user:", res.error);
         }
-    }
+    };
 
     return (
         <Modal
@@ -152,8 +126,6 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                 </Form>
             </Modal.Body>
         </Modal>
-
-
     );
 };
 

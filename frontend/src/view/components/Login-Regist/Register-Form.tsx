@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../../AuthContext";
+import {useAuth} from "../../../services/authService";
 
 interface RegisterDataProps {
     eMail: string;

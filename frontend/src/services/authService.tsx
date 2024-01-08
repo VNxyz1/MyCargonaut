@@ -7,7 +7,7 @@ type AuthContextType = {
     checkLoginStatus: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthService = createContext<AuthContextType | undefined>(undefined);
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -43,7 +43,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const logout = () => {
         setIsAuthenticated(false);
-        setIsAuthenticated(false);
         localStorage.removeItem('isAuthenticated');
     };
 
@@ -61,14 +60,14 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
     return (
-        <AuthContext.Provider value={contextValue}>
+        <AuthService.Provider value={contextValue}>
             {children}
-        </AuthContext.Provider>
+        </AuthService.Provider>
     );
 };
 
 const useAuth = () => {
-    const context = useContext(AuthContext);
+    const context = useContext(AuthService);
     if (!context) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
@@ -76,3 +75,23 @@ const useAuth = () => {
 };
 
 export { AuthProvider, useAuth };
+
+/*-----Routen-----*/
+export const logoutUser = async (): Promise<boolean> => {
+    try {
+        const res = await fetch("/auth/logout", {
+            method: "POST",
+            headers: { "Content-type": "application/json" },
+        });
+
+        if (res.ok) {
+            return true;
+        } else {
+            console.error("Logout failed.");
+            return false;
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return false;
+    }
+};
