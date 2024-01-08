@@ -17,6 +17,7 @@ import {useNavigate} from "react-router-dom";
 import {Image, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import ProfileEditModalComponent from "../components/Profile/ProfileEditModalComponent";
 
 function ProfilPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
@@ -127,6 +128,7 @@ function ProfilPage() {
 
     const handleCloseEditImageModal = () => {
         setShowEditImageModal(false);
+        getLoggedInUser();
     };
 
     const handleUploadImage = async () => {
@@ -235,7 +237,10 @@ function ProfilPage() {
         <>
             <Container className="content-container">
                 <Row>
+
                     <Col sm={4} id="prof-sidebar">
+                    <div>
+
                         <img
                             src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
                             alt="User profile image"
@@ -251,22 +256,40 @@ function ProfilPage() {
                         {userData && (
                             <>
                                 <p>{(userData as any).firstName} {(userData as any).lastName}</p>
+                                <p className="prof-lable">E-Mail</p>
+                                <p>{(userData as any).eMail}</p>
+                                <p className="prof-lable">Handynummer</p>
+                                <p>{(userData as any).phoneNumber}</p>
+                                <p className="prof-lable">Coins</p>
                                 <p>{(userData as any).coins} Coins</p>
+                                <p className="prof-lable">Alter</p>
                                 <p>{userAge} Jahre alt</p>
+
+                                <p className="prof-lable">Beschreibung</p>
                                 <p>{(userData as any).description.length > 0 ? (userData as any).description : 'Keine Beschreibung vorhanden'}</p>
-                                <p>Mitglied seit: {formattedEntryDate}</p>
+                                <p className="prof-lable">Mitglied seit</p>
+                                <p>{formattedEntryDate}</p>
                             </>
                         )}
-
+                        <span className="section-seperator"></span>
+                        <p>Bewertungen</p>
                         <p style={{color: '#aeaeae'}}>4,7 40 Ratings (statisch - nicht implementiert)</p>
                         <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
 
                         <div className="prof-side-btn-wrapper">
+                            <span className="section-seperator"></span>
+
                             <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
                             <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
                             <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
+
+                            <span className="section-seperator"></span>
+
                             <span onClick={openProfileEditModal}><i className="icon-gear"></i> Profil bearbeiten</span>
                             <span onClick={handleShowDeleteProfileModal}><i className="icon-trash"></i> Profil löschen</span>
+
+                            <span className="section-seperator"></span>
+
                             <span onClick={handleLogout}> <i className="icon-arrow-right-from-bracket"></i> Logout</span>
                         </div>
 
@@ -314,26 +337,39 @@ function ProfilPage() {
                                 <Button variant="secondary" onClick={handleCloseDeleteProfileModal}> Abbrechen </Button>
                             </Modal.Footer>
                         </Modal>
-
+                    </div>
 
                     </Col>
 
                     <Col sm={8} id="prof-content">
                         <div className="profil_navi">
-                            <span onClick={() => setCurrentSection("Meine Fahrten")} className={currentSection === "Meine Fahrten" ? "active" : ""}> Meine Fahrten </span>
-                            <span onClick={() => setCurrentSection("Meine Transporte")} className={currentSection === "Meine Transporte" ? "active" : ""}> Meine Transporte </span>
-                            <span onClick={() => setCurrentSection("Meine Fahrzeuge")} className={currentSection === "Meine Fahrzeuge" ? "active" : ""}> Meine Fahrzeuge </span>
-                            <span onClick={() => setCurrentSection("Bewertungen")} className={currentSection === "Bewertungen" ? "active" : ""}> Bewertungen </span>
+                            <span onClick={() => setCurrentSection("Meine Fahrten")} className={`prof-tab ${currentSection === "Meine Fahrten" ? "active" : ""}`}> Meine Fahrten </span>
+                            <span onClick={() => setCurrentSection("Meine Transporte")} className={`prof-tab ${currentSection === "Meine Transporte" ? "active" : ""}`}> Meine Transporte </span>
+                            <span onClick={() => setCurrentSection("Meine Fahrzeuge")} className={`prof-tab ${currentSection === "Meine Fahrzeuge" ? "active" : ""}`}> Meine Fahrzeuge </span>
+                            <span onClick={() => setCurrentSection("Bewertungen")} className={`prof-tab ${currentSection === "Bewertungen" ? "active" : ""}`}> Bewertungen </span>
                         </div>
 
                         {renderSectionContent()}
 
                     </Col>
+
                 </Row>
             </Container>
 
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
-            <ProfileEditModal show={showProfileEditModal} onHide={() => setShowProfileEditModal(false)}/>
+            <ProfileEditModal show={showProfileEditModal} userData={userData} onHide={() => setShowProfileEditModal(false)}/>
+
+            <ProfileEditModalComponent
+                show={showProfileEditModal}
+                onHide={() => {
+                    setShowProfileEditModal(false);
+                    getLoggedInUser();
+                }}
+                userData={userData} // Übergeben der Benutzerdaten
+            />
+
+
+
 
         </>
     );
