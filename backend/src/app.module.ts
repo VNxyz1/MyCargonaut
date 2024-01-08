@@ -16,6 +16,7 @@ import { TransitRequestService } from './routes/transit-request.service/transit-
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { RoutePart } from './database/RoutePart';
+import { Rating } from './database/Rating';
 
 @Module({
   imports: [
@@ -28,10 +29,10 @@ import { RoutePart } from './database/RoutePart';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: './db/tmp.sqlite',
-      entities: [User, Offer, Plz, TransitRequest, RoutePart],
+      entities: [User, Offer, Plz, TransitRequest, RoutePart, Rating],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+    TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart, Rating]),
   ],
   controllers: [
     UserController,
