@@ -9,8 +9,12 @@ import { AuthService } from '../auth.service/auth.service';
 import { LogInRequestDto } from './DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UserController } from '../user/user.controller';
-import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
+import { Offer } from '../../database/Offer';
+import { Plz } from '../../database/Plz';
+import { TransitRequest } from '../../database/TransitRequest';
+import { RoutePart } from '../../database/RoutePart';
+import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 
 describe('AuthController', () => {
   let userController: UserController;
@@ -30,19 +34,22 @@ describe('AuthController', () => {
       coins: 0,
       description: '',
       entryDate: undefined,
+      offers: [],
+      trips: [],
+      requestedTransits: [],
     },
   };
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.auth.controller.sqlite',
-          entities: [User],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User]),
+        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService],
@@ -54,7 +61,7 @@ describe('AuthController', () => {
     await postTempUser();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     fs.unlink('./db/tmp.tester.auth.controller.sqlite', (err) => {
       if (err) {
         throw err;
@@ -74,7 +81,7 @@ describe('AuthController', () => {
 
     const loginDTO = new LogInRequestDto();
     loginDTO.eMail = userForThisTest.eMail;
-    loginDTO.password = userForThisTest.password;
+    loginDTO.password = '1234';
 
     const result = await authController.login(session, loginDTO);
 
@@ -111,14 +118,7 @@ describe('AuthController', () => {
   });
 
   async function postTempUser() {
-    const user = new CreateUserRequestDto();
-    user.eMail = 'testerAuth@test.com';
-    user.firstName = 'Max';
-    user.lastName = 'Mustermann';
-    user.profilePicture = '/profile-pictures/12341.png';
-    user.password = '1234';
-    user.phoneNumber = '+49 173 55555';
-    user.birthday = new Date('2002-02-18');
+    const user = new MockCreateUser();
 
     await userController.postUser(user);
 
@@ -128,7 +128,7 @@ describe('AuthController', () => {
   async function logInTheTempUser() {
     const loginDTO = new LogInRequestDto();
     loginDTO.eMail = userForThisTest.eMail;
-    loginDTO.password = userForThisTest.password;
+    loginDTO.password = '1234';
     await authController.login(session, loginDTO);
   }
 });

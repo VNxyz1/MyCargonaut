@@ -17,7 +17,6 @@ function LoginForm() {
     const [loginData, setLoginData] = useState<LoginDataProps>({eMail: "", password: ""});
 
     const handleSubmit = async (event: any) => {
-
         event.preventDefault();
         event.stopPropagation();
 

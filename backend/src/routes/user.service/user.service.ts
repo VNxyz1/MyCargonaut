@@ -4,8 +4,8 @@ import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
-import {join} from "path";
-import {existsSync, unlinkSync} from "fs";
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 @Injectable()
 export class UserService {
@@ -15,7 +15,10 @@ export class UserService {
   ) {}
 
   async getUserById(id: number) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['offers', 'trips', 'requestedTransits'],
+    });
     if (user == null) {
       throw new NotFoundException(`No User with this Id found.`);
     }
@@ -28,7 +31,7 @@ export class UserService {
   }
 
   async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.getUserById(id);
 
     if (updateUserDto.birthday) {
       user.birthday = updateUserDto.birthday;
@@ -43,10 +46,6 @@ export class UserService {
     if (updateUserDto.lastName) {
       user.lastName = updateUserDto.lastName;
     }
-    /*
-    if (updateUserDto.profilePicture) {
-      user.profilePicture = updateUserDto.profilePicture;
-    }*/
 
     if (updateUserDto.description) {
       user.description = updateUserDto.description;
@@ -78,21 +77,48 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-  
+  async getCoinBalanceOfUser(id: number) {
+    const user = await this.getUserById(id);
+    return user.coins;
+  }
+
+  async setCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins = coins;
+    await this.userRepository.save(user);
+  }
+
+  async increaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins += coins;
+    await this.userRepository.save(user);
+  }
+
+  async decreaseCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins -= coins;
+    await this.userRepository.save(user);
+  }
+
   async removeOldImage(userId: number): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found.`);
     }
 
-    if (user.profilePicture.length > 0){
-      const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
+    if (user.profilePicture.length > 0) {
+      const oldImagePath = join(
+        process.cwd(),
+        'uploads',
+        'profile-images',
+        user.profilePicture,
+      );
       if (existsSync(oldImagePath)) {
         unlinkSync(oldImagePath);
       }
     }
   }
-  
+
   async saveProfileImagePath(userId: number, imagePath: string): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 

@@ -1,4 +1,4 @@
-### Log In with Username
+### Log In User
 POST localhost:3000/auth/login HTTP/2
 Content-Type: application/json
 
@@ -19,11 +19,21 @@ Content-Type: application/json
 }
 
 
-### Log In with Mail
+### Log In User 2
 POST localhost:3000/auth/login HTTP/2
 Content-Type: application/json
 
 {
   "eMail": "sdakkwd@gmail.com",
+  "password": "1234"
+}
+
+
+### Log In User 3
+POST localhost:3000/auth/login HTTP/2
+Content-Type: application/json
+
+{
+  "eMail": "bruh@gmail.com",
   "password": "1234"
 }
