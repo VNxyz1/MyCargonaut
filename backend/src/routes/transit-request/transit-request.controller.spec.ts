@@ -25,6 +25,8 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { TripRequest } from '../../database/TripRequest';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('TransitRequestController', () => {
   let transitController: TransitRequestController;
@@ -43,10 +45,17 @@ describe('TransitRequestController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.transit.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
       controllers: [
         AuthController,
@@ -59,6 +68,7 @@ describe('TransitRequestController', () => {
         AuthService,
         TransitRequestService,
         OfferService,
+        PlzService,
       ],
     }).compile();
 

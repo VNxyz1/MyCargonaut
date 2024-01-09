@@ -7,6 +7,8 @@ import { Plz } from '../../database/Plz';
 import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
 import * as fs from 'fs';
+import { PlzService } from '../plz.service/plz.service';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('TransitRequestService', () => {
   let transitService: TransitRequestService;
@@ -17,12 +19,19 @@ describe('TransitRequestService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.transit.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
-      providers: [TransitRequestService],
+      providers: [TransitRequestService, PlzService],
     }).compile();
 
     transitService = module.get<TransitRequestService>(TransitRequestService);

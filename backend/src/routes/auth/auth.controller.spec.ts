@@ -15,6 +15,8 @@ import { Plz } from '../../database/Plz';
 import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
+import { PlzService } from '../plz.service/plz.service';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('AuthController', () => {
   let userController: UserController;
@@ -37,6 +39,7 @@ describe('AuthController', () => {
       offers: [],
       trips: [],
       requestedTransits: [],
+      requestedTrips: [],
     },
   };
 
@@ -46,13 +49,20 @@ describe('AuthController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.auth.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

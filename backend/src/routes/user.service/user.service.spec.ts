@@ -11,6 +11,7 @@ import { MockGetUser } from '../user/Mocks/MockGetUser';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
 import { RoutePart } from '../../database/RoutePart';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -21,10 +22,17 @@ describe('UserService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.user.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
       providers: [UserService],
     }).compile();

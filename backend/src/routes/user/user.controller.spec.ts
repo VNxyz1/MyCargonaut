@@ -22,6 +22,8 @@ import {
 } from '@nestjs/common';
 import { MockSession } from './Mocks/MockSession';
 import { RoutePart } from '../../database/RoutePart';
+import { PlzService } from '../plz.service/plz.service';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -35,13 +37,20 @@ describe('UserController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.user.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

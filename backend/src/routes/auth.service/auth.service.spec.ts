@@ -9,6 +9,8 @@ import { Offer } from '../../database/Offer';
 import { Plz } from '../../database/Plz';
 import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
+import { PlzService } from '../plz.service/plz.service';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -21,12 +23,19 @@ describe('AuthService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.auth.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);

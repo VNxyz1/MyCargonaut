@@ -15,6 +15,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { MockUpdateOffer } from './Mock/MockUpdateOffer';
 import { RoutePart } from '../../database/RoutePart';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
+import { PlzService } from '../plz.service/plz.service';
+import { TripRequest } from '../../database/TripRequest';
 
 describe('OfferService', () => {
   let offerService: OfferService;
@@ -27,12 +29,19 @@ describe('OfferService', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.offer.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
-      providers: [OfferService, UserService, TransitRequestService],
+      providers: [OfferService, UserService, TransitRequestService, PlzService],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);

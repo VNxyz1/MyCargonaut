@@ -9,9 +9,7 @@ import { RoutePart } from '../../database/RoutePart';
 import { UserService } from '../user.service/user.service';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { TripRequest } from '../../database/TripRequest';
-import fs from 'fs';
-import { MockSession } from '../user/Mocks/MockSession';
-import { ISession } from '../../utils/ISession';
+import * as fs from 'fs';
 import { UserController } from '../user/user.controller';
 import { MockCreateTripRequest } from './MockCreateTripRequest';
 import { PlzService } from '../plz.service/plz.service';
@@ -44,7 +42,7 @@ describe('RequestService', () => {
         ]),
       ],
       controllers: [UserController],
-      providers: [UserService, PlzService, RequestService],
+      providers: [UserService, PlzService, RequestService, PlzService],
     }).compile();
 
     userService = module.get<UserService>(UserService);
@@ -66,12 +64,14 @@ describe('RequestService', () => {
 
   describe('save function', () => {
     it('should post a trip request to the db', async () => {
-      await expect(postTripRequest(
+      await expect(
+        postTripRequest(
           userForThisTest,
           { plz: '63679', location: 'Schotten' },
           { plz: '35390', location: 'Gießen' },
           2,
-      )).resolves.toBeDefined();
+        ),
+      ).resolves.toBeDefined();
       //TODO: implement MockGetTripRequest and new expect cases
     });
   });
@@ -83,7 +83,6 @@ describe('RequestService', () => {
   describe('deleteById function', () => {});
 
   describe('delete function', () => {});
-
 
   const postTripRequest = async (
     user: User,
@@ -107,11 +106,11 @@ describe('RequestService', () => {
       seats,
     );
 
-    return requestService.save(tR)
+    return requestService.save(tR);
   };
 
   afterAll(async () => {
-    fs.unlink('./db/tmp.tester.offer.service.sqlite', (err) => {
+    fs.unlink('./db/tmp.tester.request.service.sqlite', (err) => {
       if (err) {
         throw err;
       }

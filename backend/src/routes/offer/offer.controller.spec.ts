@@ -24,6 +24,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
+import { TripRequest } from '../../database/TripRequest';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -378,13 +380,20 @@ describe('OfferController', () => {
         TypeOrmModule.forRoot({
           type: 'sqlite',
           database: './db/tmp.tester.offer.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
           synchronize: true,
         }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        TypeOrmModule.forFeature([
+          User,
+          Offer,
+          Plz,
+          TransitRequest,
+          RoutePart,
+          TripRequest,
+        ]),
       ],
       controllers: [UserController, AuthController, OfferController],
-      providers: [UserService, AuthService, OfferService],
+      providers: [UserService, AuthService, OfferService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);
