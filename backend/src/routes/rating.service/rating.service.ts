@@ -8,7 +8,11 @@ export class RatingService {
     constructor(
         @InjectRepository(Rating)
         private readonly ratingRepository: Repository<Rating>,
-        ) {}
+    ) {}
+
+    async selectRatingsForRatedTrip(tripId: number) {
+        return await this.ratingRepository.find({where: {trip: Equal(tripId), complete: true}});
+    }
 
     async createRating(rating: Rating) {
         return await this.ratingRepository.save(rating);
