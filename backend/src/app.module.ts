@@ -17,6 +17,8 @@ import { TransitRequestController } from './routes/transit-request/transit-reque
 import { MulterModule } from '@nestjs/platform-express';
 import { RoutePart } from './database/RoutePart';
 import { Rating } from './database/Rating';
+import { RatingController } from './routes/rating/rating.controller';
+import { RatingService } from './routes/rating.service/rating.service';
 
 @Module({
   imports: [
@@ -39,7 +41,8 @@ import { Rating } from './database/Rating';
     AuthController,
     OfferController,
     TransitRequestController,
+    RatingController,
   ],
-  providers: [UserService, AuthService, OfferService, TransitRequestService],
+  providers: [UserService, AuthService, OfferService, TransitRequestService, RatingService],
 })
 export class AppModule {}

@@ -60,6 +60,9 @@ export class User {
   @OneToMany(() => TransitRequest, (transitRequest) => transitRequest.requester)
   requestedTransits: TransitRequest[];
 
-  @OneToMany(() => Rating, (rating) => rating.rated, { eager: true })
-  ratings: Rating[];
+  @OneToMany(() => Rating, (rating) => rating.rated)
+  ratingsAsRated: Rating[];
+
+  @OneToMany(() => Rating, (rating) => rating.rater)
+  ratingsAsRater: Rating[];
 }
