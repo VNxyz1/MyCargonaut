@@ -63,6 +63,10 @@ export class User {
 
   @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
   requestedTrips: TripRequest[];
-  @OneToMany(() => Rating, (rating) => rating.rated, { eager: true })
-  ratings: Rating[];
+
+  @OneToMany(() => Rating, (rating) => rating.rated)
+  ratingsAsRated: Rating[];
+
+  @OneToMany(() => Rating, (rating) => rating.rater)
+  ratingsAsRater: Rating[];
 }
