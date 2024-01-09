@@ -2,7 +2,7 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {useState} from "react";
-import {useAuth} from '../../../services/authService';
+import {useAuth, loginUser} from '../../../services/authService';
 import {useNavigate} from 'react-router-dom';
 
 interface LoginDataProps {
@@ -17,42 +17,23 @@ function LoginForm() {
     const [loginData, setLoginData] = useState<LoginDataProps>({eMail: "", password: ""});
 
     const handleSubmit = async (event: any) => {
+
         event.preventDefault();
         event.stopPropagation();
-        const res = await postLogin();
-        if (res) {
-            console.log(res.message);
-            setFeedback(res.message);
 
-            if (res.successful) {
+        try {
+            const res = await loginUser(loginData);
+
+            if (res.success) {
                 login();
                 navigate('/profil');
-            }
-        }
-
-    };
-
-    const postLogin = async () => {
-        try {
-            const response = await fetch("/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify(loginData),
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                return {successful: false, message: data.message}
             } else {
-                const data = await response.json();
-                return {successful: true, message: data.message}
+                setFeedback(res.error);
             }
         } catch (error) {
             console.error("Error:", error);
         }
-    }
-
+    };
 
     const handleFormChange = (prop: string, value: string) => {
         setLoginData({
@@ -61,15 +42,15 @@ function LoginForm() {
         })
     }
 
-
     return (
         <>
             <Card style={{width: '30rem', height: 'min-content'}}>
                 <Card.Body>
                     <Card.Title>Login</Card.Title>
-                    <Form noValidate onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="loginEmail">
                             <Form.Control
+                                required
                                 type="email"
                                 placeholder="E-Mail"
                                 onChange={(event) => handleFormChange("eMail", event.target.value)}
@@ -77,6 +58,7 @@ function LoginForm() {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="loginPassword">
                             <Form.Control
+                                required
                                 type="password"
                                 placeholder="Passwort"
                                 onChange={(event) => handleFormChange("password", event.target.value)}
@@ -98,7 +80,6 @@ function LoginForm() {
             </Card>
         </>
     );
-
 }
 
 export default LoginForm

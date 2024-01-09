@@ -77,6 +77,35 @@ const useAuth = () => {
 export { AuthProvider, useAuth };
 
 /*-----Routen-----*/
+interface LoginData {
+    eMail: string;
+    password: string;
+}
+
+export const loginUser = async (loginData: LoginData) : Promise<any>  => {
+    try {
+        const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(loginData),
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            return { success: false, error: data.message };
+        } else {
+            const data = await res.json();
+            return { success: true, data };
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return { success: false, error: "An error occurred during login." };
+    }
+};
+
+
 export const logoutUser = async (): Promise<boolean> => {
     try {
         const res = await fetch("/auth/logout", {

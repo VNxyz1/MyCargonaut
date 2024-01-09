@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import {Image, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
@@ -171,47 +172,76 @@ function ProfilPage() {
                     <Col sm={4} id="prof-sidebar">
                         <div>
 
+
                             <img
                                 src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
                                 alt="User profile image"
                             />
 
-                            <div className="profil_navi">
-                                <span onClick={handleShowEditImageModal}><i className="icon-pen-to-square"></i></span>
-                                {profileImageUrl && (
-                                    <span onClick={deleteImage}><i className="icon-trash"></i></span>
-                                )}
-                            </div>
-
                             {userData && (
                                 <>
-                                    <p>{(userData as any).firstName} {(userData as any).lastName}</p>
+                                    <p className="prof-lable">Name</p>
+                                    <p>{userData.firstName} {userData.lastName}</p>
                                     <p className="prof-lable">E-Mail</p>
-                                    <p>{(userData as any).eMail}</p>
+                                    <p>{userData.eMail}</p>
                                     <p className="prof-lable">Handynummer</p>
-                                    <p>{(userData as any).phoneNumber}</p>
+                                    <p>{userData.phoneNumber && userData.phoneNumber.length > 0 ? userData.phoneNumber : 'Keine Handynummer angegeben'}</p>
                                     <p className="prof-lable">Coins</p>
-                                    <p>{(userData as any).coins} Coins</p>
+                                    <p>{userData.coins} Coins</p>
                                     <p className="prof-lable">Alter</p>
                                     <p>{userAge} Jahre alt</p>
 
                                     <p className="prof-lable">Beschreibung</p>
-                                    <p>{(userData as any).description.length > 0 ? (userData as any).description : 'Keine Beschreibung vorhanden'}</p>
+                                    <p>{userData.description && userData.description.length > 0 ? userData.description : 'Keine Beschreibung vorhanden'}</p>
+
                                     <p className="prof-lable">Mitglied seit</p>
                                     <p>{formattedEntryDate}</p>
                                 </>
                             )}
                             <span className="section-seperator"></span>
-                            <p>Bewertungen</p>
-                            <p style={{color: '#aeaeae'}}>4,7 40 Ratings (statisch - nicht implementiert)</p>
-                            <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(statisch - nicht implementiert)</p>
+
+                            <Row>
+                                <p>Bewertungen 40 (nicht implementiert)</p>
+
+                                <div className="rating-wrapper">
+                                    <div className="rating-txt"><span><i className="icon-user"></i> Gesamt</span> <span>97%</span></div>
+                                    <ProgressBar now={97}/>
+                                </div>
+
+                                <div className="rating-wrapper">
+                                    <div className="rating-txt"><span><i className="icon-car"></i> Fahrt</span> <span>85%</span></div>
+                                    <ProgressBar now={85}/>
+                                </div>
+
+                                <div className="rating-wrapper">
+                                    <div className="rating-txt"><span><i className="icon-clock"></i> Pünktlich</span> <span>100%</span></div>
+                                    <ProgressBar now={100}/>
+                                </div>
+
+                                <div className="rating-wrapper">
+                                    <div className="rating-txt"><span><i className="icon-handshake"></i> Zuverlässig</span> <span>70%</span></div>
+                                    <ProgressBar now={70}/>
+                                </div>
+
+                                <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht implementiert)</p>
+                            </Row>
 
                             <div className="prof-side-btn-wrapper">
                                 <span className="section-seperator"></span>
+                               {!userData || !userData.phoneNumber ? "Um diese Aktionen auszuführen, musst du deine Handynummer hinterlegen." : ""}
+                                {userData && (
+                                    <>
+                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
+                                    </>
+                                )}
 
-                                <span className="disabled"><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
-                                <span className="disabled"><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
-                                <span onClick={openVehicleAddModal}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
+
+                                <span className="section-seperator"></span>
+
+                                <span onClick={handleShowEditImageModal}><i className="icon-pen-to-square"></i> Profilbild aktualisieren</span>
+                                {profileImageUrl && (<span onClick={deleteImage}><i className="icon-trash"></i> Profilbild entfernen</span>)}
 
                                 <span className="section-seperator"></span>
 

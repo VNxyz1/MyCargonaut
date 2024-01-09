@@ -41,6 +41,8 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
     };
 
     //TODO Ü18 Prüfung
+    //TODO Entfernen und prüfung der Nummer
+    //TODO Beschreibung Enfernen
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         const res = await updateUser(formData);
@@ -110,6 +112,8 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                             />
                         </Form.Group>
                     </Row>
+
+                    <p>Die Handynummer ist nicht für andere Nutzer sichtbar.</p>
 
                     <Form.Group controlId="description">
                         <Form.Label>Beschreibung</Form.Label>

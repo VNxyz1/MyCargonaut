@@ -1,4 +1,32 @@
-import { User } from "../models/User";
+import {User} from "../models/User";
+
+export const postUser = async (registerData: User): Promise<any> => {
+    try {
+        const response = await fetch("/user", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(registerData),
+        });
+
+        if (response) {
+            const data = await response.json();
+            console.log(data);
+            if (data.ok) {
+                return { success: true, message: data.message };
+            } else {
+                return { success: false, message: data.message };
+            }
+        } else {
+            console.error("PROBLEM");
+            return { success: false, message: "An error occurred during registration." };
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return { success: false, message: "An error occurred during registration." };
+    }
+};
 
 export const getLoggedInUser = async (): Promise<User | null> => {
     try {
@@ -32,14 +60,14 @@ export const updateUser = async (userData: User): Promise<any> => {
 
         if (!res.ok) {
             const data = await res.json();
-            return { success: false, error: data };
+            return {success: false, error: data};
         } else {
             const data = await res.json();
-            return { success: true, data };
+            return {success: true, data};
         }
     } catch (error) {
         console.error("Error:", error);
-        return { success: false, error: "An error occurred" };
+        return {success: false, error: "An error occurred"};
     }
 };
 
@@ -47,7 +75,7 @@ export const deleteUser = async (): Promise<boolean> => {
     try {
         const res = await fetch("/user", {
             method: "DELETE",
-            headers: { "Content-type": "application/json" },
+            headers: {"Content-type": "application/json"},
         });
 
         if (res.ok) {
@@ -63,6 +91,7 @@ export const deleteUser = async (): Promise<boolean> => {
     }
 };
 
+/*-----Image-----*/
 export const uploadImage = async (image: File): Promise<boolean> => {
     try {
         const userImage = new FormData();
@@ -91,7 +120,7 @@ export const deleteProfileImage = async (): Promise<boolean> => {
     try {
         const res = await fetch("/user/remove-profile-image", {
             method: "DELETE",
-            headers: { "Content-type": "application/json" },
+            headers: {"Content-type": "application/json"},
         });
 
         if (res.ok) {

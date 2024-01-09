@@ -173,7 +173,6 @@ body {
 }
 
 .home_header::after {
-   /* background-image: linear-gradient(to bottom, #fff0, #0000003d), url("assets/img/home_header_bg.jpeg");*/
     content: "";
     background-color: #0000003d;
     width: 100%;
@@ -337,10 +336,11 @@ body {
 }
 
 #prof-sidebar img {
-    height: 100px;
-    width: 100px;
+    height: 150px;
+    width: 150px;
     object-fit: cover;
-    border-radius: 50px;
+    border-radius: 50%;
+    margin-bottom: 20px;
 }
 
 .section-seperator {
@@ -355,6 +355,22 @@ font-size: 14px;
 color: #aeaeae;
 }
 
+#prof-sidebar .progress{
+    height: 10px;
+    border-radius: 20px;
+}
+#prof-sidebar .progress-bar{
+    background-color: var(--color-5);
+}
+
+#prof-sidebar .rating-wrapper {
+    margin-bottom: 10px;
+}
+
+#prof-sidebar .rating-txt{
+    display: flex;
+    justify-content: space-between;
+}
 /*_____NumberFieldSpinner______*/
 
 /* Chrome, Safari, Edge, Opera */
