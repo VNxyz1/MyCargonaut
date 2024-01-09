@@ -4,7 +4,7 @@ import App from './App.tsx'
 import './index.css'
 import './assets/Icons/fa6-sharp-light/style.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {AuthProvider} from './AuthContext.tsx';
+import {AuthProvider} from './services/authService.tsx';
 
 
 

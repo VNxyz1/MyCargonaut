@@ -6,7 +6,8 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth} from "../../../AuthContext";
+import {useAuth, loginUser} from "../../../services/authService";
+import {postUser } from "../../../services/userService";
 
 interface RegisterDataProps {
     eMail: string;
@@ -36,7 +37,6 @@ function RegisterForm() {
 
 
     const handleSubmit = async (event: any) => {
-
         const form = event.currentTarget;
         event.preventDefault();
 
@@ -57,29 +57,26 @@ function RegisterForm() {
         if (form.checkValidity() === true) {
             registerData.password = checkPasswords();
             if (registerData.password.trim() === "") {
-                console.error('Passwörter ungelich!');
+                console.error('Passwörter ungleich!');
                 return
             }
-            const res = await postUser();
-            if (res) {
 
-                console.log(res.message);
-                setFeedback(res.message);
+            const registerRes = await postUser(registerData);
 
-                if (res.successful) {
+            if (registerRes && registerRes.success) {
+                const loginRes = await loginUser({
+                    eMail: registerData.eMail,
+                    password: registerData.password,
+                });
 
-                    const res = await loginUser();
-                    if (res) {
-                        console.log(res.message);
-                        setFeedback(res.message);
-
-                        if (res.successful) {
-                            login();
-                            navigate('/profil');
-                        }
-                    }
-
+                if (loginRes.success) {
+                    login();
+                    navigate('/profil');
+                } else {
+                    setFeedback(loginRes.error);
                 }
+            } else if (registerRes) {
+                setFeedback(registerRes.message);
             }
         }
         setValidated(true);
@@ -90,59 +87,6 @@ function RegisterForm() {
             ...registerData,
             [prop]: value
         })
-    }
-
-
-    const postUser = async () => {
-        try {
-            const response = await fetch("/user", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify(registerData),
-            });
-
-            if (response) {
-                const data = await response.json();
-                console.log(data);
-                if (data.ok) {
-                    return {successful: true, message: data.message}
-                } else {
-                    return {successful: false, message: data.message}
-                }
-            } else {
-                console.error("PROBLEM")
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
-
-    const loginUser = async () => {
-        console.log("ZEIT ZUM LOGIN")
-        try {
-            const response = await fetch("/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    eMail: registerData.eMail,
-                    password: registerData.password
-                }),
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                return {successful: false, message: data.message}
-            } else {
-                const data = await response.json();
-                return {successful: true, message: data.message}
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
     }
 
     const checkPasswords = () => {
@@ -156,7 +100,6 @@ function RegisterForm() {
             return "";
         }
     }
-
 
     const isOldEnough = () => {
         if (registerData.birthday) {
