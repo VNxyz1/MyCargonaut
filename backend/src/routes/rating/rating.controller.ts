@@ -10,6 +10,8 @@ import { Offer } from '../../database/Offer';
 import { UserService } from '../user.service/user.service';
 import { OfferService } from '../offer.service/offer.service';
 import { TripState } from '../../database/TripState';
+import { GetRatingDto } from './DTOs/GetRatingResponseDTO';
+import { GetRatingsForTripRequestsResponseDTO } from './DTOs/GetRatingsForTripResponseDTO';
 
 @ApiTags('rating')
 @Controller('rating')
@@ -21,13 +23,60 @@ export class RatingController {
     ) {}
 
     @UseGuards(IsLoggedInGuard)
+    @Get(':tripId')
+    @ApiOperation({
+        summary: 'Gets ratings for a trip',
+        description: `Allows a logged-in user to get all ratings for a completed trip.`,
+    })
+    @ApiResponse({ type: GetRatingsForTripRequestsResponseDTO })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'The trip is not finished yet.',
+    })
+    async getRatingsForTrip(@Param('tripId') tripId: number) {
+        const trip = await this.offerService.getOffer(tripId);
+        const ratings = await this.ratingService.selectRatingsForRatedTrip(tripId);
+
+        if(trip.state != TripState.finished) {
+            throw new ForbiddenException(false, 'The trip is not finished yet.');
+        }
+
+        if(ratings.length == 0) {
+            throw new ForbiddenException(false, 'Not all users have rated this trip yet.');
+        }
+
+        const response: GetRatingsForTripRequestsResponseDTO = new GetRatingsForTripRequestsResponseDTO();
+        response.passengerRatings = [];
+        response.driverRatings = [];
+        ratings.forEach((rating) => {
+            const ratingDto: GetRatingDto = new GetRatingDto();
+            ratingDto.rateeId = rating.rated.id;
+            ratingDto.raterId = rating.rater.id;
+            ratingDto.tripId = rating.trip.id;
+            ratingDto.punctuality = rating.punctuality;
+            ratingDto.reliability = rating.reliability;
+
+            if(rating.driver) {
+                ratingDto.cargoArrivedUndamaged = rating.cargoArrivedUndamaged;
+                ratingDto.passengerPleasantness = rating.passengerPleasantness;
+                response.driverRatings.push(ratingDto);
+            } else {
+                ratingDto.comfortDuringTrip = rating.comfortDuringTrip;
+                response.passengerRatings.push(ratingDto);
+            }
+        });
+        return response;
+    }
+
+    @UseGuards(IsLoggedInGuard)
     @Post(':tripId')
     @ApiOperation({
         summary: 'Creates a Ranking',
         description: `Allows a logged-in user to rate another user on a finished trip.`,
     })
     @ApiResponse({
-    status: 200,
+    status: 201,
     type: OKResponseWithMessageDTO,
     description: 'Rating created successfully.',
     })
