@@ -51,6 +51,9 @@ export class RequestService {
   }
 
   async delete(tripRequest: TripRequest) {
+    if (!tripRequest.id) {
+      throw new NotFoundException('This trip request does not exist.');
+    }
     tripRequest.startPlz = null;
     tripRequest.endPlz = null;
     await this.save(tripRequest);

@@ -1,8 +1,8 @@
-import { User } from '../../database/User';
-import { Plz } from '../../database/Plz';
+import { User } from '../../../database/User';
+import { Plz } from '../../../database/Plz';
 
-export class MockCreateTripRequest {
-  id: undefined;
+export class MockGetTripRequest {
+  id: number;
 
   requester: User;
 
