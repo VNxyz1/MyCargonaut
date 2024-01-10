@@ -11,7 +11,9 @@ import { UserService } from '../user.service/user.service';
 import { OfferService } from '../offer.service/offer.service';
 import { TripState } from '../../database/TripState';
 import { GetRatingDto } from './DTOs/GetRatingResponseDTO';
-import { GetRatingsForTripRequestsResponseDTO } from './DTOs/GetRatingsForTripResponseDTO';
+import { GetRatingsForTripResponseDTO } from './DTOs/GetRatingsForTripResponseDTO';
+import { GetRatingStatusDto } from './DTOs/GetRatingStatusResponseDTO';
+import { GetAllRatingStatusDto } from './DTOs/GetAllRatingStatusResponseDTO';
 
 @ApiTags('rating')
 @Controller('rating')
@@ -28,7 +30,7 @@ export class RatingController {
         summary: 'Gets ratings for a trip',
         description: `Allows a logged-in user to get all ratings for a completed trip.`,
     })
-    @ApiResponse({ type: GetRatingsForTripRequestsResponseDTO })
+    @ApiResponse({ type: GetRatingsForTripResponseDTO })
     @ApiResponse({
         status: 403,
         type: ForbiddenException,
@@ -46,7 +48,7 @@ export class RatingController {
             throw new ForbiddenException(false, 'Not all users have rated this trip yet.');
         }
 
-        const response: GetRatingsForTripRequestsResponseDTO = new GetRatingsForTripRequestsResponseDTO();
+        const response: GetRatingsForTripResponseDTO = new GetRatingsForTripResponseDTO();
         response.passengerRatings = [];
         response.driverRatings = [];
         ratings.forEach((rating) => {
@@ -66,6 +68,59 @@ export class RatingController {
                 response.passengerRatings.push(ratingDto);
             }
         });
+        return response;
+    }
+
+    @UseGuards(IsLoggedInGuard)
+    @Get(':tripId/own')
+    @ApiOperation({
+        summary: 'Gets status of own ratings for a trip',
+        description: `Allows a logged-in user to get the status of the own ratings for a completed trip.`,
+    })
+    @ApiResponse({ type: GetAllRatingStatusDto })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'The trip is not finished yet.',
+    })
+    async getRatingStatusForTrip(@Session() session: ISession, @Param('tripId') tripId: number) {
+        const trip: Offer = await this.offerService.getOffer(tripId);
+        const rater = await this.userService.getUserById(session.userData.id);
+        let isRaterDriver: boolean;
+
+        if(trip.clients.some(client => client.id == rater.id)) {
+            isRaterDriver = false;
+        } else if(trip.provider.id == rater.id) {
+            isRaterDriver = true;
+        } else {
+            throw new ForbiddenException(false, 'You were not part of this trip.');
+        }
+
+        if(trip.state != TripState.finished) {
+            throw new ForbiddenException(false, 'The trip is not finished yet.');
+        }
+
+        const response: GetAllRatingStatusDto = new GetAllRatingStatusDto();
+        response.ratees = [];
+        
+        if(isRaterDriver) {
+            let clientIds: number[] = [];
+            trip.clients.forEach((client) => clientIds.push(client.id));
+            for(const clientId of clientIds) {
+                const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, clientId)
+                const status: GetRatingStatusDto = new GetRatingStatusDto();
+                status.rateeId = clientId;
+                status.rated = rated;
+                response.ratees.push(status);
+            }
+        } else {
+            const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, trip.provider.id)
+            const status: GetRatingStatusDto = new GetRatingStatusDto();
+            status.rateeId = trip.provider.id;
+            status.rated = rated;
+            response.ratees.push(status);
+        }
+
         return response;
     }
 
