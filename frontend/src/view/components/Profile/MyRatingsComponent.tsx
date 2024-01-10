@@ -202,10 +202,10 @@ function MyRatingsComponent() {
 
     return (
         <Container id={'prof-ratings'}>
-            <Row>
+            <Row className={'rating-columns'}>
                 <Col>
                     {ratingsDriver.length === 0 ?
-                        <Row>
+                        <Row className={'rating-rows'}>
                             <Card>
                                 <Card.Body>
                                     <Card.Title>
@@ -215,13 +215,13 @@ function MyRatingsComponent() {
                             </Card>
                         </Row>
                         :
-                        <Row>
+                        <Row className={'rating-rows'}>
                             <AccumulatedRatingsCard ratings={ratingsDriver} driver={true}/>
                         </Row>
                     }
                     {ratingsDriver.map((rating) => {
                         return (
-                            <Row>
+                            <Row className={'rating-rows'}>
                                 <RatingDetailCard rating={rating}/>
                             </Row>
                         )
@@ -229,7 +229,7 @@ function MyRatingsComponent() {
                 </Col>
                 <Col>
                     {ratingsPassenger.length === 0 ?
-                        <Row>
+                        <Row className={'rating-rows'}>
                             <Card>
                                 <Card.Body>
                                     <Card.Title>
@@ -239,13 +239,13 @@ function MyRatingsComponent() {
                             </Card>
                         </Row>
                         :
-                        <Row>
+                        <Row className={'rating-rows'}>
                             <AccumulatedRatingsCard ratings={ratingsPassenger} driver={false}/>
                         </Row>
                     }
                     {ratingsPassenger.map((rating) => {
                         return (
-                            <Row>
+                            <Row className={'rating-rows'}>
                                 <RatingDetailCard rating={rating}/>
                             </Row>
                         )

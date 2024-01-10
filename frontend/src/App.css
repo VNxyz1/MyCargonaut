@@ -425,3 +425,11 @@ input[type="number"] {
     display: flex;
     justify-content: space-between;
 }
+
+.rating-columns {
+    column-gap: 20px;
+}
+
+.rating-rows {
+    padding-bottom: 10px;
+}

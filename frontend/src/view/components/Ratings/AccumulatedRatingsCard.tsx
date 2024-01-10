@@ -41,8 +41,8 @@ function AccumulatedRatingsCard(props: {
     return (
         <Card>
             <Card.Body>
-                <Card.Title>Bewertung</Card.Title>
-                <Card.Subtitle>als {props.driver ? 'Fahrer' : 'Mitfahrer'} aus {props.ratings.length} abgegebenen Bewertungen</Card.Subtitle>
+                <Card.Title>{props.driver ? 'Fahrer' : 'Mitfahrer'} Bewertung</Card.Title>
+                <Card.Subtitle>aus {props.ratings.length} abgegebenen Bewertungen</Card.Subtitle>
                 <Card.Text>
                     <Row>
                         <div className="rating-wrapper">
