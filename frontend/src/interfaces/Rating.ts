@@ -1,4 +1,3 @@
-
 export interface Rating {
     "raterId": number,
     "rateeId": number,

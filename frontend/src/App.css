@@ -408,3 +408,20 @@ input[type="number"] {
 .star-active {
     color: var(--color-5); /* Active color for stars */
 }
+
+#prof-ratings .progress{
+    height: 10px;
+    border-radius: 20px;
+}
+#prof-ratings .progress-bar{
+    background-color: var(--color-5);
+}
+
+#prof-ratings .rating-wrapper {
+    margin-bottom: 10px;
+}
+
+#prof-ratings .rating-txt{
+    display: flex;
+    justify-content: space-between;
+}

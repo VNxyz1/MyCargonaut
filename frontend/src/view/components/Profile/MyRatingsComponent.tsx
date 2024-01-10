@@ -2,7 +2,8 @@ import Container from 'react-bootstrap/Container';
 import RatingDetailCard from '../Ratings/RatingDetailCard';
 import React from 'react';
 import { Rating } from '../../../interfaces/Rating';
-import { Col, Row } from 'react-bootstrap';
+import {Card, Col, Row } from 'react-bootstrap';
+import AccumulatedRatingsCard from '../Ratings/AccumulatedRatingsCard';
 
 const TEST_RATINGS_DRIVER: Rating[] = [
     {'raterId': 40,
@@ -200,27 +201,53 @@ function MyRatingsComponent() {
     }, []);
 
     return (
-        <Container>
+        <Container id={'prof-ratings'}>
             <Row>
                 <Col>
-                    Bewertungen als Fahrer ({ratingsDriver.length})
-                </Col>
-                <Col>
-                    Bewertungen als Mitfahrer ({ratingsPassenger.length})
-                </Col>
-            </Row>
-            <Row>
-                <Col>
+                    {ratingsDriver.length === 0 ?
+                        <Row>
+                            <Card>
+                                <Card.Body>
+                                    <Card.Title>
+                                        Du hast noch keine Bewertungen als Fahrer.
+                                    </Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </Row>
+                        :
+                        <Row>
+                            <AccumulatedRatingsCard ratings={ratingsDriver} driver={true}/>
+                        </Row>
+                    }
                     {ratingsDriver.map((rating) => {
                         return (
-                            <RatingDetailCard rating={rating}/>
+                            <Row>
+                                <RatingDetailCard rating={rating}/>
+                            </Row>
                         )
                     })}
                 </Col>
                 <Col>
+                    {ratingsPassenger.length === 0 ?
+                        <Row>
+                            <Card>
+                                <Card.Body>
+                                    <Card.Title>
+                                        Du hast noch keine Bewertungen als Mitfahrer.
+                                    </Card.Title>
+                                </Card.Body>
+                            </Card>
+                        </Row>
+                        :
+                        <Row>
+                            <AccumulatedRatingsCard ratings={ratingsPassenger} driver={false}/>
+                        </Row>
+                    }
                     {ratingsPassenger.map((rating) => {
                         return (
-                            <RatingDetailCard rating={rating}/>
+                            <Row>
+                                <RatingDetailCard rating={rating}/>
+                            </Row>
                         )
                     })}
                 </Col>
