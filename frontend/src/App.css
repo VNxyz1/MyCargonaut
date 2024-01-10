@@ -1,4 +1,4 @@
-/*__________Varaiblen__________*/
+/*__________Variablen__________*/
 :root {
     --color-1: #ffffff;
     --color-2: #f6f6f6;
@@ -397,4 +397,14 @@ input[type="number"] {
     height: 100px;
     object-fit: cover;
     margin-right: 10px;
+}
+
+/*_______Ratings_______*/
+
+.star {
+    color: var(--color-3); /* Default color for stars */
+}
+
+.star-active {
+    color: var(--color-5); /* Active color for stars */
 }
