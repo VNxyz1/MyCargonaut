@@ -13,6 +13,14 @@ import { RoutePart } from '../../database/RoutePart';
 import { TripRequest } from '../../database/TripRequest';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import * as fs from 'fs';
+import { cargoImg, MockPostTripRequest } from './Mock/MockPostTripRequest';
+import { ISession } from '../../utils/ISession';
+import { MockSession } from '../user/Mocks/MockSession';
+import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
+import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
+import { GetAllTripRequestResponseDto } from './DTOs/GetAllTripRequestResponseDto';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { MockUpdateTripRequest } from './Mock/MockUpdateTripRequest';
 
 describe('RequestController', () => {
   let requestController: RequestController;
@@ -20,6 +28,7 @@ describe('RequestController', () => {
   let userService: UserService;
   let userForThisTest: User;
   let secondUserForThisTest: User;
+  const session: ISession = new MockSession(true);
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -50,6 +59,7 @@ describe('RequestController', () => {
     // create users for testing
     await userController.postUser(new MockCreateUser(false, 0));
     userForThisTest = await userService.getUserById(1);
+    session.userData = userForThisTest;
 
     await userController.postUser(new MockCreateUser(false, 1));
     secondUserForThisTest = await userService.getUserById(2);
@@ -57,6 +67,92 @@ describe('RequestController', () => {
 
   it('should be defined', () => {
     expect(requestController).toBeDefined();
+  });
+
+  describe('post', () => {
+    it('should post a trip request with a cargo image', async () => {
+      await expect(
+        requestController.post(new MockPostTripRequest(), session, cargoImg),
+      ).resolves.toStrictEqual(
+        new OKResponseWithMessageDTO(true, 'Trip request created'),
+      );
+    });
+
+    it('should post a trip request without a cargo image', async () => {
+      await expect(
+        requestController.post(new MockPostTripRequest(), session),
+      ).resolves.toStrictEqual(
+        new OKResponseWithMessageDTO(true, 'Trip request created'),
+      );
+    });
+  });
+
+  describe('get trip request', () => {
+    it('should return a trip request with a cargo image', async () => {
+      await expect(requestController.getOne(1)).resolves.toBeInstanceOf(
+        GetTripRequestResponseDto,
+      );
+      const tR = await requestController.getOne(1);
+      expect(tR.cargoImg).toBeDefined();
+    });
+
+    it('should return a trip request without a cargo image', async () => {
+      await expect(requestController.getOne(2)).resolves.toBeInstanceOf(
+        GetTripRequestResponseDto,
+      );
+      const tR = await requestController.getOne(2);
+      expect(tR.cargoImg).toBe(null);
+    });
+  });
+
+  describe('get all trip request', () => {
+    it('should return a array of trip requests', async () => {
+      await expect(requestController.getAll()).resolves.toBeInstanceOf(
+        GetAllTripRequestResponseDto,
+      );
+      const tRArr = await requestController.getAll();
+      expect(tRArr.tripRequests).toHaveLength(2);
+      expect(tRArr.tripRequests.find((tR) => tR.id === 1)).toStrictEqual(
+        await requestController.getOne(1),
+      );
+    });
+  });
+
+  describe('delete a trip request', () => {
+    it('should delete the trip request with id 2', async () => {
+      await expect(requestController.delete(2, session)).resolves.toStrictEqual(
+        new OKResponseWithMessageDTO(true, 'Transit request was deleted.'),
+      );
+    });
+
+    it('should throw a error, when trying to delete trip request with id 2', async () => {
+      await expect(requestController.delete(2, session)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw a error, when trying to delete a trip request of which the logged in user is not the owner', async () => {
+      session.userData = secondUserForThisTest;
+      await expect(requestController.delete(1, session)).rejects.toThrow(
+        ForbiddenException,
+      );
+      session.userData = userForThisTest;
+    });
+  });
+
+  describe('updateParams function', () => {
+    it('should update the startPlz', async () => {
+      await expect(
+        requestController.updateParams(
+          1,
+          session,
+          new MockUpdateTripRequest(true),
+        ),
+      ).resolves.toStrictEqual(
+        new OKResponseWithMessageDTO(true, 'Update successful.'),
+      );
+    });
+
   });
 
   afterAll(async () => {

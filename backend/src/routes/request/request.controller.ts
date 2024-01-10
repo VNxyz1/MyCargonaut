@@ -32,6 +32,7 @@ import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
 import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto';
 import { existsSync, unlinkSync } from 'fs';
+import { fileInterceptor } from './requesterFileInterceptor';
 
 @ApiTags('request')
 @Controller('request')
@@ -64,8 +65,11 @@ export class RequestController {
   @ApiOperation({ summary: 'gets all trip request' })
   @ApiResponse({ type: GetAllTripRequestResponseDto })
   async getAll() {
+    const tRArr = await this.requestService.getAll();
     const dto = new GetAllTripRequestResponseDto();
-    dto.tripRequests = await this.requestService.getAll();
+    dto.tripRequests = tRArr.map((tR) => {
+      return this.convertToGetDto(tR);
+    });
     return dto;
   }
 
@@ -74,18 +78,8 @@ export class RequestController {
   @ApiResponse({ type: GetTripRequestResponseDto })
   async getOne(@Param('id', ParseIntPipe) tripRequestId: number) {
     const tR = await this.requestService.getById(tripRequestId);
-    const dto = new GetTripRequestResponseDto();
-    dto.id = tR.id;
-    dto.requester = convertUserToOtherUser(tR.requester);
-    dto.startPlz = tR.startPlz;
-    dto.endPlz = tR.endPlz;
-    dto.createdAt = tR.createdAt;
-    dto.description = tR.description;
-    dto.cargoImg = tR.cargoImg;
-    dto.startDate = tR.startDate;
-    dto.seats = tR.seats;
 
-    return dto;
+    return this.convertToGetDto(tR);
   }
 
   @Delete(':id')
@@ -224,19 +218,19 @@ export class RequestController {
 
     unlinkSync(oldImagePath);
   }
-}
 
-const fileInterceptor = () => {
-  return FileInterceptor('cargoImg', {
-    storage: diskStorage({
-      destination: './uploads/cargo-images',
-      filename: (req: any, file, callback) => {
-        const uniquSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const prefix = req.session.userData.id;
-        const ext = extname(file.originalname);
-        const filename = `ci-${prefix}-${uniquSuffix}${ext}`;
-        callback(null, filename);
-      },
-    }),
-  });
-};
+  convertToGetDto(tripRequest: TripRequest) {
+    const dto = new GetTripRequestResponseDto();
+    dto.id = tripRequest.id;
+    dto.requester = convertUserToOtherUser(tripRequest.requester);
+    dto.startPlz = tripRequest.startPlz;
+    dto.endPlz = tripRequest.endPlz;
+    dto.createdAt = tripRequest.createdAt;
+    dto.description = tripRequest.description;
+    dto.cargoImg = tripRequest.cargoImg;
+    dto.startDate = tripRequest.startDate;
+    dto.seats = tripRequest.seats;
+
+    return dto;
+  }
+}

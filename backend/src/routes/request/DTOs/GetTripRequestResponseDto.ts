@@ -19,7 +19,7 @@ export class GetTripRequestResponseDto {
   createdAt: Date;
 
   @ApiProperty()
-  cargoImg: string;
+  cargoImg: string | null;
 
   @ApiProperty()
   description: string;

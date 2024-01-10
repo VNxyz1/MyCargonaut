@@ -129,7 +129,7 @@ describe('RequestService', () => {
 
     it('should throw NotFoundException for non-existing trip request', async () => {
       const createdStartPlz = await plzService.createPlz('63679', 'Schotten');
-      const createdEndPlz = await plzService.createPlz('35390', 'Schotten');
+      const createdEndPlz = await plzService.createPlz('35390', 'City2');
       const nonExistingTripRequest = new MockCreateTripRequest(
         userForThisTest,
         createdStartPlz,
