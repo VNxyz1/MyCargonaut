@@ -2,10 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RequestService } from './request.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../database/User';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
 import { UserService } from '../user.service/user.service';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { TripRequest } from '../../database/TripRequest';
@@ -15,6 +11,7 @@ import { MockCreateTripRequest } from './Mock/MockCreateTripRequest';
 import { PlzService } from '../plz.service/plz.service';
 import { CreatePlzDto } from '../offer/DTOs/CreatePlzDto';
 import { NotFoundException } from '@nestjs/common';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 
 describe('RequestService', () => {
   let requestService: RequestService;
@@ -176,20 +173,8 @@ describe('RequestService', () => {
   const setUp = async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.request.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([
-          User,
-          Offer,
-          Plz,
-          TransitRequest,
-          RoutePart,
-          TripRequest,
-        ]),
+        sqlite_setup('./db/tmp.tester.request.service.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController],
       providers: [UserService, PlzService, RequestService, PlzService],

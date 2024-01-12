@@ -83,8 +83,13 @@ export class RequestController {
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'gets all trip request' })
-  @ApiResponse({ type: GetAllTripRequestResponseDto })
+  @ApiOperation({
+    summary: 'Gets filtered trip requests based on various criteria',
+  })
+  @ApiResponse({
+    type: GetAllTripRequestResponseDto,
+    description: 'A DTO containing the filtered trip requests.',
+  })
   async getFilter(@Query() query: GetFilteredTripRequestRequestDto) {
     let tRArr: TripRequest[];
 

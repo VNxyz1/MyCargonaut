@@ -4,14 +4,10 @@ import { UserController } from '../user/user.controller';
 import { AuthController } from '../auth/auth.controller';
 import { User } from '../../database/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
-import { TripRequest } from '../../database/TripRequest';
 import { UserService } from '../user.service/user.service';
 import { AuthService } from '../auth.service/auth.service';
 import * as fs from 'fs';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 
 describe('PlzService', () => {
   let userController: UserController;
@@ -21,20 +17,8 @@ describe('PlzService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.plz.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([
-          User,
-          Offer,
-          Plz,
-          TransitRequest,
-          RoutePart,
-          TripRequest,
-        ]),
+        sqlite_setup('./db/tmp.tester.plz.service.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService, PlzService],
