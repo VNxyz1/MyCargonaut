@@ -5,10 +5,6 @@ import { User } from '../../database/User';
 import { ISession } from '../../utils/ISession';
 import { MockSession } from '../user/Mocks/MockSession';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
 import { AuthService } from '../auth.service/auth.service';
 import { OfferService } from '../offer.service/offer.service';
 import * as fs from 'fs';
@@ -24,6 +20,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -375,13 +372,8 @@ describe('OfferController', () => {
   const setup = async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.offer.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        sqlite_setup('./db/tmp.tester.offer.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController, OfferController],
       providers: [UserService, AuthService, OfferService],

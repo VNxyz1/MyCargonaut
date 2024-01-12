@@ -5,10 +5,6 @@ import { User } from '../../database/User';
 import { ISession } from '../../utils/ISession';
 import { MockSession } from '../user/Mocks/MockSession';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
 import { UserService } from '../user.service/user.service';
 import { AuthService } from '../auth.service/auth.service';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
@@ -25,6 +21,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 
 describe('TransitRequestController', () => {
   let transitController: TransitRequestController;
@@ -40,13 +37,8 @@ describe('TransitRequestController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.transit.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        sqlite_setup('./db/tmp.tester.transit.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [
         AuthController,
