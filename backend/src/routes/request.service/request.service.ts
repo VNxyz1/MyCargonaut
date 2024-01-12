@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { TripRequest } from '../../database/TripRequest';
 
 @Injectable()
@@ -37,6 +37,21 @@ export class RequestService {
 
   async getAll() {
     const tRs = await this.tripRequestRepository.find({
+      relations: ['startPlz', 'endPlz'],
+    });
+    if (!tRs) {
+      throw new NotFoundException('The trip requests could not be found.');
+    }
+    return tRs;
+  }
+
+  async getFilteredBySearchstring(searchFor: string) {
+    const tRs = await this.tripRequestRepository.find({
+      where: [
+        { description: Like(`%${searchFor}%`) },
+        { startPlz: { location: Like(`%${searchFor}%`) } },
+        { endPlz: { plz: Like(`%${searchFor}%`) } },
+      ],
       relations: ['startPlz', 'endPlz'],
     });
     if (!tRs) {

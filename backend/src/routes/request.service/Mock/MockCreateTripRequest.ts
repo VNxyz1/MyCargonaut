@@ -10,7 +10,7 @@ export class MockCreateTripRequest {
 
   endPlz: Plz;
 
-  createdAt: Date;
+  createdAt: string;
 
   cargoImg: string = 'test/path/img.jpg';
 

@@ -6,11 +6,6 @@ import { UserService } from '../user.service/user.service';
 import { PlzService } from '../plz.service/plz.service';
 import { User } from '../../database/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
-import { TripRequest } from '../../database/TripRequest';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import * as fs from 'fs';
 import { cargoImg, MockPostTripRequest } from './Mock/MockPostTripRequest';
@@ -21,6 +16,8 @@ import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
 import { GetAllTripRequestResponseDto } from './DTOs/GetAllTripRequestResponseDto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { MockUpdateTripRequest } from './Mock/MockUpdateTripRequest';
+import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 
 describe('RequestController', () => {
   let requestController: RequestController;
@@ -33,20 +30,8 @@ describe('RequestController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.request.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([
-          User,
-          Offer,
-          Plz,
-          TransitRequest,
-          RoutePart,
-          TripRequest,
-        ]),
+        sqlite_setup('./db/tmp.tester.request.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, RequestController],
       providers: [UserService, PlzService, RequestService],
@@ -177,6 +162,52 @@ describe('RequestController', () => {
       expect(tR.endPlz.location).toBe(updateData.endPlz.location);
       expect(tR.startPlz.plz).toBe(updateData.startPlz.plz);
       expect(tR.startPlz.location).toBe(updateData.startPlz.location);
+    });
+  });
+
+  describe('filter function', () => {
+    it('should get filtered trip requests by search string', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.searchString = '67890';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(1);
+    });
+
+    it('should get filtered trip requests by seats', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.seats = '6';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(0); // No trip request has 6 seats
+    });
+
+    it('should get filtered trip requests by fromPLZ', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.fromPLZ = '67890';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(0);
+    });
+
+    it('should get filtered trip requests by toPlz', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.toPLZ = '67890';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(1);
+    });
+
+    it('should get filtered trip requests by from- toPlz', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.toPLZ = '67890';
+      query.fromPLZ = '12345';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(1);
+    });
+
+    it('should get filtered trip requests by from- toPlz (not existing)', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.toPLZ = '67890';
+      query.fromPLZ = '67878';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(0);
     });
   });
 
