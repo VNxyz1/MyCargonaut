@@ -47,7 +47,7 @@ function RoutesComponent() {
                 <Route path="/imprint" element={<ImprintPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/profil" element={<ProfilPage />} />
-                <Route path="/search-transport" element={<SearchTransportPage />} />
+                <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
                 <Route path="/search-cargo" element={<SearchCargoPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
                 <Route path="/trip/:id" element={<TripDetailPage offers={offers} />} />
