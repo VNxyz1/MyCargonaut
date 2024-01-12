@@ -22,7 +22,6 @@ describe('RequestService', () => {
   let userService: UserService;
   let plzService: PlzService;
   let userForThisTest: User;
-  let secondUserForThisTest: User;
   let tripRequestArr: TripRequest[] = [];
 
   beforeAll(async () => {
@@ -90,7 +89,7 @@ describe('RequestService', () => {
 
   describe('deleteById function', () => {
     it('should delete a specific trip request by ID', async () => {
-      const savedTripRequest = await postTripRequest(
+      await postTripRequest(
         userForThisTest,
         { plz: '12345', location: 'City1' },
         { plz: '67890', location: 'City2' },
@@ -206,7 +205,6 @@ describe('RequestService', () => {
     userForThisTest = await userService.getUserById(1);
 
     await userController.postUser(new MockCreateUser(false, 1));
-    secondUserForThisTest = await userService.getUserById(2);
   };
 
   const deleteDb = async () => {

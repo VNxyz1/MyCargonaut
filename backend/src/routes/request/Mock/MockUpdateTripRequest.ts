@@ -1,6 +1,6 @@
 import { CreatePlzDto } from '../../offer/DTOs/CreatePlzDto';
-import * as fs from "fs";
-import {join} from "path";
+import * as fs from 'fs';
+import { join } from 'path';
 
 export class MockUpdateTripRequest {
   startPlz?: CreatePlzDto;
@@ -33,12 +33,12 @@ export class MockUpdateTripRequest {
 }
 
 const filePath = join(
-    process.cwd(),
-    'src',
-    'routes',
-    'request',
-    'Mock',
-    'user-default-2-placeholder.png',
+  process.cwd(),
+  'src',
+  'routes',
+  'request',
+  'Mock',
+  'user-default-2-placeholder.png',
 );
 
 export const cargoImgUpdate: Express.Multer.File = {

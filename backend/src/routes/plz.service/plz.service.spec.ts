@@ -3,8 +3,6 @@ import { PlzService } from './plz.service';
 import { UserController } from '../user/user.controller';
 import { AuthController } from '../auth/auth.controller';
 import { User } from '../../database/User';
-import { ISession } from '../../utils/ISession';
-import { MockSession } from '../user/Mocks/MockSession';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Offer } from '../../database/Offer';
 import { Plz } from '../../database/Plz';
@@ -19,7 +17,6 @@ describe('PlzService', () => {
   let userController: UserController;
   let plzService: PlzService;
   let userForThisTest: User;
-  const session: ISession = new MockSession();
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({

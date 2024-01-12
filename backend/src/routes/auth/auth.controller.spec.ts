@@ -13,7 +13,6 @@ import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
-import { TripRequest } from '../../database/TripRequest';
 
 describe('AuthController', () => {
   let userController: UserController;

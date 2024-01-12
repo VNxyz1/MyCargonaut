@@ -7,7 +7,6 @@ import { MockGetUser } from '../user/Mocks/MockGetUser';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from '../user/DTOs/UpdateUserRequestDTO';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
-import { TripRequest } from '../../database/TripRequest';
 
 describe('UserService', () => {
   let userService: UserService;

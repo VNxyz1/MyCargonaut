@@ -21,7 +21,7 @@ import {
 } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
-import {PlzService} from "../plz.service/plz.service";
+import { PlzService } from '../plz.service/plz.service';
 
 describe('OfferController', () => {
   let offerController: OfferController;

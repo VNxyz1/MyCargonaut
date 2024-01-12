@@ -11,10 +11,8 @@ import { OfferController } from './routes/offer/offer.controller';
 import { TransitRequestService } from './routes/transit-request.service/transit-request.service';
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { RoutePart } from './database/RoutePart';
 import { RequestController } from './routes/request/request.controller';
 import { RequestService } from './routes/request.service/request.service';
-import { TripRequest } from './database/TripRequest';
 import { PlzService } from './routes/plz.service/plz.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 
