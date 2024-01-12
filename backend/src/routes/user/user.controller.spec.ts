@@ -19,6 +19,7 @@ import {
 } from '@nestjs/common';
 import { MockSession } from './Mocks/MockSession';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -33,7 +34,7 @@ describe('UserController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

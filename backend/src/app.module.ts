@@ -11,6 +11,9 @@ import { OfferController } from './routes/offer/offer.controller';
 import { TransitRequestService } from './routes/transit-request.service/transit-request.service';
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 import { MulterModule } from '@nestjs/platform-express';
+import { RequestController } from './routes/request/request.controller';
+import { RequestService } from './routes/request.service/request.service';
+import { PlzService } from './routes/plz.service/plz.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 
 @Module({
@@ -29,7 +32,15 @@ import { entityArr, sqlite_setup } from './utils/sqlite_setup';
     AuthController,
     OfferController,
     TransitRequestController,
+    RequestController,
   ],
-  providers: [UserService, AuthService, OfferService, TransitRequestService],
+  providers: [
+    UserService,
+    AuthService,
+    OfferService,
+    TransitRequestService,
+    RequestService,
+    PlzService,
+  ],
 })
 export class AppModule {}

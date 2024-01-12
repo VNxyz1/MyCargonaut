@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Offer } from './Offer';
 import { TransitRequest } from './TransitRequest';
+import { TripRequest } from './TripRequest';
 
 @Entity()
 @Unique(['eMail'])
@@ -58,4 +59,7 @@ export class User {
 
   @OneToMany(() => TransitRequest, (transitRequest) => transitRequest.requester)
   requestedTransits: TransitRequest[];
+
+  @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
+  requestedTrips: TripRequest[];
 }

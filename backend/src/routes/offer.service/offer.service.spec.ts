@@ -11,6 +11,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { MockUpdateOffer } from './Mock/MockUpdateOffer';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('OfferService', () => {
   let offerService: OfferService;
@@ -23,7 +24,7 @@ describe('OfferService', () => {
         sqlite_setup('./db/tmp.tester.offer.service.sqlite'),
         TypeOrmModule.forFeature(entityArr),
       ],
-      providers: [OfferService, UserService, TransitRequestService],
+      providers: [OfferService, UserService, TransitRequestService, PlzService],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);
@@ -45,32 +46,6 @@ describe('OfferService', () => {
       await expect(
         offerService.postOffer(providerId, offerDto),
       ).resolves.toBeDefined();
-    });
-  });
-
-  describe('checkIfPlzIsDuplicate', () => {
-    it('should check if PLZ is duplicate and return the Plz object', async () => {
-      const plz = '12345';
-      const location = 'test';
-
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(
-        plz,
-        location,
-      );
-
-      expect(duplicatePlz).toBeDefined();
-    });
-
-    it('should return null if PLZ is not duplicate', async () => {
-      const plz = '54321';
-      const location = 'test';
-
-      const duplicatePlz = await offerService.checkIfPlzIsDuplicate(
-        plz,
-        location,
-      );
-
-      expect(duplicatePlz).toBeNull();
     });
   });
 

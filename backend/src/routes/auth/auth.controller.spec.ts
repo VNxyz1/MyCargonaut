@@ -12,6 +12,7 @@ import { UserController } from '../user/user.controller';
 import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('AuthController', () => {
   let userController: UserController;
@@ -34,6 +35,7 @@ describe('AuthController', () => {
       offers: [],
       trips: [],
       requestedTransits: [],
+      requestedTrips: [],
     },
   };
 
@@ -44,7 +46,7 @@ describe('AuthController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

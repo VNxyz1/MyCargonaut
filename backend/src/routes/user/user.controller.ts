@@ -152,7 +152,7 @@ export class UserController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: './uploads/profile-images',
-        filename: (req, file, callback) => {
+        filename: (req: any, file, callback) => {
           const uniquSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
           const prefix = req.session.userData.id;
