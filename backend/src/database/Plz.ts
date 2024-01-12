@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoutePart } from './RoutePart';
+import { TripRequest } from './TripRequest';
 
 @Entity()
 export class Plz {
@@ -18,4 +19,10 @@ export class Plz {
 
   @OneToMany(() => RoutePart, (rP) => rP.plz)
   routeParts: RoutePart[];
+
+  @OneToMany(() => TripRequest, (request) => request.startPlz)
+  requestStartPlz: TripRequest[];
+
+  @OneToMany(() => TripRequest, (request) => request.endPlz)
+  requestEndPlz: TripRequest[];
 }

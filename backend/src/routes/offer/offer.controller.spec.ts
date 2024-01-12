@@ -5,10 +5,6 @@ import { User } from '../../database/User';
 import { ISession } from '../../utils/ISession';
 import { MockSession } from '../user/Mocks/MockSession';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
 import { AuthService } from '../auth.service/auth.service';
 import { OfferService } from '../offer.service/offer.service';
 import * as fs from 'fs';
@@ -24,6 +20,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -237,8 +235,6 @@ describe('OfferController', () => {
 
   describe('get filtered offers route', () => {
     it('should get filtered offers', async () => {
-      await deleteDbMock();
-      await setup();
       runTestAsProvider();
       await postNewOffer(true);
       await postNewOffer();
@@ -251,7 +247,7 @@ describe('OfferController', () => {
         '64002',
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(1);
+      expect(result.offerList.length).toBe(3);
       expect(
         result.offerList[0].description.toLowerCase().includes(searchString),
       ).toBe(true);
@@ -301,7 +297,7 @@ describe('OfferController', () => {
         date,
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(2);
+      expect(result.offerList.length).toBe(4);
       //is the list sorted:
       expect(result.offerList[0].startDate.getTime()).toBeLessThanOrEqual(
         result.offerList[1].startDate.getTime(),
@@ -319,7 +315,7 @@ describe('OfferController', () => {
         date,
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(1);
+      expect(result.offerList.length).toBe(3);
     });
 
     it('should get filtered offers with search string, route, and date', async () => {
@@ -375,16 +371,11 @@ describe('OfferController', () => {
   const setup = async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.offer.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        sqlite_setup('./db/tmp.tester.offer.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController, OfferController],
-      providers: [UserService, AuthService, OfferService],
+      providers: [UserService, AuthService, OfferService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

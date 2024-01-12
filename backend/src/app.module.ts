@@ -4,18 +4,17 @@ import { join } from 'path';
 import { UserController } from './routes/user/user.controller';
 import { UserService } from './routes/user.service/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './database/User';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthService } from './routes/auth.service/auth.service';
 import { OfferService } from './routes/offer.service/offer.service';
 import { OfferController } from './routes/offer/offer.controller';
-import { Offer } from './database/Offer';
-import { Plz } from './database/Plz';
-import { TransitRequest } from './database/TransitRequest';
 import { TransitRequestService } from './routes/transit-request.service/transit-request.service';
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { RoutePart } from './database/RoutePart';
+import { RequestController } from './routes/request/request.controller';
+import { RequestService } from './routes/request.service/request.service';
+import { PlzService } from './routes/plz.service/plz.service';
+import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -59,23 +58,26 @@ if (process.env.RUNNS_ON_DOCKER === "true") {
           host: process.env.DB_HOST,
           username: user.toString(),
           password: pass.toString(),
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          entities: entityArr,
           synchronize: true,
         })
-      : TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-    TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
-  ],
+      : sqlite_setup('./db/tmp.sqlite'),
+      TypeOrmModule.forFeature(entityArr),
+      ],
   controllers: [
     UserController,
     AuthController,
     OfferController,
     TransitRequestController,
+    RequestController,
   ],
-  providers: [UserService, AuthService, OfferService, TransitRequestService],
+  providers: [
+    UserService,
+    AuthService,
+    OfferService,
+    TransitRequestService,
+    RequestService,
+    PlzService,
+  ],
 })
 export class AppModule {}

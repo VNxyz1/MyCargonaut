@@ -10,6 +10,7 @@ import { UpdateOfferRequestDto } from '../offer/DTOs/UpdateOfferRequestDto';
 import { TripState } from '../../database/TripState';
 import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
+import { PlzService } from '../plz.service/plz.service';
 
 @Injectable()
 export class OfferService {
@@ -18,12 +19,11 @@ export class OfferService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Offer)
     private readonly offerRepository: Repository<Offer>,
-    @InjectRepository(Plz)
-    private readonly plzRepository: Repository<Plz>,
     @InjectRepository(TransitRequest)
     private readonly transitRequestRepository: Repository<TransitRequest>,
     @InjectRepository(RoutePart)
     private readonly routePartRepository: Repository<RoutePart>,
+    private readonly plzService: PlzService,
   ) {}
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
@@ -48,21 +48,14 @@ export class OfferService {
     const offerDb = await this.offerRepository.save(offer);
 
     for (const routePartDto of offerDto.route) {
-      const plz = await this.createPlz(routePartDto.plz, routePartDto.location);
+      const plz = await this.plzService.createPlz(
+        routePartDto.plz,
+        routePartDto.location,
+      );
       await this.createRoutePart(offerDb, plz, routePartDto.position);
     }
 
     return offerDb;
-  }
-
-  async checkIfPlzIsDuplicate(
-    plz: string,
-    location: string,
-  ): Promise<Plz | null> {
-    return await this.plzRepository.findOne({
-      where: { plz, location },
-      relations: ['routeParts'],
-    });
   }
 
   async getOffers(searchFor?: string) {
@@ -101,18 +94,6 @@ export class OfferService {
     return offer;
   }
 
-  private async createPlz(plz: string, location: string) {
-    const checkPlz = await this.checkIfPlzIsDuplicate(plz, location);
-
-    if (!checkPlz) {
-      const newPlz = new Plz();
-      newPlz.plz = plz;
-      newPlz.location = location;
-      return await this.plzRepository.save(newPlz);
-    }
-    return checkPlz;
-  }
-
   async updateOffer(updateData: UpdateOfferRequestDto, offer: Offer) {
     if (updateData.description) {
       offer.description = updateData.description;
@@ -133,7 +114,7 @@ export class OfferService {
       }
 
       for (const createRoutePartDto of updateData.route) {
-        const plz = await this.createPlz(
+        const plz = await this.plzService.createPlz(
           createRoutePartDto.plz,
           createRoutePartDto.location,
         );
