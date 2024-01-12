@@ -3,13 +3,13 @@ import {
   Controller,
   Delete,
   ForbiddenException,
-  Get,
+  Get, InternalServerErrorException,
   NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  Query,
+  Query, Res,
   Session,
   UploadedFile,
   UseGuards,
@@ -33,6 +33,7 @@ import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto'
 import { existsSync, unlinkSync } from 'fs';
 import { fileInterceptor } from './requesterFileInterceptor';
 import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
+import {Response} from "express";
 
 @ApiTags('request')
 @Controller('request')
@@ -182,6 +183,29 @@ export class RequestController {
     await this.requestService.save(updatedTripRequest);
 
     return new OKResponseWithMessageDTO(true, 'Update successful.');
+  }
+
+  @Get('cargo-image/:imagename')
+  @ApiOperation({ description: 'Get a cargo image' })
+  @ApiResponse({
+    description: 'The retrieved cargo image',
+    type: 'image/png',
+  })
+  async findCargoImage(
+      @Param('imagename') imagename: string,
+      @Res() res: Response,
+  ) {
+    try {
+      const imagePath = join(
+          process.cwd(),
+          'uploads',
+          'cargo-images',
+          imagename,
+      );
+      res.sendFile(imagePath);
+    } catch (error) {
+      return new InternalServerErrorException('Image not found');
+    }
   }
 
   loggedInUserIsRequester(userId: number, tripRequest: TripRequest) {

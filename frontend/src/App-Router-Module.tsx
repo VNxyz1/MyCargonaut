@@ -12,8 +12,10 @@ import MessagesPage from "./view/pages/Messages-Page";
 import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
 import {useEffect, useState} from "react";
 import {Offer} from "./interfaces/Offer.ts";
+import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
 
 function RoutesComponent() {
+    // @ts-ignore wird vielleicht noch gebraucht
     const [offers, setOffers] = useState<Offer[]>([]);
 
 
@@ -50,7 +52,8 @@ function RoutesComponent() {
                 <Route path="/search-transport" element={<SearchTransportPage />} />
                 <Route path="/search-cargo" element={<SearchCargoPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/trip/:id" element={<TripDetailPage offers={offers} />} />
+                <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
+                <Route path="/404" element={<BadRequestPage/>} />
             </Routes>
             <FooterComponent />
         </BrowserRouter>

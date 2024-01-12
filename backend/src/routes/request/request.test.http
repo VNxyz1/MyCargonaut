@@ -1,0 +1,17 @@
+### Trip Request Offer
+POST localhost:3000/request HTTP/2
+Content-Type: application/json
+
+{
+  "startPlz": {
+    "plz": "63679",
+    "location": "Nidda"
+  },
+  "endPlz": {
+    "plz": "35390",
+    "location": "Gießen"
+  },
+  "description": "Das ist ein Test!",
+  "startDate": "2024-02-18",
+  "seats": 1
+}
