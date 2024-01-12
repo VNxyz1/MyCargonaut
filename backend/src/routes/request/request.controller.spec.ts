@@ -13,14 +13,14 @@ import { RoutePart } from '../../database/RoutePart';
 import { TripRequest } from '../../database/TripRequest';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import * as fs from 'fs';
-import { cargoImg, MockPostTripRequest } from './Mock/MockPostTripRequest';
+import {cargoImg, MockPostTripRequest} from './Mock/MockPostTripRequest';
 import { ISession } from '../../utils/ISession';
 import { MockSession } from '../user/Mocks/MockSession';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
 import { GetAllTripRequestResponseDto } from './DTOs/GetAllTripRequestResponseDto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { MockUpdateTripRequest } from './Mock/MockUpdateTripRequest';
+import {MockUpdateTripRequest} from './Mock/MockUpdateTripRequest';
 
 describe('RequestController', () => {
   let requestController: RequestController;
@@ -142,17 +142,54 @@ describe('RequestController', () => {
 
   describe('updateParams function', () => {
     it('should update the startPlz', async () => {
+      const updateData = new MockUpdateTripRequest(true);
       await expect(
-        requestController.updateParams(
-          1,
-          session,
-          new MockUpdateTripRequest(true),
-        ),
+          requestController.updateParams(
+              1,
+              session,
+              updateData,
+          ),
       ).resolves.toStrictEqual(
-        new OKResponseWithMessageDTO(true, 'Update successful.'),
+          new OKResponseWithMessageDTO(true, 'Update successful.'),
       );
+      const tR = await requestController.getOne(1);
+      expect(tR.startPlz.plz).toBe(updateData.startPlz.plz);
+      expect(tR.startPlz.location).toBe(updateData.startPlz.location);
     });
 
+    it('should update the endPlz', async () => {
+      const updateData = new MockUpdateTripRequest(false,true);
+      await expect(
+          requestController.updateParams(
+              1,
+              session,
+              updateData,
+          ),
+      ).resolves.toStrictEqual(
+          new OKResponseWithMessageDTO(true, 'Update successful.'),
+      );
+      const tR = await requestController.getOne(1);
+      expect(tR.endPlz.plz).toBe(updateData.endPlz.plz);
+      expect(tR.endPlz.location).toBe(updateData.endPlz.location);
+    });
+
+    it('should update the startPlz and endPlz', async () => {
+      const updateData = new MockUpdateTripRequest(true, true);
+      await expect(
+          requestController.updateParams(
+              1,
+              session,
+              updateData,
+          ),
+      ).resolves.toStrictEqual(
+          new OKResponseWithMessageDTO(true, 'Update successful.'),
+      );
+      const tR = await requestController.getOne(1);
+      expect(tR.endPlz.plz).toBe(updateData.endPlz.plz);
+      expect(tR.endPlz.location).toBe(updateData.endPlz.location);
+      expect(tR.startPlz.plz).toBe(updateData.startPlz.plz);
+      expect(tR.startPlz.location).toBe(updateData.startPlz.location);
+    });
   });
 
   afterAll(async () => {

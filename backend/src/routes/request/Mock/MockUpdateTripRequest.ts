@@ -1,4 +1,6 @@
 import { CreatePlzDto } from '../../offer/DTOs/CreatePlzDto';
+import * as fs from "fs";
+import {join} from "path";
 
 export class MockUpdateTripRequest {
   startPlz?: CreatePlzDto;
@@ -29,3 +31,25 @@ export class MockUpdateTripRequest {
     this.seats = seats ? 1 : undefined;
   }
 }
+
+const filePath = join(
+    process.cwd(),
+    'src',
+    'routes',
+    'request',
+    'Mock',
+    'user-default-2-placeholder.png',
+);
+
+export const cargoImgUpdate: Express.Multer.File = {
+  buffer: fs.readFileSync(filePath),
+  destination: './',
+  encoding: '7bit',
+  fieldname: 'cargoImg',
+  filename: 'user-default-2-placeholder.png',
+  mimetype: 'image/png',
+  originalname: 'cargoImg',
+  path: filePath,
+  size: fs.statSync(filePath).size,
+  stream: undefined,
+};
