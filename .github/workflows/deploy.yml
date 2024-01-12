@@ -33,7 +33,7 @@ jobs:
           known_hosts: ${{ secrets.DEVELOPMENT_TEST_SERVER_KNOWN_HOSTS }}
 
       - name: Deploy to server
-        uses: alex-ac/github-action-ssh-docker-compose@v1
+        uses: alex-ac/github-action-ssh-docker-compose
         with:
           ssh_private_key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
           ssh_host: ${{ secrets.DEVELOPMENT_TEST_SERVER_IP }}
