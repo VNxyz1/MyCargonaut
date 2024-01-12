@@ -57,8 +57,8 @@ console.log({
     MulterModule.register({
       dest: './uploads',
     }),
-    process.env.RUNNS_ON_DOCKER
-      ? TypeOrmModule.forRoot({
+    process.env.RUNNS_ON_DOCKER === "true" ?
+        TypeOrmModule.forRoot({
           type: 'mysql',
           database: process.env.DB_DATABASE,
           port: Number(process.env.DB_PORT),

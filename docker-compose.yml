@@ -47,7 +47,7 @@ services:
       DB_DATABASE: webappdb
       DB_PASSWORD_FILE: run/secrets/pass
       DB_USER_FILE: run/secrets/user
-      RUNNS_ON_DOCKER: true
+      RUNNS_ON_DOCKER: "true"
     secrets:
       - user
       - pass
