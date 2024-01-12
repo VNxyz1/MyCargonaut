@@ -32,11 +32,10 @@ jobs:
           key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
           known_hosts: ${{ secrets.DEVELOPMENT_TEST_SERVER_KNOWN_HOSTS }}
 
-      - name: Deploy Stack
-        uses: appleboy/ssh-action@master
+      - name: Deploy to server
+        uses: alex-ac/github-action-ssh-docker-compose@v1
         with:
-          host: ${{ secrets.DEVELOPMENT_TEST_SERVER_IP }}
-          username: ${{ secrets.GL_SSH_USERNAME }}
-          key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
-          script: |
-            whoami
+          ssh_private_key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
+          ssh_host: ${{ secrets.DEVELOPMENT_TEST_SERVER_IP }}
+          ssh_user: ${{ secrets.DEVELOPMENT_TEST_SERVER_USER }}
+          docker_compose_filename: docker-compose.yml
