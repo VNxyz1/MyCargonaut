@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Session,
   UploadedFile,
   UseGuards,
@@ -31,6 +32,7 @@ import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto';
 import { existsSync, unlinkSync } from 'fs';
 import { fileInterceptor } from './requesterFileInterceptor';
+import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
 
 @ApiTags('request')
 @Controller('request')
@@ -78,6 +80,51 @@ export class RequestController {
     const tR = await this.requestService.getById(tripRequestId);
 
     return this.convertToGetDto(tR);
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'gets all trip request' })
+  @ApiResponse({ type: GetAllTripRequestResponseDto })
+  async getFilter(@Query() query: GetFilteredTripRequestRequestDto) {
+    let tRArr: TripRequest[];
+
+    if (query.searchString) {
+      tRArr = await this.requestService.getFilteredBySearchstring(
+        query.searchString,
+      );
+    } else {
+      tRArr = await this.requestService.getAll();
+    }
+
+    if (query.seats) {
+      const seats = Number(query.seats);
+      tRArr = this.filterRequestsBySeats(seats, tRArr);
+    }
+
+    if (query.date) {
+      const date = new Date(query.date);
+      tRArr = this.filterAndSortByDate(date, tRArr);
+    }
+
+    if (query.fromPLZ && !query.toPLZ) {
+      tRArr = this.filterStartByPlz(query.fromPLZ, tRArr);
+    }
+
+    if (query.toPLZ && !query.fromPLZ) {
+      tRArr = this.filterEndByPlz(query.toPLZ, tRArr);
+    }
+
+    if (query.fromPLZ && query.toPLZ) {
+      tRArr = this.filterStartToEndPlz(query.fromPLZ, query.toPLZ, tRArr);
+    }
+
+    /* TODO: filterByRating */
+
+    const dto = new GetAllTripRequestResponseDto();
+    dto.tripRequests = tRArr.map((tR) => {
+      return this.convertToGetDto(tR);
+    });
+    return dto;
   }
 
   @Delete(':id')
@@ -230,5 +277,44 @@ export class RequestController {
     dto.seats = tripRequest.seats;
 
     return dto;
+  }
+
+  filterRequestsBySeats(
+    seats: number,
+    tripRequests: TripRequest[],
+  ): TripRequest[] {
+    return tripRequests.filter((tR) => tR.seats === seats);
+  }
+
+  filterAndSortByDate(date: Date, tripRequests: TripRequest[]) {
+    const filteredRequests = tripRequests.filter((tR) => {
+      return tR.startDate >= date;
+    });
+
+    filteredRequests.sort((a, b) => {
+      const aDateNumber = a.startDate.getTime();
+      const bDateNumber = b.startDate.getTime();
+      return aDateNumber - bDateNumber;
+    });
+
+    return filteredRequests;
+  }
+
+  filterStartByPlz(startPlz: string, tripRequests: TripRequest[]) {
+    return tripRequests.filter((tR) => tR.startPlz.plz === startPlz);
+  }
+
+  filterEndByPlz(endPlz: string, tripRequests: TripRequest[]) {
+    return tripRequests.filter((tR) => tR.endPlz.plz === endPlz);
+  }
+
+  filterStartToEndPlz(
+    fromPlz: string,
+    toPlz: string,
+    tripRequests: TripRequest[],
+  ): TripRequest[] {
+    return tripRequests.filter((tR) => {
+      return tR.endPlz.plz === toPlz && tR.startPlz.plz === fromPlz;
+    });
   }
 }

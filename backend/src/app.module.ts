@@ -22,24 +22,24 @@ import * as fs from 'fs';
 let user: Buffer;
 let pass: Buffer;
 
-if (process.env.RUNNS_ON_DOCKER === "true") {
-    const userPath = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        process.env.DB_USER_FILE,
-    );
-    const passPath = path.join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        process.env.DB_PASSWORD_FILE,
-    );
+if (process.env.RUNNS_ON_DOCKER === 'true') {
+  const userPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    process.env.DB_USER_FILE,
+  );
+  const passPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    '..',
+    process.env.DB_PASSWORD_FILE,
+  );
 
-    user = fs.readFileSync(userPath);
-    pass = fs.readFileSync(passPath);
+  user = fs.readFileSync(userPath);
+  pass = fs.readFileSync(passPath);
 }
 
 @Module({
@@ -50,8 +50,8 @@ if (process.env.RUNNS_ON_DOCKER === "true") {
     MulterModule.register({
       dest: './uploads',
     }),
-    process.env.RUNNS_ON_DOCKER === "true" ?
-        TypeOrmModule.forRoot({
+    process.env.RUNNS_ON_DOCKER === 'true'
+      ? TypeOrmModule.forRoot({
           type: 'mysql',
           database: process.env.DB_DATABASE,
           port: Number(process.env.DB_PORT),
@@ -62,8 +62,8 @@ if (process.env.RUNNS_ON_DOCKER === "true") {
           synchronize: true,
         })
       : sqlite_setup('./db/tmp.sqlite'),
-      TypeOrmModule.forFeature(entityArr),
-      ],
+    TypeOrmModule.forFeature(entityArr),
+  ],
   controllers: [
     UserController,
     AuthController,
