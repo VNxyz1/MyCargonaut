@@ -54,7 +54,7 @@ export class User {
     nullable: true,
     default: new Date().toISOString(),
   })
-  entryDate: Date;
+  entryDate: string;
 
   @OneToMany(() => TransitRequest, (transitRequest) => transitRequest.requester)
   requestedTransits: TransitRequest[];

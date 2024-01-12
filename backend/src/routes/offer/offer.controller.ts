@@ -13,7 +13,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import {ApiOperation, ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OfferService } from '../offer.service/offer.service';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { CreateOfferDto } from './DTOs/CreateOfferDto';
@@ -79,14 +79,34 @@ export class OfferController {
   @ApiOperation({
     summary:
       'Gets offers that match a search string, including the description, location (plz), and date.',
-    description: 'Example request: "offers/search?search=test&fromPLZ=63679&toPLZ=64002&rating=4&date=2025-01-01".',
+    description:
+      'Example request: "offers/search?search=test&fromPLZ=63679&toPLZ=64002&rating=4&date=2025-01-01".',
   })
-  @ApiQuery({ name: 'search', description: "A search string to filter offers by." })
-  @ApiQuery({ name: 'fromPLZ', description: "The starting postal code for filtering offers by location." })
-  @ApiQuery({ name: 'toPLZ', description: "The ending postal code for filtering offers by location." })
-  @ApiQuery({ name: 'seats', description: "A number of seats to filter offers by." })
-  @ApiQuery({ name: 'date', description: "A date to filter offers by. Must be in the format YYYY-MM-DD." })
-  @ApiQuery({ name: 'rating', description: "A rating to filter offers by. Must be between 0 and 5." })
+  @ApiQuery({
+    name: 'search',
+    description: 'A search string to filter offers by.',
+  })
+  @ApiQuery({
+    name: 'fromPLZ',
+    description: 'The starting postal code for filtering offers by location.',
+  })
+  @ApiQuery({
+    name: 'toPLZ',
+    description: 'The ending postal code for filtering offers by location.',
+  })
+  @ApiQuery({
+    name: 'seats',
+    description: 'A number of seats to filter offers by.',
+  })
+  @ApiQuery({
+    name: 'date',
+    description:
+      'A date to filter offers by. Must be in the format YYYY-MM-DD.',
+  })
+  @ApiQuery({
+    name: 'rating',
+    description: 'A rating to filter offers by. Must be between 0 and 5.',
+  })
   @ApiResponse({
     type: GetAllOffersResponseDto,
     description: 'An array of offers that match the search criteria.',

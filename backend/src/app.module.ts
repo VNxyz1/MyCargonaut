@@ -16,6 +16,38 @@ import { TransitRequestService } from './routes/transit-request.service/transit-
 import { TransitRequestController } from './routes/transit-request/transit-request.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { RoutePart } from './database/RoutePart';
+import * as process from 'process';
+import * as path from 'path';
+import * as fs from 'fs';
+
+const userPath = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  process.env.DB_USER_FILE,
+);
+const passPath = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  process.env.DB_PASSWORD_FILE,
+);
+
+const user = fs.readFileSync(userPath);
+const pass = fs.readFileSync(passPath);
+
+console.log({
+  type: 'mysql',
+  database: process.env.DB_DATABASE,
+  port: Number(process.env.DB_PORT),
+  host: process.env.DB_HOST,
+  username: user.toString(),
+  password: pass.toString(),
+  entities: [User, Offer, Plz, TransitRequest, RoutePart],
+  synchronize: true,
+});
 
 @Module({
   imports: [
@@ -25,12 +57,23 @@ import { RoutePart } from './database/RoutePart';
     MulterModule.register({
       dest: './uploads',
     }),
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: './db/tmp.sqlite',
-      entities: [User, Offer, Plz, TransitRequest, RoutePart],
-      synchronize: true,
-    }),
+    process.env.RUNNS_ON_DOCKER
+      ? TypeOrmModule.forRoot({
+          type: 'mysql',
+          database: process.env.DB_DATABASE,
+          port: Number(process.env.DB_PORT),
+          host: process.env.DB_HOST,
+          username: user.toString(),
+          password: pass.toString(),
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          synchronize: true,
+        })
+      : TypeOrmModule.forRoot({
+          type: 'sqlite',
+          database: './db/tmp.sqlite',
+          entities: [User, Offer, Plz, TransitRequest, RoutePart],
+          synchronize: true,
+        }),
     TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
   ],
   controllers: [

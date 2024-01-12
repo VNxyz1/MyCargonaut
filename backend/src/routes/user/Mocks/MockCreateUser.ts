@@ -15,7 +15,7 @@ export class MockCreateUser {
 
   description: string;
 
-  entryDate: Date;
+  entryDate: string;
 
   constructor(asProvider?: boolean, user?: User) {
     this.eMail = 'tester@test.com';
@@ -27,7 +27,7 @@ export class MockCreateUser {
       this.eMail = 'testerDrei@test.com';
     }
 
-    this.entryDate = new Date('2021-02-18');
+    this.entryDate = '2021-02-18';
     this.firstName = 'Max';
     this.lastName = 'Mustermann';
     this.password = '1234';

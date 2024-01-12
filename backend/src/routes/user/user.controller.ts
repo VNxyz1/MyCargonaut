@@ -51,7 +51,7 @@ export class UserController {
     userDto.lastName = user.lastName;
     userDto.birthday = user.birthday;
     userDto.coins = user.coins;
-    userDto.entryDate = user.entryDate;
+    userDto.entryDate = new Date(user.entryDate);
     userDto.description = user.description;
     userDto.requestedTransits = user.requestedTransits;
 
@@ -136,7 +136,7 @@ export class UserController {
       userDto.profilePicture = user.profilePicture;
       userDto.phoneNumber = user.phoneNumber;
       userDto.description = user.description;
-      userDto.entryDate = user.entryDate;
+      userDto.entryDate = new Date(user.entryDate);
       return userDto;
     });
   }
@@ -152,7 +152,7 @@ export class UserController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: './uploads/profile-images',
-        filename: (req, file, callback) => {
+        filename: (req: any, file, callback) => {
           const uniquSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
           const prefix = req.session.userData.id;
