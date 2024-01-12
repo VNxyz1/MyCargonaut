@@ -1,0 +1,42 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - docker-pipe
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and push Docker images
+        run: docker-compose -f docker-compose.yml build
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Push image to DO Container Registry
+        run: docker compose -f docker-compose.prod.yml push
+
+      - name: SSH Key Action
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
+          known_hosts: ${{ secrets.DEVELOPMENT_TEST_SERVER_KNOWN_HOSTS }}
+
+      - name: Deploy Stack
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEVELOPMENT_TEST_SERVER_IP }}
+          username: ${{ secrets.GL_SSH_USERNAME }}
+          key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
+          script: |
+            whoami
