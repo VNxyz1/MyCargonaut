@@ -223,7 +223,7 @@ export class RequestController {
     dto.requester = convertUserToOtherUser(tripRequest.requester);
     dto.startPlz = tripRequest.startPlz;
     dto.endPlz = tripRequest.endPlz;
-    dto.createdAt = tripRequest.createdAt;
+    dto.createdAt = new Date(tripRequest.createdAt);
     dto.description = tripRequest.description;
     dto.cargoImg = tripRequest.cargoImg;
     dto.startDate = tripRequest.startDate;

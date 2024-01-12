@@ -16,7 +16,7 @@ export class TripRequest {
   endPlz: Plz;
 
   @Column({ default: new Date().toISOString() })
-  createdAt: Date;
+  createdAt: string;
 
   @Column({ nullable: true })
   cargoImg: string;

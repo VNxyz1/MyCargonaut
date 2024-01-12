@@ -7,7 +7,7 @@ export const convertOfferToGetOfferDto = (offer: Offer) => {
   const getOfferResponseDto: GetOfferResponseDto = new GetOfferResponseDto();
   getOfferResponseDto.id = offer.id;
   getOfferResponseDto.provider = convertUserToOtherUser(offer.provider);
-  getOfferResponseDto.createdAt = offer.createdAt;
+  getOfferResponseDto.createdAt = new Date(offer.createdAt);
   getOfferResponseDto.clients = offer.clients.map((client) =>
     convertUserToOtherUser(client),
   );
@@ -28,7 +28,7 @@ export const convertUserToOtherUser = (user: User) => {
   otherUserDto.firstName = user.firstName;
   otherUserDto.lastName = user.lastName;
   otherUserDto.profilePicture = user.profilePicture;
-  otherUserDto.entryDate = user.entryDate;
+  otherUserDto.entryDate = new Date(user.entryDate);
 
   return otherUserDto;
 };

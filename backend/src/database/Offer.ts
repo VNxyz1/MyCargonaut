@@ -22,7 +22,7 @@ export class Offer {
   route: RoutePart[];
 
   @Column({ default: new Date().toISOString() })
-  createdAt: Date;
+  createdAt: string;
 
   @ManyToMany(() => User, (user) => user.trips, { eager: true })
   clients: User[];
