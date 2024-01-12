@@ -21,8 +21,11 @@ export class Offer {
   @OneToMany(() => RoutePart, (rP) => rP.offer, { eager: true, cascade: true })
   route: RoutePart[];
 
-  @Column({ default: new Date().toISOString() })
-  createdAt: Date;
+  @Column({
+    nullable: true,
+    default: new Date().toISOString(),
+  })
+  createdAt: string;
 
   @ManyToMany(() => User, (user) => user.trips, { eager: true })
   clients: User[];

@@ -51,7 +51,7 @@ export class UserController {
     userDto.lastName = user.lastName;
     userDto.birthday = user.birthday;
     userDto.coins = user.coins;
-    userDto.entryDate = user.entryDate;
+    userDto.entryDate = new Date(user.entryDate);
     userDto.description = user.description;
     userDto.requestedTransits = user.requestedTransits;
 
@@ -136,7 +136,7 @@ export class UserController {
       userDto.profilePicture = user.profilePicture;
       userDto.phoneNumber = user.phoneNumber;
       userDto.description = user.description;
-      userDto.entryDate = user.entryDate;
+      userDto.entryDate = new Date(user.entryDate);
       return userDto;
     });
   }

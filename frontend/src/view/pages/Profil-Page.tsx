@@ -174,7 +174,7 @@ function ProfilPage() {
 
 
                             <img
-                                src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
+                                src={profileImageUrl ? `${window.location.protocol}//${window.location.host}/user/profile-image/${profileImageUrl}` : placeholderImg}
                                 alt="User profile image"
                             />
 
