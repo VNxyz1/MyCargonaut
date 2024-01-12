@@ -5,12 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import * as fs from 'fs';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
-import { TripRequest } from '../../database/TripRequest';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -20,20 +16,8 @@ describe('AuthService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.auth.service.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([
-          User,
-          Offer,
-          Plz,
-          TransitRequest,
-          RoutePart,
-          TripRequest,
-        ]),
+        sqlite_setup('./db/tmp.tester.auth.service.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       providers: [UserService, AuthService, PlzService],
     }).compile();

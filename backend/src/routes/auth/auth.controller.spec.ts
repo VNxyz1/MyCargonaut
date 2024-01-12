@@ -10,11 +10,8 @@ import { LogInRequestDto } from './DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UserController } from '../user/user.controller';
 import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
-import { RoutePart } from '../../database/RoutePart';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { TripRequest } from '../../database/TripRequest';
 
@@ -46,20 +43,8 @@ describe('AuthController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.auth.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart, TripRequest],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([
-          User,
-          Offer,
-          Plz,
-          TransitRequest,
-          RoutePart,
-          TripRequest,
-        ]),
+        sqlite_setup('./db/tmp.tester.auth.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService, PlzService],
