@@ -6,7 +6,6 @@ import {
     ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
     PunctualityRatingHeadline,
     ReliabilityRatingHeadline,
-    TotalRatingHeadline
 } from "./RatingHeadlines";
 
 function AccumulatedRatingsCard(props: {
@@ -33,12 +32,13 @@ function AccumulatedRatingsCard(props: {
 
         const count = ratings.length;
         return {
-            averageTotalRating: total.totalRating / count * 20,
-            averagePunctuality: total.punctuality / count * 20,
-            averageReliability: total.reliability / count * 20,
-            averageComfortDuringTrip: total.comfortDuringTrip / count * 20,
-            averageCargoArrivedUndamaged: total.cargoArrivedUndamaged / count * 20,
-            averagePassengerPleasantness: total.passengerPleasantness / count * 20
+            amount: count,
+            totalRating: total.totalRating / count * 20,
+            punctuality: total.punctuality / count * 20,
+            reliability: total.reliability / count * 20,
+            comfortDuringTrip: total.comfortDuringTrip / count * 20,
+            cargoArrivedUndamaged: total.cargoArrivedUndamaged / count * 20,
+            passengerPleasantness: total.passengerPleasantness / count * 20
         };
     }
 
@@ -47,34 +47,30 @@ function AccumulatedRatingsCard(props: {
     return (
         <Card>
             <Card.Body>
-                <Card.Title>{props.driver ? 'Fahrer' : 'Mitfahrer'} Bewertung</Card.Title>
-                <Card.Subtitle>aus {props.ratings.length} abgegebenen Bewertungen</Card.Subtitle>
+                <Card.Title>
+                    <div className="rating-txt">
+                        {props.driver ? 'Fahrer' : 'Mitfahrer'} Bewertung
+                        <span>{averageRatings.totalRating.toFixed(0)}%</span>
+                    </div>
+                </Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">aus {averageRatings.amount} abgegebenen Bewertungen</Card.Subtitle>
                 <Card.Text>
                     <Row>
                         <div className="rating-wrapper">
                             <div className="rating-txt">
-                                <TotalRatingHeadline/>
-                                <span>{averageRatings.averageTotalRating.toFixed(0)}%</span>
-                            </div>
-                            <ProgressBar now={averageRatings.averageTotalRating}/>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className="rating-wrapper">
-                            <div className="rating-txt">
                                 <PunctualityRatingHeadline/>
-                                <span>{averageRatings.averagePunctuality.toFixed(0)}%</span>
+                                <span>{averageRatings.punctuality.toFixed(0)}%</span>
                             </div>
-                            <ProgressBar now={averageRatings.averagePunctuality}/>
+                            <ProgressBar now={averageRatings.punctuality}/>
                         </div>
                     </Row>
                     <Row>
                         <div className="rating-wrapper">
                             <div className="rating-txt">
                                 <ReliabilityRatingHeadline/>
-                                <span>{averageRatings.averageReliability.toFixed(0)}%</span>
+                                <span>{averageRatings.reliability.toFixed(0)}%</span>
                             </div>
-                            <ProgressBar now={averageRatings.averageReliability}/>
+                            <ProgressBar now={averageRatings.reliability}/>
                         </div>
                     </Row>
                     {!props.driver &&
@@ -82,9 +78,9 @@ function AccumulatedRatingsCard(props: {
                             <div className="rating-wrapper">
                                 <div className="rating-txt">
                                     <ComfortDuringTripRatingHeadline/>
-                                    <span>{averageRatings.averageComfortDuringTrip.toFixed(0)}%</span>
+                                    <span>{averageRatings.comfortDuringTrip.toFixed(0)}%</span>
                                 </div>
-                                <ProgressBar now={averageRatings.averageComfortDuringTrip}/>
+                                <ProgressBar now={averageRatings.comfortDuringTrip}/>
                             </div>
                         </Row>
                     }
@@ -93,9 +89,9 @@ function AccumulatedRatingsCard(props: {
                             <div className="rating-wrapper">
                                 <div className="rating-txt">
                                     <CargoArrivedUndamagedRatingHeadline/>
-                                    <span>{averageRatings.averageCargoArrivedUndamaged.toFixed(0)}%</span>
+                                    <span>{averageRatings.cargoArrivedUndamaged.toFixed(0)}%</span>
                                 </div>
-                                <ProgressBar now={averageRatings.averageCargoArrivedUndamaged}/>
+                                <ProgressBar now={averageRatings.cargoArrivedUndamaged}/>
                             </div>
                         </Row>
                     }
@@ -104,9 +100,9 @@ function AccumulatedRatingsCard(props: {
                             <div className="rating-wrapper">
                                 <div className="rating-txt">
                                     <PassengerPleasantnessRatingHeadline/>
-                                    <span>{averageRatings.averagePassengerPleasantness.toFixed(0)}%</span>
+                                    <span>{averageRatings.passengerPleasantness.toFixed(0)}%</span>
                                 </div>
-                                <ProgressBar now={averageRatings.averagePassengerPleasantness}/>
+                                <ProgressBar now={averageRatings.passengerPleasantness}/>
                             </div>
                         </Row>
                     }

@@ -4,30 +4,35 @@ import StarRating from "./StarRating";
 import {
     CargoArrivedUndamagedRatingHeadline,
     ComfortDuringTripRatingHeadline,
-    PassengerPleasantnessRatingHeadline, PunctualityRatingHeadline, ReliabilityRatingHeadline, TotalRatingHeadline
+    PassengerPleasantnessRatingHeadline, PunctualityRatingHeadline, ReliabilityRatingHeadline
 } from "./RatingHeadlines";
+import { TripRequest } from "../../../interfaces/TripRequest";
+import React, { useEffect } from "react";
+import { getTripRequestById } from "../../../services/tripRequestService";
 
 function RatingDetailCard(props: {
     rating: Rating
 }) {
-    // TODO: get trip details to fill out card, maybe photo of car
+    const [tripData, setTripData] = React.useState<TripRequest>();
+
+    useEffect(() => {
+        getTripRequestById(props.rating.tripId)
+            .then((r) => {
+                setTripData(r);
+            })
+    }, []);
 
     return (
         <Card>
             <Card.Body>
-                <Card.Title>TripName</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">TripDatum</Card.Subtitle>
+                <Card.Title>
+                    <div className="rating-txt">
+                        {tripData ? tripData.startPlz.location : 'Start'} -{">"} {tripData ? tripData.endPlz.location : 'Ende'}
+                        <span>{(props.rating.totalRating * 20).toFixed()}%</span>
+                    </div>
+                </Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">{new Date(props.rating.tripDate).toLocaleDateString()}</Card.Subtitle>
                 <Card.Text>
-                    {props.rating.totalRating > 0 &&
-                        <Row>
-                            <Col xs="auto">
-                                <StarRating initialValue={props.rating.totalRating} disabled />
-                            </Col>
-                            <Col>
-                                <TotalRatingHeadline/>
-                            </Col>
-                        </Row>
-                    }
                     {props.rating.punctuality > 0 &&
                         <Row>
                             <Col xs="auto">

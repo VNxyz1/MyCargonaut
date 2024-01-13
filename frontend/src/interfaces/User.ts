@@ -1,3 +1,4 @@
+import { AverageRatings } from "./AverageRatings";
 
 export interface User {
   id: number;
@@ -22,4 +23,5 @@ export interface User {
 
   entryDate: Date;
 
+  averageRatings: AverageRatings;
 }

@@ -1,8 +1,9 @@
 export interface AverageRatings {
-    averageTotalRating: number;
-    averagePunctuality: number;
-    averageReliability: number;
-    averageComfortDuringTrip: number;
-    averageCargoArrivedUndamaged: number;
-    averagePassengerPleasantness: number;
+    amount: number;
+    totalRating: number;
+    punctuality: number;
+    reliability: number;
+    comfortDuringTrip: number;
+    cargoArrivedUndamaged: number;
+    passengerPleasantness: number;
 }
