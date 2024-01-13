@@ -1,7 +1,13 @@
 import { Card, ProgressBar, Row } from "react-bootstrap";
 import { Rating } from "../../../interfaces/Rating";
 import { AverageRatings } from "../../../interfaces/AverageRatings";
-import { RatingTypes } from "../../../interfaces/RatingTypes";
+import {
+    CargoArrivedUndamagedRatingHeadline,
+    ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
+    PunctualityRatingHeadline,
+    ReliabilityRatingHeadline,
+    TotalRatingHeadline
+} from "./RatingHeadlines";
 
 function AccumulatedRatingsCard(props: {
     ratings: Rating[]
@@ -47,7 +53,7 @@ function AccumulatedRatingsCard(props: {
                     <Row>
                         <div className="rating-wrapper">
                             <div className="rating-txt">
-                                <span><i className="icon-user"></i> {RatingTypes.totalRating}</span>
+                                <TotalRatingHeadline/>
                                 <span>{averageRatings.averageTotalRating.toFixed(0)}%</span>
                             </div>
                             <ProgressBar now={averageRatings.averageTotalRating}/>
@@ -56,7 +62,7 @@ function AccumulatedRatingsCard(props: {
                     <Row>
                         <div className="rating-wrapper">
                             <div className="rating-txt">
-                                <span><i className="icon-clock"></i> {RatingTypes.punctuality}</span>
+                                <PunctualityRatingHeadline/>
                                 <span>{averageRatings.averagePunctuality.toFixed(0)}%</span>
                             </div>
                             <ProgressBar now={averageRatings.averagePunctuality}/>
@@ -65,7 +71,7 @@ function AccumulatedRatingsCard(props: {
                     <Row>
                         <div className="rating-wrapper">
                             <div className="rating-txt">
-                                <span><i className="icon-handshake"></i> {RatingTypes.reliability}</span>
+                                <ReliabilityRatingHeadline/>
                                 <span>{averageRatings.averageReliability.toFixed(0)}%</span>
                             </div>
                             <ProgressBar now={averageRatings.averageReliability}/>
@@ -75,21 +81,32 @@ function AccumulatedRatingsCard(props: {
                         <Row>
                             <div className="rating-wrapper">
                                 <div className="rating-txt">
-                                    <span><i className="icon-face-smile"></i> {RatingTypes.comfortDuringTrip}</span>
+                                    <ComfortDuringTripRatingHeadline/>
                                     <span>{averageRatings.averageComfortDuringTrip.toFixed(0)}%</span>
                                 </div>
                                 <ProgressBar now={averageRatings.averageComfortDuringTrip}/>
                             </div>
                         </Row>
                     }
-                    {!props.driver &&
+                    {props.driver &&
                         <Row>
                             <div className="rating-wrapper">
                                 <div className="rating-txt">
-                                    <span><i className="icon-user"></i> {RatingTypes.cargoArrivedUndamaged}</span>
+                                    <CargoArrivedUndamagedRatingHeadline/>
                                     <span>{averageRatings.averageCargoArrivedUndamaged.toFixed(0)}%</span>
                                 </div>
                                 <ProgressBar now={averageRatings.averageCargoArrivedUndamaged}/>
+                            </div>
+                        </Row>
+                    }
+                    {props.driver &&
+                        <Row>
+                            <div className="rating-wrapper">
+                                <div className="rating-txt">
+                                    <PassengerPleasantnessRatingHeadline/>
+                                    <span>{averageRatings.averagePassengerPleasantness.toFixed(0)}%</span>
+                                </div>
+                                <ProgressBar now={averageRatings.averagePassengerPleasantness}/>
                             </div>
                         </Row>
                     }

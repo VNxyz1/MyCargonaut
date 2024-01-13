@@ -1,6 +1,11 @@
 import { Card, Col, Row } from "react-bootstrap";
 import { Rating } from "../../../interfaces/Rating";
 import StarRating from "./StarRating";
+import {
+    CargoArrivedUndamagedRatingHeadline,
+    ComfortDuringTripRatingHeadline,
+    PassengerPleasantnessRatingHeadline, PunctualityRatingHeadline, ReliabilityRatingHeadline, TotalRatingHeadline
+} from "./RatingHeadlines";
 
 function RatingDetailCard(props: {
     rating: Rating
@@ -13,38 +18,66 @@ function RatingDetailCard(props: {
                 <Card.Title>TripName</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">TripDatum</Card.Subtitle>
                 <Card.Text>
-                    <Row>
-                        <Col xs="auto">
-                            <StarRating initialValue={props.rating.totalRating} disabled />
-                        </Col>
-                        <Col>
-                            <span><i className="icon-user"/> Gesamt</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="auto">
-                            <StarRating initialValue={props.rating.punctuality} disabled />
-                        </Col>
-                        <Col>
-                            <span><i className="icon-clock"/> Pünktlich</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="auto">
-                            <StarRating initialValue={props.rating.reliability} disabled />
-                        </Col>
-                        <Col>
-                            <span><i className="icon-handshake"/> Zuverlässig</span>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs="auto">
-                            <StarRating initialValue={props.rating.comfortDuringTrip} disabled />
-                        </Col>
-                        <Col>
-                            <span><i className="icon-face-smile"/> Wohlsein</span>
-                        </Col>
-                    </Row>
+                    {props.rating.totalRating > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.totalRating} disabled />
+                            </Col>
+                            <Col>
+                                <TotalRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
+                    {props.rating.punctuality > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.punctuality} disabled />
+                            </Col>
+                            <Col>
+                                <PunctualityRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
+                    {props.rating.reliability > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.reliability} disabled />
+                            </Col>
+                            <Col>
+                                <ReliabilityRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
+                    {props.rating.comfortDuringTrip > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.comfortDuringTrip} disabled />
+                            </Col>
+                            <Col>
+                                <ComfortDuringTripRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
+                    {props.rating.cargoArrivedUndamaged > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.cargoArrivedUndamaged} disabled />
+                            </Col>
+                            <Col>
+                                <CargoArrivedUndamagedRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
+                    {props.rating.passengerPleasantness > 0 &&
+                        <Row>
+                            <Col xs="auto">
+                                <StarRating initialValue={props.rating.passengerPleasantness} disabled />
+                            </Col>
+                            <Col>
+                                <PassengerPleasantnessRatingHeadline/>
+                            </Col>
+                        </Row>
+                    }
                 </Card.Text>
             </Card.Body>
         </Card>
