@@ -30,11 +30,16 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
 import { hash } from '../utils/hash';
+import { RatingService } from '../rating.service/rating.service';
 
 @ApiTags('user')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly ratingService: RatingService,
+  )
+   {}
 
   @Get()
   @UseGuards(IsLoggedInGuard)
@@ -57,6 +62,8 @@ export class UserController {
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
+    userDto.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
+    userDto.totalRatings = await this.ratingService.selectAllRatingsByUserId(user.id);
 
     return userDto;
   }
@@ -66,7 +73,10 @@ export class UserController {
   @ApiResponse({ type: GetOtherUserDto })
   async getUser(@Param('id', ParseIntPipe) userId: number) {
     const user = await this.userService.getUserById(userId);
-    return convertUserToOtherUser(user);
+    const response = convertUserToOtherUser(user);
+    response.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
+    response.totalRatings = await this.ratingService.selectAllRatingsByUserId(user.id);
+    return response;
   }
 
   @Post()

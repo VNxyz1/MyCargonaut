@@ -14,6 +14,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { RequestController } from './routes/request/request.controller';
 import { RequestService } from './routes/request.service/request.service';
 import { PlzService } from './routes/plz.service/plz.service';
+import { RatingController } from './routes/rating/rating.controller';
+import { RatingService } from './routes/rating.service/rating.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 import * as process from 'process';
 import * as path from 'path';
@@ -70,6 +72,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     OfferController,
     TransitRequestController,
     RequestController,
+    RatingController,
   ],
   providers: [
     UserService,
@@ -78,6 +81,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     TransitRequestService,
     RequestService,
     PlzService,
+    RatingService,
   ],
 })
 export class AppModule {}
