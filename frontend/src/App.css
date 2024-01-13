@@ -629,3 +629,38 @@ input[type="number"] {
     background-color: var(--color-6);
     border-color: var(--color-6);
 }
+
+/*_______Ratings_______*/
+
+.star {
+    color: var(--color-3); /* Default color for stars */
+}
+
+.star-active {
+    color: var(--color-5); /* Active color for stars */
+}
+
+#prof-ratings .progress{
+    height: 10px;
+    border-radius: 20px;
+}
+#prof-ratings .progress-bar{
+    background-color: var(--color-5);
+}
+
+#prof-ratings .rating-wrapper {
+    margin-bottom: 10px;
+}
+
+#prof-ratings .rating-txt{
+    display: flex;
+    justify-content: space-between;
+}
+
+.rating-columns {
+    column-gap: 20px;
+}
+
+.rating-rows {
+    padding-bottom: 10px;
+}
