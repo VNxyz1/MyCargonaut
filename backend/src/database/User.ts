@@ -63,10 +63,15 @@ export class User {
 
   @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
   requestedTrips: TripRequest[];
+<<<<<<< HEAD
 
   @OneToMany(() => Rating, (rating) => rating.rated)
   ratingsAsRated: Rating[];
 
   @OneToMany(() => Rating, (rating) => rating.rater)
   ratingsAsRater: Rating[];
+=======
+  @OneToMany(() => Rating, (rating) => rating.rated, { eager: true })
+  ratings: Rating[];
+>>>>>>> fe15981 (rebase main)
 }
