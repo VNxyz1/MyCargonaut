@@ -38,8 +38,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly ratingService: RatingService,
-  )
-   {}
+  ) {}
 
   @Get()
   @UseGuards(IsLoggedInGuard)
@@ -62,8 +61,8 @@ export class UserController {
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
-    userDto.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
-    userDto.totalRatings = await this.ratingService.selectAllRatingsByUserId(user.id);
+    userDto.averageRatings =
+      await this.ratingService.selectAverageRatingForUser(user.id);
 
     return userDto;
   }
@@ -75,7 +74,6 @@ export class UserController {
     const user = await this.userService.getUserById(userId);
     const response = convertUserToOtherUser(user);
     response.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
-    response.totalRatings = await this.ratingService.selectAllRatingsByUserId(user.id);
     return response;
   }
 

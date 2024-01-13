@@ -18,6 +18,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { MockUpdateTripRequest } from './Mock/MockUpdateTripRequest';
 import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('RequestController', () => {
   let requestController: RequestController;
@@ -34,7 +35,7 @@ describe('RequestController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, RequestController],
-      providers: [UserService, PlzService, RequestService],
+      providers: [UserService, PlzService, RequestService, RatingService],
     }).compile();
 
     userService = module.get<UserService>(UserService);

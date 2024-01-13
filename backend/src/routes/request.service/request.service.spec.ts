@@ -12,6 +12,7 @@ import { PlzService } from '../plz.service/plz.service';
 import { CreatePlzDto } from '../offer/DTOs/CreatePlzDto';
 import { NotFoundException } from '@nestjs/common';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('RequestService', () => {
   let requestService: RequestService;
@@ -177,7 +178,13 @@ describe('RequestService', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController],
-      providers: [UserService, PlzService, RequestService, PlzService],
+      providers: [
+        UserService,
+        PlzService,
+        RequestService,
+        PlzService,
+        RatingService,
+      ],
     }).compile();
 
     userService = module.get<UserService>(UserService);

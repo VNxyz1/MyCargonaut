@@ -8,6 +8,7 @@ import { UserService } from '../user.service/user.service';
 import { AuthService } from '../auth.service/auth.service';
 import * as fs from 'fs';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('PlzService', () => {
   let userController: UserController;
@@ -21,7 +22,7 @@ describe('PlzService', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService, PlzService],
+      providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

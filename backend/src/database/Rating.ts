@@ -1,47 +1,42 @@
-import {
-    Column,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-  } from 'typeorm';
-  import { User } from './User';
-  import { Offer } from './Offer';
-  
-  @Entity()
-  export class Rating {
-    @PrimaryGeneratedColumn()
-    id: number;
-  
-    @ManyToOne(() => User, (user) => user.ratingsAsRater, { eager: true })
-    rater: User;
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from './User';
+import { Offer } from './Offer';
 
-    @ManyToOne(() => User, (user) => user.ratingsAsRated, { eager: true })
-    rated: User;
+@Entity()
+export class Rating {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(() => Offer, (offer) => offer.ratings, { eager: true })
-    trip: Offer;
+  @ManyToOne(() => User, (user) => user.ratingsAsRater, { eager: true })
+  rater: User;
 
-    @Column()
-    driver: boolean;
+  @ManyToOne(() => User, (user) => user.ratingsAsRated, { eager: true })
+  rated: User;
 
-    @Column('decimal')
-    totalRating: number;
+  @ManyToOne(() => Offer, (offer) => offer.ratings, { eager: true })
+  trip: Offer;
 
-    @Column({ nullable: true})
-    punctuality: number;
+  @Column()
+  driver: boolean;
 
-    @Column({ nullable: true})
-    reliability: number;
+  @Column('decimal')
+  totalRating: number;
 
-    @Column({ nullable: true})
-    comfortDuringTrip: number;
+  @Column({ nullable: true })
+  punctuality: number;
 
-    @Column({ nullable: true})
-    cargoArrivedUndamaged: number;
+  @Column({ nullable: true })
+  reliability: number;
 
-    @Column({ nullable: true})
-    passengerPleasantness: number;
+  @Column({ nullable: true })
+  comfortDuringTrip: number;
 
-    @Column({ default: false })
-    complete: boolean;
-  }
+  @Column({ nullable: true })
+  cargoArrivedUndamaged: number;
+
+  @Column({ nullable: true })
+  passengerPleasantness: number;
+
+  @Column({ default: false })
+  complete: boolean;
+}
