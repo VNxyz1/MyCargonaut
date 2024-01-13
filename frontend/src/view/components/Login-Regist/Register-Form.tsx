@@ -140,7 +140,7 @@ function RegisterForm() {
 
     return (
         <>
-            <Card style={{width: '30rem'}}>
+            <Card style={{width: '30rem'}} className="login-card">
                 <Card.Body>
                     <Card.Title>Sign in</Card.Title>
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>

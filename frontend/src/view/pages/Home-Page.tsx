@@ -52,7 +52,7 @@ function HomePage() {
                     </Col>
                 </Row>
 
-                <Row>
+                <Row className="homeCont-sec">
                     <Col sm={6} className="homeTxtBox-l">
                         <p>TRANSPORTIEREN LASSEN</p>
                         <h3>Suchst du eine Mitfahrgelegenheit oder jemanden, der etwas für dich transportiert?</h3>
