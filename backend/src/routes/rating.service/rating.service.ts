@@ -106,43 +106,7 @@ export class RatingService {
         return averageRatings;
     }
 
-    async selectAllRatingsByUserId(userId: number): Promise<GetUserRatingsDto> {
-        const ratingsAsDriver = await this.ratingRepository.find({where: {rated: Equal(userId), driver: true, complete: true}});
-        const ratingsAsPassenger = await this.ratingRepository.find({where: {rated: Equal(userId), driver: false, complete: true}});
-
-        const ratings: GetUserRatingsDto = new GetUserRatingsDto();
-        ratings.ratingsAsDriver = [];
-        ratings.ratingsAsPassenger = [];
-
-        ratingsAsDriver.forEach(rating => {
-            const driverRating: GetRatingDto = new GetRatingDto();
-            driverRating.rateeId = rating.rated.id;
-            driverRating.raterId = rating.rater.id;
-            driverRating.tripId = rating.trip.id;
-            driverRating.tripDate = rating.trip.startDate.toISOString();
-            driverRating.totalRating = rating.totalRating ? rating.totalRating : 0;
-            driverRating.punctuality = rating.punctuality ? rating.punctuality : 0;
-            driverRating.reliability = rating.reliability ? rating.reliability : 0;
-            driverRating.cargoArrivedUndamaged = rating.cargoArrivedUndamaged ? rating.cargoArrivedUndamaged : 0;
-            driverRating.passengerPleasantness = rating.passengerPleasantness ? rating.passengerPleasantness : 0;
-
-            ratings.ratingsAsDriver.push(driverRating);
-        });
-
-        ratingsAsPassenger.forEach(rating => {
-            const passengerRating: GetRatingDto = new GetRatingDto();
-            passengerRating.rateeId = rating.rated.id;
-            passengerRating.raterId = rating.rater.id;
-            passengerRating.tripId = rating.trip.id;
-            passengerRating.tripDate = rating.trip.startDate.toISOString();
-            passengerRating.totalRating = rating.totalRating ? rating.totalRating : 0;
-            passengerRating.punctuality = rating.punctuality ? rating.punctuality : 0;
-            passengerRating.reliability = rating.reliability ? rating.reliability : 0;
-            passengerRating.comfortDuringTrip = rating.comfortDuringTrip ? rating.comfortDuringTrip : 0;
-
-            ratings.ratingsAsPassenger.push(passengerRating);
-        });
-
-        return ratings;
+    async selectAllRatingsByUserId(userId: number, driverRating: boolean) {
+        return await this.ratingRepository.find({where: {rated: Equal(userId), driver: driverRating, complete: true}});
     }
 }
