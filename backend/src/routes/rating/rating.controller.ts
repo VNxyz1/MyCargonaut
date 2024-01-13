@@ -23,6 +23,7 @@ import { GetRatingDto } from './DTOs/GetRatingResponseDTO';
 import { GetRatingsForTripResponseDTO } from './DTOs/GetRatingsForTripResponseDTO';
 import { GetRatingStatusDto } from './DTOs/GetRatingStatusResponseDTO';
 import { GetAllRatingStatusDto } from './DTOs/GetAllRatingStatusResponseDTO';
+import { GetUserRatingsDto } from './DTOs/GetUserRatingsResponseDTO';
 
 @ApiTags('rating')
 @Controller('rating')
@@ -147,6 +148,58 @@ export class RatingController {
 
     return response;
   }
+
+  @UseGuards(IsLoggedInGuard)
+    @Get('/user/:userId')
+    @ApiOperation({
+        summary: 'Gets all ratings from an user',
+        description: `Allows a logged-in user to get all ratings from an user.`,
+    })
+    @ApiResponse({ type: GetUserRatingsDto })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'Forbidden resource.',
+    })
+    async getUserRatings(@Param('userId') userId: number) {
+        const user = await this.userService.getUserById(userId);
+        const ratingsAsDriver = await this.ratingService.selectAllRatingsByUserId(user.id, true);
+        const ratingsAsPassenger = await this.ratingService.selectAllRatingsByUserId(user.id, false);
+
+        const ratings: GetUserRatingsDto = new GetUserRatingsDto();
+        ratings.ratingsAsDriver = [];
+        ratings.ratingsAsPassenger = [];
+
+        ratingsAsDriver.forEach(rating => {
+            const driverRating: GetRatingDto = new GetRatingDto();
+            driverRating.rateeId = rating.rated.id;
+            driverRating.raterId = rating.rater.id;
+            driverRating.tripId = rating.trip.id;
+            driverRating.tripDate = rating.trip.startDate.toISOString();
+            driverRating.totalRating = rating.totalRating ? rating.totalRating : 0;
+            driverRating.punctuality = rating.punctuality ? rating.punctuality : 0;
+            driverRating.reliability = rating.reliability ? rating.reliability : 0;
+            driverRating.cargoArrivedUndamaged = rating.cargoArrivedUndamaged ? rating.cargoArrivedUndamaged : 0;
+            driverRating.passengerPleasantness = rating.passengerPleasantness ? rating.passengerPleasantness : 0;
+
+            ratings.ratingsAsDriver.push(driverRating);
+        });
+
+        ratingsAsPassenger.forEach(rating => {
+            const passengerRating: GetRatingDto = new GetRatingDto();
+            passengerRating.rateeId = rating.rated.id;
+            passengerRating.raterId = rating.rater.id;
+            passengerRating.tripId = rating.trip.id;
+            passengerRating.tripDate = rating.trip.startDate.toISOString();
+            passengerRating.totalRating = rating.totalRating ? rating.totalRating : 0;
+            passengerRating.punctuality = rating.punctuality ? rating.punctuality : 0;
+            passengerRating.reliability = rating.reliability ? rating.reliability : 0;
+            passengerRating.comfortDuringTrip = rating.comfortDuringTrip ? rating.comfortDuringTrip : 0;
+
+            ratings.ratingsAsPassenger.push(passengerRating);
+        });
+        return ratings;
+    }
 
   @UseGuards(IsLoggedInGuard)
   @Post(':tripId')
