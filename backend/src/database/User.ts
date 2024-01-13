@@ -11,6 +11,8 @@ import { Offer } from './Offer';
 import { TransitRequest } from './TransitRequest';
 import { TripRequest } from './TripRequest';
 import { Rating } from './Rating';
+import { Conversation } from './Conversation';
+import { Message } from './Message';
 
 @Entity()
 @Unique(['eMail'])
@@ -69,4 +71,13 @@ export class User {
 
   @OneToMany(() => Rating, (rating) => rating.rater)
   ratingsAsRater: Rating[];
+
+  @OneToMany(() => Conversation, (conversation) => conversation.user1)
+  conversationUser1: Conversation[];
+
+  @OneToMany(() => Conversation, (conversation) => conversation.user2)
+  conversationUser2: Conversation[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messageSender: Message[];
 }

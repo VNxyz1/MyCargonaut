@@ -1,0 +1,41 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Message } from '../../database/Message';
+import { Conversation } from '../../database/Conversation';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class MessageService {
+    constructor(
+        @InjectRepository(Message)
+        private readonly messageRepository: Repository<Message>,
+        @InjectRepository(Conversation)
+        private readonly conversationRepository: Repository<Conversation>,
+    ) {}
+
+    async getConversation(user1: number, user2: number) {
+        const conversation = await this.conversationRepository
+        .createQueryBuilder('conversation')
+        .leftJoinAndSelect('conversation.user1', 'user1')
+        .leftJoinAndSelect('conversation.user2', 'user2')
+        .leftJoinAndSelect('conversation.messages', 'messages')
+        .where('user1.id = :user1 AND user2.id = :user2 OR user1.id = :user2 AND user2.id = :user1', {
+            user1: user1,
+            user2: user2,
+        })
+        .getOne();
+
+        if (conversation == null) {
+            return null;
+        }
+        return conversation;
+    }
+
+    async createConversation(conversation: Conversation) {
+        return await this.conversationRepository.save(conversation);
+    }
+
+    async createMessage(message: Message) {
+        return await this.messageRepository.save(message);
+    }
+}
