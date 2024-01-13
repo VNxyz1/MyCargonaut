@@ -25,16 +25,15 @@ import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
 import { User } from '../../database/User';
 import { TripState } from '../../database/TripState';
 import { Offer } from '../../database/Offer';
-import {GetTripRequestResponseDto} from "../request/DTOs/GetTripRequestResponseDto";
-import {GetOfferResponseDto} from "./DTOs/GetOfferResponseDto";
-import {UserService} from "../user.service/user.service";
+import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
+import { UserService } from '../user.service/user.service';
 
 @ApiTags('offer')
 @Controller('offer')
 export class OfferController {
   constructor(
-      private readonly offerService: OfferService,
-      private readonly userService: UserService,
+    private readonly offerService: OfferService,
+    private readonly userService: UserService,
   ) {}
 
   @Post()
@@ -254,8 +253,6 @@ export class OfferController {
     await this.offerService.saveOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Offer is reopened');
   }
-
-
 
   userHasProfilePicAndPhoneNumber(user: User) {
     let bothExisting: boolean;
