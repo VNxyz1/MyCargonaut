@@ -1,12 +1,11 @@
 import { Card, ProgressBar, Row } from "react-bootstrap";
-import { AverageRatings } from "../../../interfaces/AverageRatings";
 import {
     CargoArrivedUndamagedRatingHeadline,
     ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
     PunctualityRatingHeadline,
     ReliabilityRatingHeadline,
 } from "./RatingHeadlines";
-import { DriverRating, PassengerRating } from "../../../interfaces/Rating";
+import {AverageRatings, DriverRating, PassengerRating } from "../../../interfaces/Rating";
 
 function AccumulatedRatingsCard(props: {
     ratings: DriverRating[] | PassengerRating[]

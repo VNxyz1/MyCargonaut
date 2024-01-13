@@ -1,4 +1,4 @@
-import { AverageRatings } from "../interfaces/AverageRatings";
+import { AverageRatings } from "../interfaces/Rating";
 
 export interface User {
     id?: number;

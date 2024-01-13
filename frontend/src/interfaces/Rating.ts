@@ -34,3 +34,13 @@ export enum RatingTypes {
     "cargoArrivedUndamaged" = "Cargo intakt angekommen",
     "passengerPleasantness" = "Mitfahrer fühlen sich wohl"
 }
+
+export interface AverageRatings {
+    amount: number;
+    totalRating: number;
+    punctuality: number;
+    reliability: number;
+    comfortDuringTrip: number;
+    cargoArrivedUndamaged: number;
+    passengerPleasantness: number;
+}

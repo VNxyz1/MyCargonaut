@@ -1,4 +1,4 @@
-import { AverageRatings } from "./AverageRatings";
+import { AverageRatings } from "./Rating";
 
 export interface User {
   id: number;
