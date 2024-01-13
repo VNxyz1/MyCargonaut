@@ -18,6 +18,9 @@
 }
 
 /*_____________________________*/
+.spacer {
+    transition: var(--transition);
+}
 
 .mainButton {
     background: var(--color-5) !important;
@@ -64,6 +67,19 @@ body {
 }
 
 /*_____________Navi____________*/
+
+.nav-login-btn {
+    background: var(--color-5);
+    border-radius: 20px !important;
+    border-color: transparent !important;
+    box-shadow: var(--shadow_default) !important;
+    padding: 7px 1.6rem;
+    color: #fff !important;
+}
+
+.nav-login-btn:hover {
+    background: var(--color-6) !important;
+}
 
 .navigation {
     z-index: 100;
@@ -117,17 +133,102 @@ body {
     transition: var(--transition);
 }
 
-.navigation.sticky .navi_content img{
+.navigation.sticky .navi_content img {
     max-width: 140px;
 }
-.spacer{
-   transition: var(--transition);
+
+.logo_cont {
+    z-index: 1;
+}
+
+
+.toggle_button {
+    width: 30px;
+    height: 23px;
+    top: 25px;
+    right: 25px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.bar {
+    height: 4px;
+    width: 100%;
+    background: var(--color-5);
+    border-radius: 100px;
+    transition: var(--transition);
+}
+
+nav input[type="checkbox"] {
+    display: none;
+}
+
+.toggle_button {
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+    .nav-login-btn {
+        border-radius: 0 !important;
+    }
+
+    .nav-login-btn:hover {
+        border-radius: 0 !important;
+        background: var(--color-6) !important;
+    }
+
+    .toggle_button {
+        display: flex;
+    }
+
+    nav ul {
+        background-color: #ffffff;
+
+        opacity: 0;
+        position: absolute;
+        top: 90px;
+        left: 0;
+        width: 100%;
+        gap: 0 !important;
+        height: 0px;
+        transition: var(--transition);
+        padding: 0;
+    }
+
+    nav a {
+        text-align: center;
+        width: 100%;
+        display: block;
+        padding: 10px 0;
+    }
+
+    nav li {
+        width: 100%;
+    }
+
+    #toggle_button:checked ~ ul {
+        height: 220px;
+        opacity: 1;
+    }
+
+    #toggle_button:checked ~ .toggle_button .bar-2 {
+        opacity: 0;
+    }
+
+    #toggle_button:checked ~ .toggle_button .bar-1 {
+        transform: rotate(45deg) translate(4px, 7px);
+    }
+
+    #toggle_button:checked ~ .toggle_button .bar-3 {
+        transform: rotate(-45deg) translate(7px, -9px);
+    }
 }
 
 /*___________Footer____________*/
 .footer {
     background-image: url("assets/img/map_bg.png");
-    background-color: var(--color-4);
+    background-color: #262626ed;
     color: rgba(255, 255, 255, 0.5);
     bottom: 0;
     width: 100%;
@@ -242,12 +343,55 @@ body {
     gap: 30px;
 }
 
+@media (max-width: 1000px) {
+    .home_header {
+        height: 600px;
+    }
+
+    .home_header .homeTitel {
+        font-size: 45px;
+        line-height: 50px;
+    }
+
+    .navi_content {
+        margin: 0 3%;
+    }
+
+}
+@media (max-width: 987px) {
+    .btn_wrapper{
+        flex-direction: column;
+    }
+
+    .btn_wrapper .mainButton{
+        width: 100% !important;
+    }
+
+  .homeTxtBox-l{
+      padding-bottom: 0px !important;
+  }
+    .homeTxtBox-l p{
+        padding-top: 20px !important;
+    }
+}
+@media (max-width: 575px) {
+    .homeCont-sec{
+        flex-direction: column-reverse;
+    }
+
+    .homeTxtBox-r, .homeTxtBox-l{
+        padding: 20px 3% 90px 3% !important;
+    }
+
+}
+
 /*___________Login____________*/
 #login_page {
     background-image: url("assets/img/map_bg.png");
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
+    box-shadow: inset 0 0 0 1000px rgba(255, 255, 255, 0.45);
 }
 
 /*___________Profil____________*/
@@ -349,17 +493,19 @@ body {
     display: inline-block;
     width: 100%;
 }
-#prof-sidebar .prof-lable{
-margin-bottom: 0px;
-font-size: 14px;
-color: #aeaeae;
+
+#prof-sidebar .prof-lable {
+    margin-bottom: 0px;
+    font-size: 14px;
+    color: #aeaeae;
 }
 
-#prof-sidebar .progress{
+#prof-sidebar .progress {
     height: 10px;
     border-radius: 20px;
 }
-#prof-sidebar .progress-bar{
+
+#prof-sidebar .progress-bar {
     background-color: var(--color-5);
 }
 
@@ -367,10 +513,11 @@ color: #aeaeae;
     margin-bottom: 10px;
 }
 
-#prof-sidebar .rating-txt{
+#prof-sidebar .rating-txt {
     display: flex;
     justify-content: space-between;
 }
+
 /*_____NumberFieldSpinner______*/
 
 /* Chrome, Safari, Edge, Opera */
@@ -397,4 +544,55 @@ input[type="number"] {
     height: 100px;
     object-fit: cover;
     margin-right: 10px;
+}
+
+/*________Login & Regist_______*/
+.login-card .card-title {
+    color: var(--color-4);
+    font-size: 30px !important;
+    text-align: center;
+    font-weight: bold !important;
+    margin-bottom: 30px  !important;
+}
+.login-card{
+    border-radius: 20px !important;
+    border: none !important;
+
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+/*________Search-Page_______*/
+#search-sidebar .card {
+    border-radius: 20px !important;
+    border: none !important;
+
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+#search-sidebar input[type="checkbox"]{
+    margin: 0 10px 0 0;
+    accent-color: var(--color-5);
+}
+#search-sidebar p{
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-5);
+    padding: 0;
+    margin: 0;
+}
+#search-sidebar button{
+     border-radius: 0 0 20px 20px !important;
+    margin: 0 !important;
+}
+.searchBar input{
+    border-radius: 20px 0 0 20px;
+}
+.searchBar button{
+    border-radius: 0px 20px 20px 0;
+    background-color: var(--color-5);
+    color: #fff;
+    border-color:  var(--color-5);
+}
+.searchBar button:hover{
+     background-color: var(--color-6);
+    border-color: var(--color-6);
 }
