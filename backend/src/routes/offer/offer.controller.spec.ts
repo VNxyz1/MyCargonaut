@@ -21,6 +21,8 @@ import {
 } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -234,8 +236,6 @@ describe('OfferController', () => {
 
   describe('get filtered offers route', () => {
     it('should get filtered offers', async () => {
-      await deleteDbMock();
-      await setup();
       runTestAsProvider();
       await postNewOffer(true);
       await postNewOffer();
@@ -248,7 +248,7 @@ describe('OfferController', () => {
         '64002',
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(1);
+      expect(result.offerList.length).toBe(3);
       expect(
         result.offerList[0].description.toLowerCase().includes(searchString),
       ).toBe(true);
@@ -298,7 +298,7 @@ describe('OfferController', () => {
         date,
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(2);
+      expect(result.offerList.length).toBe(4);
       //is the list sorted:
       expect(result.offerList[0].startDate.getTime()).toBeLessThanOrEqual(
         result.offerList[1].startDate.getTime(),
@@ -316,7 +316,7 @@ describe('OfferController', () => {
         date,
       );
       expect(result.offerList).toBeDefined();
-      expect(result.offerList.length).toBe(1);
+      expect(result.offerList.length).toBe(3);
     });
 
     it('should get filtered offers with search string, route, and date', async () => {
@@ -376,7 +376,13 @@ describe('OfferController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController, OfferController],
-      providers: [UserService, AuthService, OfferService],
+      providers: [
+        UserService,
+        AuthService,
+        OfferService,
+        PlzService,
+        RatingService,
+      ],
     }).compile();
 
     userController = module.get<UserController>(UserController);

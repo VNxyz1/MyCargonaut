@@ -19,12 +19,17 @@ import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
 import CreateCargoModal from "../components/Profile/CreateCargoModalComponent";
 import CreateTripModal from "../components/Profile/CreateTripModalComponent";
 
-import {User} from "../../models/User";
+import {User} from "../../interfaces/User";
 
 import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
+import {
+    CargoArrivedUndamagedRatingHeadline, ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
+    PunctualityRatingHeadline, ReliabilityRatingHeadline,
+    TotalRatingHeadline
+} from '../components/Ratings/RatingHeadlines';
 
-function ProfilPage() {
+function UserPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
@@ -66,7 +71,7 @@ function ProfilPage() {
     const fetchLoggedInUser = async () => {
         const data = await getLoggedInUser();
         if (data !== null) {
-            setUserData(data);
+            setUserData(data as any);
             setProfileImageUrl((data as any)?.profilePicture);
             const bDate = calculateAge(new Date((data as any)?.birthday));
             setUserAge(bDate);
@@ -153,8 +158,12 @@ function ProfilPage() {
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
-            case "Bewertungen":
-                return <MyRatingsComponent/>;
+            case "Bewertungen": {
+                if (userData?.id) {
+                    return <MyRatingsComponent userId={userData.id}/>;
+                }
+                return <p>Benutzerdaten konnten nicht geladen werden. Versuche es später erneut.</p>
+            }
             default:
                 return null;
         }
@@ -186,7 +195,7 @@ function ProfilPage() {
 
 
                             <img
-                                src={profileImageUrl ? `http://localhost:3000/user/profile-image/${profileImageUrl}` : placeholderImg}
+                                src={profileImageUrl ? `${window.location.protocol}//${window.location.host}/user/profile-image/${profileImageUrl}` : placeholderImg}
                                 alt="User profile image"
                             />
 
@@ -213,29 +222,58 @@ function ProfilPage() {
                             <span className="section-seperator"></span>
 
                             <Row>
-                                <p>Bewertungen 40 (nicht implementiert)</p>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-user"></i> Gesamt</span> <span>97%</span></div>
-                                    <ProgressBar now={97}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-car"></i> Fahrt</span> <span>85%</span></div>
-                                    <ProgressBar now={85}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-clock"></i> Pünktlich</span> <span>100%</span></div>
-                                    <ProgressBar now={100}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-handshake"></i> Zuverlässig</span> <span>70%</span></div>
-                                    <ProgressBar now={70}/>
-                                </div>
-
-                                <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht implementiert)</p>
+                                {userData?.averageRatings ?
+                                    <><p>{userData.averageRatings.amount} Bewertungen</p>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <TotalRatingHeadline/>
+                                                <span>{userData.averageRatings.totalRating > 0 ? userData.averageRatings.totalRating : 0}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.totalRating}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <PunctualityRatingHeadline/>
+                                                <span>{userData.averageRatings.punctuality}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.punctuality}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <ReliabilityRatingHeadline/>
+                                                <span>{userData.averageRatings.reliability}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.reliability}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <ComfortDuringTripRatingHeadline/>
+                                                <span>{userData.averageRatings.comfortDuringTrip}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.comfortDuringTrip}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <CargoArrivedUndamagedRatingHeadline/>
+                                                <span>{userData.averageRatings.cargoArrivedUndamaged}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.cargoArrivedUndamaged}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <PassengerPleasantnessRatingHeadline/>
+                                                <span>{userData.averageRatings.passengerPleasantness}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.passengerPleasantness}/>
+                                        </div></>
+                                    : <p>Bewerungen konnten nicht geladen werden.</p>
+                                }
                             </Row>
 
                             <div className="prof-side-btn-wrapper">
@@ -349,4 +387,4 @@ function ProfilPage() {
     );
 }
 
-export default ProfilPage;
+export default UserPage;

@@ -14,23 +14,42 @@ export const postUser = async (registerData: User): Promise<any> => {
             const data = await response.json();
             console.log(data);
             if (data.ok) {
-                return { success: true, message: data.message };
+                return {success: true, message: data.message};
             } else {
-                return { success: false, message: data.message };
+                return {success: false, message: data.message};
             }
         } else {
             console.error("PROBLEM");
-            return { success: false, message: "An error occurred during registration." };
+            return {success: false, message: "An error occurred during registration."};
         }
     } catch (error) {
         console.error("Error:", error);
-        return { success: false, message: "An error occurred during registration." };
+        return {success: false, message: "An error occurred during registration."};
     }
 };
 
 export const getLoggedInUser = async (): Promise<User | null> => {
     try {
         const res = await fetch("/user", {
+            method: "GET",
+            headers: {},
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            return data;
+        } else {
+            console.error("Error fetching user data");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return null;
+    }
+};
+export const getAUser = async (userId: any): Promise<User | null> => {
+    try {
+        const res = await fetch(`/user/other/${userId}`, {
             method: "GET",
             headers: {},
         });
@@ -134,4 +153,6 @@ export const deleteProfileImage = async (): Promise<boolean> => {
         console.error("Error:", error);
         return false;
     }
+
+
 };

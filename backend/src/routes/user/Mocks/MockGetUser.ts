@@ -1,5 +1,7 @@
 import { TransitRequest } from '../../../database/TransitRequest';
 import { MockGetOffer } from '../../offer.service/Mock/MockGetOffer';
+import { GetAverageRatingsDto } from '../../rating/DTOs/GetAverageRatingsResponseDTO';
+import { GetUserRatingsDto } from '../../rating/DTOs/GetUserRatingsResponseDTO';
 
 export class MockGetUser {
   id: number;
@@ -20,7 +22,7 @@ export class MockGetUser {
 
   description: string;
 
-  entryDate: Date;
+  entryDate: Date | string;
 
   coins: number;
 
@@ -28,6 +30,9 @@ export class MockGetUser {
 
   offers?: MockGetOffer[];
   trips?: MockGetOffer[];
+
+  averageRatings: GetAverageRatingsDto;
+  totalRatings: GetUserRatingsDto;
 
   constructor(asProvider?: boolean, forService?: boolean) {
     this.id = 1;
@@ -50,6 +55,7 @@ export class MockGetUser {
     if (forService) {
       this.offers = [];
       this.trips = [];
+      this.entryDate = '2021-02-18';
     }
   }
 }

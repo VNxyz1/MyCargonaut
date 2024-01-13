@@ -43,7 +43,7 @@ function LoginForm() {
 
     return (
         <>
-            <Card style={{width: '30rem', height: 'min-content'}}>
+            <Card style={{width: '30rem', height: 'min-content'}} className="login-card">
                 <Card.Body>
                     <Card.Title>Login</Card.Title>
                     <Form onSubmit={handleSubmit}>

@@ -25,20 +25,26 @@ import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
 import { User } from '../../database/User';
 import { TripState } from '../../database/TripState';
 import { Offer } from '../../database/Offer';
+import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
+import { UserService } from '../user.service/user.service';
 
 @ApiTags('offer')
 @Controller('offer')
 export class OfferController {
-  constructor(private readonly offerService: OfferService) {}
+  constructor(
+    private readonly offerService: OfferService,
+    private readonly userService: UserService,
+  ) {}
 
   @Post()
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({ summary: 'Creates a new Offer' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateOfferDto, @Session() session: ISession) {
-    this.userHasProfilePicAndPhoneNumber(session.userData);
-
     const userId = session.userData.id;
+    const user = await this.userService.getUserById(userId);
+    this.userHasProfilePicAndPhoneNumber(user);
+
     await this.offerService.postOffer(userId, body);
     return new OKResponseWithMessageDTO(true, 'Offer Created');
   }
@@ -56,6 +62,14 @@ export class OfferController {
     }
 
     return offerListDto;
+  }
+
+  @Get('one/:id')
+  @ApiOperation({ summary: 'gets offer by id' })
+  @ApiResponse({ type: GetOfferResponseDto })
+  async getOne(@Param('id', ParseIntPipe) tripRequestId: number) {
+    const offer = await this.offerService.getOffer(tripRequestId);
+    return convertOfferToGetOfferDto(offer);
   }
 
   @Get('own')

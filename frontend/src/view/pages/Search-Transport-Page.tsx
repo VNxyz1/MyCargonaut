@@ -5,7 +5,7 @@ import img from "../../assets/img/home_transport.png"
 import Button from "react-bootstrap/Button";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-  
+
 
 function SearchTransportPage(
     props: {
@@ -17,14 +17,13 @@ function SearchTransportPage(
 
     return (
         <>
-            <Container className="mt-5 mb-5">
+            <Container className=" content-container">
                 <Row>
-                    <div className="col-sm-3">
+                    <div className="col-sm-3" id="search-sidebar">
                         <Card>
-                            <Card.Footer>
-                                <h3>Kategorie</h3>
-                            </Card.Footer>
+
                             <Card.Body>
+                                <p>Kategorie</p>
                                 <div>
                                     <span>
                                         <input
@@ -42,10 +41,9 @@ function SearchTransportPage(
                                     </span>
                                 </div>
                             </Card.Body>
-                            <Card.Footer>
-                                <h3>Angebotstyp</h3>
-                            </Card.Footer>
+
                             <Card.Body>
+                                <p>Angebotstyp</p>
                                 <div>
                                     <span>
                                         <input 
@@ -63,10 +61,9 @@ function SearchTransportPage(
                                     </span>
                                 </div>
                             </Card.Body>
-                            <Card.Footer>
-                                <h3>Ort</h3>
-                            </Card.Footer>
+
                             <Card.Body>
+                                <p>Ort</p>
                                 <span>
                                     <input
                                         type="checkbox"
@@ -74,15 +71,14 @@ function SearchTransportPage(
                                     <small>Berlin</small>
                                 </span>
                             </Card.Body>
-                            <Card.Footer>
                                 <Button className="mainButton w-100 mb-2">
                                     Filter anwenden
                                 </Button>
-                            </Card.Footer>
                         </Card>
+
                     </div>
                     <div className="col-sm-9">
-                        <div className="input-group mb-3">
+                        <div className="input-group mb-3 searchBar">
                             <input type="text" className="form-control" placeholder="Suche..." aria-label="Suchen" aria-describedby="basic-addon2"/>
                             <div className="input-group-append">
                                 <button className="btn btn-outline-secondary" type="button">Suchen</button>

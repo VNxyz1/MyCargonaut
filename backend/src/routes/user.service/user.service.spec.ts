@@ -61,6 +61,7 @@ describe('UserService', () => {
     const result = await userService.getAllUsers();
     const resultMock: MockGetUser[] = [];
     const mockUser = new MockGetUser(true);
+    mockUser.entryDate = '2021-02-18';
     mockUser.password = '1234';
     mockUser.requestedTransits = undefined;
     resultMock.push(mockUser);

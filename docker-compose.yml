@@ -1,0 +1,87 @@
+version: '3.1'
+
+
+services:
+  db:
+    image: mariadb:lts
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_USER_FILE: /run/secrets/rootUser
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/rootPass
+      MYSQL_USER_FILE: /run/secrets/user
+      MYSQL_PASSWORD_FILE: /run/secrets/pass
+      MYSQL_DATABASE: webappdb
+    secrets:
+      - rootUser
+      - rootPass
+      - user
+      - pass
+    volumes:
+      - db_data:/var/lib/mysql:Z
+    ports:
+      - "3306:3306"
+    networks:
+      - intern
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    restart: unless-stopped
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ABSOLUTE_URI: "http://proxy:8000/pma/"
+    networks:
+      - intern
+
+
+  app:
+    build:
+      context: ./
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: webappdb
+      DB_PASSWORD_FILE: run/secrets/pass
+      DB_USER_FILE: run/secrets/user
+      RUNNS_ON_DOCKER: "true"
+    secrets:
+      - user
+      - pass
+    networks:
+      - intern
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - app
+      - db
+    networks:
+      - intern
+
+secrets:
+  rootUser:
+    file: docker/secrets/rootUser.txt
+  rootPass:
+    file: docker/secrets/rootPass.txt
+  user:
+    file: docker/secrets/user.txt
+  pass:
+    file: docker/secrets/pass.txt
+
+
+networks:
+  intern:
+    driver: bridge
+
+
+volumes:
+  db_data:

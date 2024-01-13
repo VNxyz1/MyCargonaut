@@ -12,30 +12,15 @@ import { UserController } from '../user/user.controller';
 import { GetLogInResponseDto } from './DTOs/GetLoginResponseDto';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
+import { MockSession } from '../user/Mocks/MockSession';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('AuthController', () => {
   let userController: UserController;
   let authController: AuthController;
   let userForThisTest: User;
-  const session: ISession = {
-    isLoggedIn: false,
-    userData: {
-      id: 0,
-      eMail: '',
-      firstName: '',
-      lastName: '',
-      phoneNumber: '',
-      password: '',
-      profilePicture: '',
-      birthday: undefined,
-      coins: 0,
-      description: '',
-      entryDate: undefined,
-      offers: [],
-      trips: [],
-      requestedTransits: [],
-    },
-  };
+  const session: ISession = new MockSession(true);
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -44,7 +29,7 @@ describe('AuthController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

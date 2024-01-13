@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import * as fs from 'fs';
 import { CreateUserRequestDto } from '../user/DTOs/CreateUserRequestDTO';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -18,7 +19,7 @@ describe('AuthService', () => {
         sqlite_setup('./db/tmp.tester.auth.service.sqlite'),
         TypeOrmModule.forFeature(entityArr),
       ],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     authService = module.get<AuthService>(AuthService);

@@ -3,6 +3,7 @@ import HomePage from "./view/pages/Home-Page.tsx";
 import LoginAndRegisterPage from "./view/pages/Login-And-Register-Page.tsx";
 import ImprintPage from "./view/pages/Imprint-Page.tsx";
 import ProfilPage from "./view/pages/Profil-Page.tsx";
+import UserPage from "./view/pages/User-Page.tsx";
 import PrivacyPage from "./view/pages/Privacy-Page.tsx";
 import NavigationComponent from "./view/components/NavigationComponent.tsx";
 import FooterComponent from "./view/components/FooterComponent.tsx";
@@ -11,8 +12,10 @@ import MessagesPage from "./view/pages/Messages-Page";
 import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
 import {useEffect, useState} from "react";
 import {Offer} from "./interfaces/Offer.ts";
+import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
 
 function RoutesComponent() {
+    // @ts-ignore wird vielleicht noch gebraucht
     const [offers, setOffers] = useState<Offer[]>([]);
 
 
@@ -46,9 +49,11 @@ function RoutesComponent() {
                 <Route path="/imprint" element={<ImprintPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/profil" element={<ProfilPage />} />
+                <Route path="/user/:userId" element={<UserPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
                 <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/trip/:id" element={<TripDetailPage offers={offers} />} />
+                <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
+                <Route path="/404" element={<BadRequestPage/>} />
             </Routes>
             <FooterComponent />
         </BrowserRouter>
