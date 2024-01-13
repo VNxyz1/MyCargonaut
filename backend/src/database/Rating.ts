@@ -24,7 +24,7 @@ import {
     @Column()
     driver: boolean;
 
-    @Column()
+    @Column('decimal')
     totalRating: number;
 
     @Column({ nullable: true})

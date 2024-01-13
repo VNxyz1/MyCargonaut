@@ -1,4 +1,4 @@
-import { IsInt, IsNumber, IsOptional } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsISO8601 } from 'class-validator';
   import { ApiProperty } from '@nestjs/swagger';
   export class GetRatingDto {
     @IsInt()
@@ -12,6 +12,10 @@ import { IsInt, IsNumber, IsOptional } from 'class-validator';
     @IsInt()
     @ApiProperty()
     tripId: number;
+
+    @IsISO8601()
+    @ApiProperty()
+    tripDate: string;
 
     @IsNumber()
     @ApiProperty()

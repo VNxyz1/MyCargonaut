@@ -56,15 +56,17 @@ export class RatingController {
             ratingDto.rateeId = rating.rated.id;
             ratingDto.raterId = rating.rater.id;
             ratingDto.tripId = rating.trip.id;
+            ratingDto.tripDate = rating.trip.startDate.toISOString();
+            ratingDto.totalRating = rating.totalRating;
             ratingDto.punctuality = rating.punctuality;
             ratingDto.reliability = rating.reliability;
+            ratingDto.comfortDuringTrip = rating.comfortDuringTrip;
+            ratingDto.cargoArrivedUndamaged = rating.cargoArrivedUndamaged;
+            ratingDto.passengerPleasantness = rating.passengerPleasantness;
 
             if(rating.driver) {
-                ratingDto.cargoArrivedUndamaged = rating.cargoArrivedUndamaged;
-                ratingDto.passengerPleasantness = rating.passengerPleasantness;
                 response.driverRatings.push(ratingDto);
             } else {
-                ratingDto.comfortDuringTrip = rating.comfortDuringTrip;
                 response.passengerRatings.push(ratingDto);
             }
         });
