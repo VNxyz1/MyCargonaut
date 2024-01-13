@@ -33,8 +33,8 @@ function NavigationComponent() {
                     </div>
                     <div>
                         <ul>
-                            <li><Link to="/search-transport">Fahrt suche</Link></li>
-                            <li><Link to="/search-cargo">Cargo suchen</Link></li>
+                            <li><Link to="/search-transport?t=trip">Fahrt suche</Link></li>
+                            <li><Link to="/search-cargo?t=cargo">Cargo suchen</Link></li>
                             {!isAuthenticated && (
                                 <>
                                     <li><Link to="/login">Fahrt veröffentlichen</Link></li>

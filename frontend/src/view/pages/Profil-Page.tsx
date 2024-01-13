@@ -16,6 +16,8 @@ import MyVehiclesComponent from "../components/Profile/MyVehiclesComponent";
 import MyRatingsComponent from "../components/Profile/MyRatingsComponent";
 import ProfileEditModal from "../components/Profile/ProfileEditModalComponent";
 import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
+import CreateCargoModal from "../components/Profile/CreateCargoModalComponent";
+import CreateTripModal from "../components/Profile/CreateTripModalComponent";
 
 import {User} from "../../models/User";
 
@@ -27,6 +29,8 @@ function ProfilPage() {
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
+    const [showCreateCargoModal, setShowCreateCargoModal] = useState(false);
+    const [showCreateTripModal, setShowCreateTripModal] = useState(false);
     const [showEditImageModal, setShowEditImageModal] = useState(false);
     const [image, setImage] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -164,6 +168,14 @@ function ProfilPage() {
         setShowVehicleAddModal(true);
     };
 
+    const openCreateCargoModal = () => {
+        setShowCreateCargoModal(true);
+    };
+
+    const openCreateTripModal = () => {
+        setShowCreateTripModal(true);
+    };
+
     return (
         <>
             <Container className="content-container">
@@ -231,8 +243,8 @@ function ProfilPage() {
                                {!userData || !userData.phoneNumber ? "Um diese Aktionen auszuführen, musst du deine Handynummer hinterlegen." : ""}
                                 {userData && (
                                     <>
-                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt anlegen (nicht implementiert)</span>
-                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Transport anlegen (nicht implementiert)</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openCreateTripModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt anlegen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openCreateCargoModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Transport anlegen</span>
                                         <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
                                     </>
                                 )}
@@ -317,6 +329,10 @@ function ProfilPage() {
             </Container>
 
             <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
+
+            <CreateCargoModal show={showCreateCargoModal} onHide={() => setShowCreateCargoModal(false)}/>
+
+            <CreateTripModal show={showCreateTripModal} onHide={() => setShowCreateTripModal(false)}/>
 
 
             <ProfileEditModal

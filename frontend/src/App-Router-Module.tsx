@@ -7,7 +7,6 @@ import PrivacyPage from "./view/pages/Privacy-Page.tsx";
 import NavigationComponent from "./view/components/NavigationComponent.tsx";
 import FooterComponent from "./view/components/FooterComponent.tsx";
 import SearchTransportPage from "./view/pages/Search-Transport-Page.tsx";
-import SearchCargoPage from "./view/pages/Search-Cargo-Page";
 import MessagesPage from "./view/pages/Messages-Page";
 import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
 import {useEffect, useState} from "react";
@@ -48,7 +47,6 @@ function RoutesComponent() {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
-                <Route path="/search-cargo" element={<SearchCargoPage />} />
                 <Route path="/messages" element={<MessagesPage />} />
                 <Route path="/trip/:id" element={<TripDetailPage offers={offers} />} />
             </Routes>
