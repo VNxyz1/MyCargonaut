@@ -17,12 +17,12 @@ import MyRatingsComponent from "../components/Profile/MyRatingsComponent";
 import ProfileEditModal from "../components/Profile/ProfileEditModalComponent";
 import VehicleAddModal from "../components/Profile/VehicleAddModalComponent";
 
-import {User} from "../../models/User";
+import {User} from "../../interfaces/User";
 
 import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
 
-function ProfilPage() {
+function UserPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
@@ -62,7 +62,7 @@ function ProfilPage() {
     const fetchLoggedInUser = async () => {
         const data = await getLoggedInUser();
         if (data !== null) {
-            setUserData(data);
+            setUserData(data as any);
             setProfileImageUrl((data as any)?.profilePicture);
             const bDate = calculateAge(new Date((data as any)?.birthday));
             setUserAge(bDate);
@@ -333,4 +333,4 @@ function ProfilPage() {
     );
 }
 
-export default ProfilPage;
+export default UserPage;
