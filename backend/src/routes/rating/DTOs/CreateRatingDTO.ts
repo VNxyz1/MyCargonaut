@@ -12,34 +12,34 @@ import {
     rateeId: number;
 
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(5)
     @ApiProperty()
     punctuality: number;
 
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(5)
     @ApiProperty()
     reliability: number;
 
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(5)
     @ApiProperty()
     comfortDuringTrip: number;
 
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(5)
     @ApiProperty()
     cargoArrivedUndamaged: number;
 
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(5)
     @ApiProperty()
     passengerPleasantness: number;

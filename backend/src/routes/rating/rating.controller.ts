@@ -192,23 +192,44 @@ export class RatingController {
                 throw new ForbiddenException(false, 'You have to rate if you would pick this user again.');
             }
             rating.comfortDuringTrip = createRatingDto.comfortDuringTrip;
+            rating.cargoArrivedUndamaged = 0;
+            rating.passengerPleasantness = 0;
             rating.totalRating = (
                 rating.punctuality + 
                 rating.reliability +
                 rating.comfortDuringTrip
             ) / 3;
         } else {
-            //ToDo: Unterscheiden zwischen Transport und Lieferung
-            if(!createRatingDto.cargoArrivedUndamaged || !createRatingDto.passengerPleasantness) {
-                throw new ForbiddenException(false, 'You have to rate if the cargo was delivered undamaged and if you enjoyed the trip.');
+            if(!createRatingDto.cargoArrivedUndamaged && !createRatingDto.passengerPleasantness) {
+                throw new ForbiddenException(false, 'You have to rate if the cargo was delivered undamaged or if you enjoyed the trip.');
             }
-            rating.cargoArrivedUndamaged = createRatingDto.cargoArrivedUndamaged;
-            rating.passengerPleasantness = createRatingDto.passengerPleasantness;
-            rating.totalRating = (
-                rating.punctuality + 
-                rating.reliability +
-                rating.cargoArrivedUndamaged + 
-                rating.passengerPleasantness) / 4;
+            
+            if(createRatingDto.cargoArrivedUndamaged && createRatingDto.passengerPleasantness) {
+                rating.comfortDuringTrip = 0;
+                rating.cargoArrivedUndamaged = createRatingDto.cargoArrivedUndamaged;
+                rating.passengerPleasantness = createRatingDto.passengerPleasantness;
+                rating.totalRating = (
+                    rating.punctuality + 
+                    rating.reliability +
+                    rating.cargoArrivedUndamaged + 
+                    rating.passengerPleasantness) / 4;
+            } else if(createRatingDto.cargoArrivedUndamaged) {
+                rating.comfortDuringTrip = 0;
+                rating.cargoArrivedUndamaged = createRatingDto.cargoArrivedUndamaged;
+                rating.passengerPleasantness = 0;
+                rating.totalRating = (
+                    rating.punctuality + 
+                    rating.reliability +
+                    rating.cargoArrivedUndamaged) / 3;
+            } else {
+                rating.comfortDuringTrip = 0;
+                rating.cargoArrivedUndamaged = 0;
+                rating.passengerPleasantness = createRatingDto.passengerPleasantness;
+                rating.totalRating = (
+                    rating.punctuality + 
+                    rating.reliability +
+                    rating.passengerPleasantness) / 3;
+            }
         }
 
         await this.ratingService.createRating(rating);
