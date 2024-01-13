@@ -19,9 +19,14 @@ import { MockUpdateTripRequest } from './Mock/MockUpdateTripRequest';
 import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { RatingService } from '../rating.service/rating.service';
+import { RequestOfferingService } from '../request-offering.service/request-offering.service';
+import { MockPostOffering } from "./Mock/MockPostOffering";
+import { OfferService } from "../offer.service/offer.service";
 
 describe('RequestController', () => {
+  let requestService: RequestService;
   let requestController: RequestController;
+  let offeringService: RequestOfferingService;
   let userController: UserController;
   let userService: UserService;
   let userForThisTest: User;
@@ -35,9 +40,18 @@ describe('RequestController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, RequestController],
-      providers: [UserService, PlzService, RequestService, RatingService],
+      providers: [
+        UserService,
+        PlzService,
+        RequestService,
+        RatingService,
+        RequestOfferingService,
+        OfferService
+      ],
     }).compile();
 
+    requestService = module.get<RequestService>(RequestService);
+    offeringService = module.get<RequestOfferingService>(RequestOfferingService);
     userService = module.get<UserService>(UserService);
     requestController = module.get<RequestController>(RequestController);
     userController = module.get<UserController>(UserController);
@@ -211,6 +225,90 @@ describe('RequestController', () => {
       expect(filteredRequests.tripRequests.length).toBe(0);
     });
   });
+
+  describe('offerTransit', () => {
+    it('should send an offering to the requester of the request with the given ID', async () => {
+      session.userData = secondUserForThisTest;
+
+      const offering = new MockPostOffering();
+
+      await requestController.offerTransit(
+        session,
+        1,
+        offering,
+      );
+
+      const offerings = await offeringService.getAllPendingOfRequestingUser(
+        2,
+      );
+      expect(offerings.length).toBe(1);
+    });
+  });
+
+  describe('getOfferingsAsOfferingUser', () => {
+    it('should get all pending Offerings that you offered.', async () => {
+      session.userData = secondUserForThisTest;
+      const offerings = await requestController.getOfferingsAsOfferingUser(session);
+
+      const offering = new MockPostOffering();
+      await requestController.offerTransit(session, 1, offering);
+
+      const newOfferings = await requestController.getOfferingsAsOfferingUser(session);
+      expect(newOfferings.length).toBe(offerings.length + 1);
+      expect(newOfferings[newOfferings.length-1]).toBe(offering);
+    });
+  });
+
+  describe('getOfferingsAsRequestingUser', () => {
+    it('should get all pending Offerings for which trip request you are the requester', async () => {
+      session.userData = secondUserForThisTest;
+      const offerings = await requestController.getOfferingsAsRequestingUser(session);
+
+      expect(offerings.length).toBe(2);
+    });
+  });
+
+  describe('acceptOffering', () => {
+    it('should accept a offering with the given id. And executes the payment action if the user has enough coins.', async () => {
+      const offering = await requestService.getById(1);
+
+      if (offering.tripRequest.requester.id !== 2) {
+        throw new ForbiddenException(
+          'You are not allowed to accept this offering!',
+        );
+      }
+
+      const coinbalanceOfRequester = await userService.getCoinBalanceOfUser(
+        2
+      );
+      if (coinbalanceOfRequester < offering.requestedCoins) {
+        throw new ForbiddenException(
+          'The coin balance of the requesting user is not valid.',
+        );
+      }
+
+      offering.accepted = true;
+      await requestService.save(offering);
+
+      await userService.decreaseCoinBalanceOfUser(
+        2,
+        offering.requestedCoins,
+      );
+      await userService.increaseCoinBalanceOfUser(
+        offering.offeringUser.id,
+        offering.requestedCoins,
+      );
+
+      const acceptedOffering = await requestController.acceptOffering(session, 1);
+      expect(acceptedOffering.message).toBe('Offering was accepted.');
+
+      const updatedOffering = await requestService.getById(1);
+      expect(updatedOffering.accepted).toBe(true);
+      expect(updatedOffering.offeringUser.id).toBe(2);
+    });
+  });
+
+
 
   afterAll(async () => {
     fs.unlink('./db/tmp.tester.request.controller.sqlite', (err) => {

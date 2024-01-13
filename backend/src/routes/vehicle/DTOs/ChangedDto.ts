@@ -1,42 +1,34 @@
-import {
-    IsNumber,
-    IsNotEmpty,
-    IsOptional,
-    IsString,
-  } from 'class-validator';
-  import { ApiProperty } from '@nestjs/swagger';
-  import { VehicleType } from 'src/database/VehicleType';
-  
-  export class ChangedDto {
-    
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
-    @IsOptional()
-    name?: string;
+import { IsNumber, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { VehicleType } from 'src/database/VehicleType';
 
-    @IsNumber()
-    @IsNotEmpty()
-    @ApiProperty()
-    @IsOptional()
-    seats?: number;
+export class ChangedDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsOptional()
+  name?: string;
 
-    @IsNotEmpty()
-    @ApiProperty()
-    @IsOptional()
-    type?: VehicleType;
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsOptional()
+  seats?: number;
 
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty({ required: false })
-    @IsOptional()
-    description?: string;
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsOptional()
+  type?: VehicleType;
 
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
-    @IsOptional()
-    picture?: string;
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
+  description?: string;
 
-  }
-  
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsOptional()
+  picture?: string;
+}

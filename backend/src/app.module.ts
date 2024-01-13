@@ -17,6 +17,7 @@ import { PlzService } from './routes/plz.service/plz.service';
 import { RatingController } from './routes/rating/rating.controller';
 import { RatingService } from './routes/rating.service/rating.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
+import { RequestOfferingService } from './routes/request-offering.service/request-offering.service';
 import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -82,6 +83,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     RequestService,
     PlzService,
     RatingService,
+    RequestOfferingService,
   ],
 })
 export class AppModule {}
