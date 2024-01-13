@@ -1,4 +1,4 @@
-import { RatingTypes } from "../../../interfaces/RatingTypes";
+import { RatingTypes } from "../../../interfaces/Rating"
 
 export function TotalRatingHeadline() {
     return (

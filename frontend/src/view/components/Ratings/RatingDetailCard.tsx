@@ -1,5 +1,4 @@
 import { Card, Col, Row } from "react-bootstrap";
-import { Rating } from "../../../interfaces/Rating";
 import StarRating from "./StarRating";
 import {
     CargoArrivedUndamagedRatingHeadline,
@@ -9,9 +8,10 @@ import {
 import { TripRequest } from "../../../interfaces/TripRequest";
 import React, { useEffect } from "react";
 import { getTripRequestById } from "../../../services/tripRequestService";
+import { DriverRating, PassengerRating } from "../../../interfaces/Rating";
 
 function RatingDetailCard(props: {
-    rating: Rating
+    rating: DriverRating | PassengerRating
 }) {
     const [tripData, setTripData] = React.useState<TripRequest>();
 
@@ -53,7 +53,7 @@ function RatingDetailCard(props: {
                             </Col>
                         </Row>
                     }
-                    {props.rating.comfortDuringTrip > 0 &&
+                    {"comfortDuringTrip" in props.rating && props.rating.comfortDuringTrip > 0 &&
                         <Row>
                             <Col xs="auto">
                                 <StarRating initialValue={props.rating.comfortDuringTrip} disabled />
@@ -63,7 +63,7 @@ function RatingDetailCard(props: {
                             </Col>
                         </Row>
                     }
-                    {props.rating.cargoArrivedUndamaged > 0 &&
+                    {"cargoArrivedUndamaged" in props.rating && props.rating.cargoArrivedUndamaged > 0 &&
                         <Row>
                             <Col xs="auto">
                                 <StarRating initialValue={props.rating.cargoArrivedUndamaged} disabled />
@@ -73,7 +73,7 @@ function RatingDetailCard(props: {
                             </Col>
                         </Row>
                     }
-                    {props.rating.passengerPleasantness > 0 &&
+                    {"passengerPleasantness" in props.rating && props.rating.passengerPleasantness > 0 &&
                         <Row>
                             <Col xs="auto">
                                 <StarRating initialValue={props.rating.passengerPleasantness} disabled />

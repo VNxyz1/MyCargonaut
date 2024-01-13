@@ -21,6 +21,11 @@ import {User} from "../../interfaces/User";
 
 import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
+import {
+    CargoArrivedUndamagedRatingHeadline, ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
+    PunctualityRatingHeadline, ReliabilityRatingHeadline,
+    TotalRatingHeadline
+} from '../components/Ratings/RatingHeadlines';
 
 function UserPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
@@ -149,8 +154,12 @@ function UserPage() {
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
-            case "Bewertungen":
-                return <MyRatingsComponent/>;
+            case "Bewertungen": {
+                if (userData?.id) {
+                    return <MyRatingsComponent userId={userData.id}/>;
+                }
+                return <p>Benutzerdaten konnten nicht geladen werden. Versuche es später erneut.</p>
+            }
             default:
                 return null;
         }
@@ -201,29 +210,60 @@ function UserPage() {
                             <span className="section-seperator"></span>
 
                             <Row>
-                                <p>Bewertungen 40 (nicht implementiert)</p>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-user"></i> Gesamt</span> <span>97%</span></div>
-                                    <ProgressBar now={97}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-car"></i> Fahrt</span> <span>85%</span></div>
-                                    <ProgressBar now={85}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-clock"></i> Pünktlich</span> <span>100%</span></div>
-                                    <ProgressBar now={100}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-handshake"></i> Zuverlässig</span> <span>70%</span></div>
-                                    <ProgressBar now={70}/>
-                                </div>
-
-                                <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht implementiert)</p>
+                                {userData?.averageRatings ?
+                                    <><p>{userData.averageRatings.amount} Bewertungen</p>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <TotalRatingHeadline/>
+                                                <span>{userData.averageRatings.totalRating > 0 ? userData.averageRatings.totalRating : 0}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.totalRating}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <PunctualityRatingHeadline/>
+                                                <span>{userData.averageRatings.punctuality}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.punctuality}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <ReliabilityRatingHeadline/>
+                                                <span>{userData.averageRatings.reliability}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.reliability}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <ComfortDuringTripRatingHeadline/>
+                                                <span>{userData.averageRatings.comfortDuringTrip}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.comfortDuringTrip}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <CargoArrivedUndamagedRatingHeadline/>
+                                                <span>{userData.averageRatings.cargoArrivedUndamaged}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.cargoArrivedUndamaged}/>
+                                        </div>
+                                        <div className="rating-wrapper">
+                                            <div className="rating-txt">
+                                                <PassengerPleasantnessRatingHeadline/>
+                                                <span>{userData.averageRatings.passengerPleasantness}%</span>
+                                            </div>
+                                            <ProgressBar
+                                                now={userData.averageRatings.passengerPleasantness}/>
+                                        </div>
+                                        <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht
+                                            implementiert)</p></>
+                                    : <p>Bewerungen konnten nicht geladen werden.</p>
+                                }
                             </Row>
 
                             <div className="prof-side-btn-wrapper">

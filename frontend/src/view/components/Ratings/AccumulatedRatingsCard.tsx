@@ -1,5 +1,4 @@
 import { Card, ProgressBar, Row } from "react-bootstrap";
-import { Rating } from "../../../interfaces/Rating";
 import { AverageRatings } from "../../../interfaces/AverageRatings";
 import {
     CargoArrivedUndamagedRatingHeadline,
@@ -7,19 +6,20 @@ import {
     PunctualityRatingHeadline,
     ReliabilityRatingHeadline,
 } from "./RatingHeadlines";
+import { DriverRating, PassengerRating } from "../../../interfaces/Rating";
 
 function AccumulatedRatingsCard(props: {
-    ratings: Rating[]
+    ratings: DriverRating[] | PassengerRating[]
     driver: boolean
 }) {
-    function calculateAverageRatings(ratings: Rating[]): AverageRatings {
+    function calculateAverageRatings(ratings: DriverRating[] | PassengerRating[]): AverageRatings {
         const total = ratings.reduce((acc, rating) => {
             acc.totalRating += rating.totalRating;
             acc.punctuality += rating.punctuality;
             acc.reliability += rating.reliability;
-            acc.comfortDuringTrip += rating.comfortDuringTrip;
-            acc.cargoArrivedUndamaged += rating.cargoArrivedUndamaged;
-            acc.passengerPleasantness += rating.passengerPleasantness;
+            acc.comfortDuringTrip += "comfortDuringTrip" in rating ? rating.comfortDuringTrip : 0;
+            acc.cargoArrivedUndamaged += "cargoArrivedUndamaged" in rating ? rating.cargoArrivedUndamaged : 0;
+            acc.passengerPleasantness += "passengerPleasantness" in rating ? rating.passengerPleasantness : 0;
             return acc;
         }, {
             totalRating: 0,
