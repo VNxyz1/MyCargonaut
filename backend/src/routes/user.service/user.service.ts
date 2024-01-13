@@ -33,21 +33,21 @@ export class UserService {
   async updateLoggedInUser(id: number, updateUserDto: UpdateUserRequestDto) {
     const user = await this.getUserById(id);
 
-    if (updateUserDto.birthday) {
+    if (updateUserDto.birthday !== undefined) {
       user.birthday = updateUserDto.birthday;
     }
-    if (updateUserDto.phoneNumber) {
+    if (updateUserDto.phoneNumber !== undefined) {
       user.phoneNumber = updateUserDto.phoneNumber;
     }
 
-    if (updateUserDto.firstName) {
+    if (updateUserDto.firstName !== undefined) {
       user.firstName = updateUserDto.firstName;
     }
-    if (updateUserDto.lastName) {
+    if (updateUserDto.lastName !== undefined) {
       user.lastName = updateUserDto.lastName;
     }
 
-    if (updateUserDto.description) {
+    if (updateUserDto.description !== undefined) {
       user.description = updateUserDto.description;
     }
 

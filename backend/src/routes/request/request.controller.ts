@@ -3,13 +3,15 @@ import {
   Controller,
   Delete,
   ForbiddenException,
-  Get, InternalServerErrorException,
+  Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Put,
-  Query, Res,
+  Query,
+  Res,
   Session,
   UploadedFile,
   UseGuards,
@@ -33,7 +35,7 @@ import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto'
 import { existsSync, unlinkSync } from 'fs';
 import { fileInterceptor } from './requesterFileInterceptor';
 import { GetFilteredTripRequestRequestDto } from './DTOs/GetFilteredTripRequestRequestDto';
-import {Response} from "express";
+import { Response } from 'express';
 
 @ApiTags('request')
 @Controller('request')
@@ -192,15 +194,15 @@ export class RequestController {
     type: 'image/png',
   })
   async findCargoImage(
-      @Param('imagename') imagename: string,
-      @Res() res: Response,
+    @Param('imagename') imagename: string,
+    @Res() res: Response,
   ) {
     try {
       const imagePath = join(
-          process.cwd(),
-          'uploads',
-          'cargo-images',
-          imagename,
+        process.cwd(),
+        'uploads',
+        'cargo-images',
+        imagename,
       );
       res.sendFile(imagePath);
     } catch (error) {
