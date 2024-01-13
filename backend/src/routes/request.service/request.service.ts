@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -92,5 +93,17 @@ export class RequestService {
       throw new NotFoundException('The trip request could not be found.');
     }
     return tR;
+  }
+
+  async userAlreadyPostedAOfferingToThisTripRequest(userId: number, requestId: number) {
+    const tR = await this.tripRequestRepository.findOne({
+      where: {
+        offerings: { offeringUser: { id: userId } },
+        id: requestId,
+      },
+      relations: ['startPlz', 'endPlz', 'offerings'],
+    });
+    return !!tR;
+
   }
 }

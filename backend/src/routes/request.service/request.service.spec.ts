@@ -13,6 +13,7 @@ import { CreatePlzDto } from '../offer/DTOs/CreatePlzDto';
 import { NotFoundException } from '@nestjs/common';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { RatingService } from '../rating.service/rating.service';
+import { RequestOfferingService } from "../request-offering.service/request-offering.service";
 
 describe('RequestService', () => {
   let requestService: RequestService;
@@ -163,6 +164,7 @@ describe('RequestService', () => {
     );
 
     const tRdB = await requestService.save(tR);
+    tRdB.offerings = [];
     tripRequestArr.push(tRdB);
     return tRdB;
   };
@@ -184,6 +186,7 @@ describe('RequestService', () => {
         RequestService,
         PlzService,
         RatingService,
+        RequestOfferingService
       ],
     }).compile();
 

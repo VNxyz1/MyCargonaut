@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
+import { RatingController } from "../rating/rating.controller";
+import { RatingService } from "../rating.service/rating.service";
+import { UserService } from "../user.service/user.service";
+import { OfferService } from "../offer.service/offer.service";
 
 describe('TransitRequestService', () => {
   let transitService: TransitRequestService;
@@ -14,7 +18,8 @@ describe('TransitRequestService', () => {
         sqlite_setup('./db/tmp.tester.transit.service.sqlite'),
         TypeOrmModule.forFeature(entityArr),
       ],
-      providers: [TransitRequestService, PlzService],
+      controllers: [RatingController],
+      providers: [TransitRequestService, PlzService, RatingService, UserService, OfferService],
     }).compile();
 
     transitService = module.get<TransitRequestService>(TransitRequestService);

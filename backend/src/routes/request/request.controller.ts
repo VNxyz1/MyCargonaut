@@ -242,8 +242,13 @@ export class RequestController {
 
     if (tR.requester.id === offeringUserId) {
       throw new ForbiddenException(
-        'You are not allowed to make a offering to your own trip request',
+        'You are not allowed to make a offering to your own trip request!',
       );
+    }
+
+    const check = await this.requestService.userAlreadyPostedAOfferingToThisTripRequest(offeringUserId, requestId);
+    if (check) {
+      throw new ForbiddenException('You already sent a offering to this trip request!');
     }
 
     const offering = new TripRequestOffering();
