@@ -9,6 +9,7 @@ import {
 import { User } from './User';
 import { TransitRequest } from './TransitRequest';
 import { RoutePart } from './RoutePart';
+import { Rating } from './Rating';
 
 @Entity()
 export class Offer {
@@ -21,8 +22,11 @@ export class Offer {
   @OneToMany(() => RoutePart, (rP) => rP.offer, { eager: true, cascade: true })
   route: RoutePart[];
 
-  @Column({ default: new Date().toISOString() })
-  createdAt: Date;
+  @Column({
+    nullable: true,
+    default: new Date().toISOString(),
+  })
+  createdAt: string;
 
   @ManyToMany(() => User, (user) => user.trips, { eager: true })
   clients: User[];
@@ -47,4 +51,7 @@ export class Offer {
     eager: true,
   })
   transitRequests: TransitRequest[];
+
+  @OneToMany(() => Rating, (rating) => rating.trip)
+  ratings: Rating[];
 }

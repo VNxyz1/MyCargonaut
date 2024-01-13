@@ -4,61 +4,67 @@ import {Offer} from "../../interfaces/Offer.ts";
 import DetailComponent from "../components/Trip-Detail/Detail-Component.tsx";
 import {Col, Container, Row} from "react-bootstrap";
 import DetailSidebar from "../components/Trip-Detail/Trip-Detail-Sidebar.tsx";
+import {getOfferById} from "../../services/offerService.ts";
+import {getTripRequestById} from "../../services/tripRequestService.ts";
+import {TripRequest} from "../../interfaces/TripRequest.ts";
 
-function TripDetailPage(
-    props: {
-        offers: Offer[]
-    }
-) {
+function TripDetailPage() {
     const navigate = useNavigate();
 
-    const {id} = useParams();
-    let offerId: number;
-    if (id) {
-        offerId = Number(id);
+    const {id, type} = useParams();
+
+
+    let tripId: number;
+    let tripType: string;
+    if (id && type) {
+        tripId = Number(id);
+        tripType = type;
     } else {
-        navigate('/');
+        navigate('/404');
     }
 
-    const [offer, setOffer] = useState<Offer>({
-        bookedSeats: 0,
-        clients: [],
-        createdAt: new Date(),
-        description: "",
-        id: 0,
-        provider: {
-            id: 0,
-            firstName: "",
-            lastName: "",
-            profilePicture: "",
-            description: "",
-            entryDate: new Date(),
-        },
-        route: [],
-        startDate: new Date(),
-        state: 0,
-        transitRequests: [],
-        vehicle: ""
-    });
+    const [trip, setTrip] = useState<Offer|TripRequest|undefined>();
 
     useEffect(() => {
-        const offer = props.offers.find((o) => o.id === offerId);
-        if (offer) {
-            setOffer(offer);
+        if(tripType === "offer") {
+            (async () => {
+                const offer = await getOfferById(tripId);
+                setTrip(offer);
+                if(!offer) {
+                    navigate("/404")
+                }
+            })()
         }
-    }, [props.offers]);
+        if(tripType === "request") {
+            (async () => {
+                const tripRequest = await getTripRequestById(tripId);
+                setTrip(tripRequest);
+                if(!tripRequest) {
+                    navigate("/404")
+                }
+            })()
+        }
+        if(tripType !== "request" && tripType !== "offer") {
+           navigate("/404")
+        }
+
+    }, []);
 
 
     return (
         <Container fluid="md">
-            <Row className="d-flex justify-content-center">
-                <Col md={8} className="d-flex justify-content-center justify-content-xl-end">
-                    <DetailComponent offer={offer}/>
-                </Col>
-                <Col md={3} className="d-flex justify-content-center justify-content-xl-start">
-                    <DetailSidebar offer={offer}/>
-                </Col>
-            </Row>
+            {!trip ?
+                <p >Wähle ein Gültiges Offer aus</p>
+                :
+                <Row className="d-flex justify-content-center">
+                    <Col md={8} className="d-flex justify-content-center justify-content-xl-end">
+                        <DetailComponent trip={trip}/>
+                    </Col>
+                    <Col md={3} className="d-flex justify-content-center justify-content-xl-start">
+                        <DetailSidebar trip={trip}/>
+                    </Col>
+                </Row>
+            }
         </Container>
     )
 }

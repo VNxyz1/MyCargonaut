@@ -1,11 +1,6 @@
-import {
-  IsISO8601,
-  IsNotEmpty,
-  IsOptional,
-  IsPhoneNumber,
-  IsString,
-} from 'class-validator';
+import { IsISO8601, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsPhoneNumberOrEmptyString } from '../../utils/custom_validators';
 export class UpdateUserRequestDto {
   @IsOptional()
   @IsNotEmpty()
@@ -19,15 +14,8 @@ export class UpdateUserRequestDto {
   @ApiProperty({ required: false })
   lastName?: string;
 
-  /*
   @IsOptional()
-  @IsString()
-  @ApiProperty()
-  profilePicture?: string;
-*/
-
-  @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumberOrEmptyString('phoneNumber')
   @ApiProperty({ required: false })
   phoneNumber?: string;
 

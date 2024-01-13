@@ -11,9 +11,6 @@ import { LogInRequestDto } from '../auth/DTOs/LoginRequestDTO';
 import * as fs from 'fs';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
 import { MockCreateUser } from './Mocks/MockCreateUser';
-import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
-import { TransitRequest } from '../../database/TransitRequest';
 import { MockGetUser } from './Mocks/MockGetUser';
 import {
   ForbiddenException,
@@ -21,7 +18,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MockSession } from './Mocks/MockSession';
-import { RoutePart } from '../../database/RoutePart';
+import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
+import { PlzService } from '../plz.service/plz.service';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -32,16 +30,11 @@ describe('UserController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forRoot({
-          type: 'sqlite',
-          database: './db/tmp.tester.user.controller.sqlite',
-          entities: [User, Offer, Plz, TransitRequest, RoutePart],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([User, Offer, Plz, TransitRequest, RoutePart]),
+        sqlite_setup('./db/tmp.tester.user.controller.sqlite'),
+        TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService],
+      providers: [UserService, AuthService, PlzService],
     }).compile();
 
     userController = module.get<UserController>(UserController);

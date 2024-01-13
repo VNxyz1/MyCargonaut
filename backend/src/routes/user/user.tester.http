@@ -26,7 +26,9 @@ Content-Type: application/json
   "firstName" : "Vincent",
   "lastName": "Schneeb",
   "birthday": "2002-02-19",
-  "password": "1234"
+  "password": "1234",
+  "description": "",
+  "phoneNumber": "+49 173 55555"
 }
 
 ### Delete logged in User

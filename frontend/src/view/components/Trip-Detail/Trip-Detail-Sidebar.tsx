@@ -5,11 +5,12 @@ import Button from "react-bootstrap/Button";
 import ProfileDisplay from "./ProfileDisplay.tsx";
 import TransitRequestModal from "./Transit-Request-Modal.tsx";
 import NotLoggedInModal from "../Login-Regist/Not-Logged-In-Modal.tsx";
+import {TripRequest} from "../../../interfaces/TripRequest.ts";
 
 
 function DetailSidebar(
     props: {
-        offer: Offer
+        trip: Offer|TripRequest
     }
 ) {
     const [showTransitRequestModal, setShowTransitRequestModal] = useState(false);
@@ -76,16 +77,16 @@ function DetailSidebar(
                         </Button>
                     </Card.Header>
                     <Card.Body>
-                        <ProfileDisplay user={props.offer.provider}/>
+                        <ProfileDisplay user={"provider" in props.trip ? props.trip.provider : props.trip.requester}/>
                     </Card.Body>
                     <Card.Footer className="d-flex justify-content-between">
                         <span>Anzeigen-ID</span>
-                        <span>{props.offer.id}</span>
+                        <span>{props.trip.id}</span>
                     </Card.Footer>
                 </Card>
 
             </div>
-            <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.offer.id}/>
+            <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.trip.id}/>
             <NotLoggedInModal show={showNotLoggedInModal} onClose={handleClose}/>
         </>
 

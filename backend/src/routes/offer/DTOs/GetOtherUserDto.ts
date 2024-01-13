@@ -1,5 +1,7 @@
 import { IsInt, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { GetAverageRatingsDto } from 'src/routes/rating/DTOs/GetAverageRatingsResponseDTO';
+import { GetUserRatingsDto } from 'src/routes/rating/DTOs/GetUserRatingsResponseDTO';
 
 export class GetOtherUserDto {
   @IsNotEmpty()
@@ -24,4 +26,10 @@ export class GetOtherUserDto {
   @IsISO8601()
   @ApiProperty()
   entryDate: Date;
+
+  @ApiProperty({ type: GetAverageRatingsDto })
+    averageRatings: GetAverageRatingsDto;
+
+  @ApiProperty({ type: GetUserRatingsDto })
+    totalRatings: GetUserRatingsDto;
 }
