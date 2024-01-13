@@ -6,7 +6,7 @@ export class MockGetOffer {
 
   provider = {
     id: 1,
-    entryDate: new Date('2021-02-18'),
+    entryDate: '2021-02-18',
     eMail: 'tester@test.com',
     firstName: 'Max',
     lastName: 'Mustermann',
@@ -20,7 +20,7 @@ export class MockGetOffer {
 
   route = [];
 
-  createdAt: Date = new Date('2022-01-01T00:00:00.000Z');
+  createdAt: string = '2022-01-01 00:00:00.000';
 
   clients: User[] = [];
 

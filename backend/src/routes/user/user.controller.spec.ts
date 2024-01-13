@@ -20,6 +20,7 @@ import {
 import { MockSession } from './Mocks/MockSession';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
+import { RatingService } from '../rating.service/rating.service';
 
 describe('UserController', () => {
   let userController: UserController;
@@ -34,7 +35,7 @@ describe('UserController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController],
-      providers: [UserService, AuthService, PlzService],
+      providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();
 
     userController = module.get<UserController>(UserController);
@@ -93,6 +94,19 @@ describe('UserController', () => {
 
   it('should get logged-in user', async () => {
     const userDto = new MockGetUser(true);
+    userDto.averageRatings = {
+      amount: 0,
+      cargoArrivedUndamaged: 0,
+      comfortDuringTrip: 0,
+      passengerPleasantness: 0,
+      punctuality: 0,
+      reliability: 0,
+      total: 0,
+    };
+    userDto.totalRatings = {
+      ratingsAsDriver: [],
+      ratingsAsPassenger: [],
+    };
 
     const result = await userController.getLoggedInUser(session);
 

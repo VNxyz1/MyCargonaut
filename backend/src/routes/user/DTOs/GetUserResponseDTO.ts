@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransitRequest } from '../../../database/TransitRequest';
-import { GetAverageRatingsDto } from 'src/routes/rating/DTOs/GetAverageRatingsResponseDTO';
-import { GetUserRatingsDto } from 'src/routes/rating/DTOs/GetUserRatingsResponseDTO';
+import { GetAverageRatingsDto } from '../../rating/DTOs/GetAverageRatingsResponseDTO';
+import { GetUserRatingsDto } from '../../rating/DTOs/GetUserRatingsResponseDTO';
 
 export class GetUserResponseDto {
   @ApiProperty()
@@ -40,8 +40,8 @@ export class GetUserResponseDto {
   requestedTransits: TransitRequest[];
 
   @ApiProperty({ type: GetAverageRatingsDto })
-    averageRatings: GetAverageRatingsDto;
+  averageRatings: GetAverageRatingsDto;
 
   @ApiProperty({ type: GetUserRatingsDto })
-    totalRatings: GetUserRatingsDto;
+  totalRatings: GetUserRatingsDto;
 }
