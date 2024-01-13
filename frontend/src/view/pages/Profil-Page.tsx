@@ -259,9 +259,7 @@ function UserPage() {
                                             </div>
                                             <ProgressBar
                                                 now={userData.averageRatings.passengerPleasantness}/>
-                                        </div>
-                                        <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht
-                                            implementiert)</p></>
+                                        </div></>
                                     : <p>Bewerungen konnten nicht geladen werden.</p>
                                 }
                             </Row>
