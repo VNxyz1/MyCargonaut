@@ -123,7 +123,6 @@ export class RatingService {
             driverRating.totalRating = rating.totalRating ? rating.totalRating : 0;
             driverRating.punctuality = rating.punctuality ? rating.punctuality : 0;
             driverRating.reliability = rating.reliability ? rating.reliability : 0;
-            driverRating.comfortDuringTrip = 0;
             driverRating.cargoArrivedUndamaged = rating.cargoArrivedUndamaged ? rating.cargoArrivedUndamaged : 0;
             driverRating.passengerPleasantness = rating.passengerPleasantness ? rating.passengerPleasantness : 0;
 
@@ -140,8 +139,6 @@ export class RatingService {
             passengerRating.punctuality = rating.punctuality ? rating.punctuality : 0;
             passengerRating.reliability = rating.reliability ? rating.reliability : 0;
             passengerRating.comfortDuringTrip = rating.comfortDuringTrip ? rating.comfortDuringTrip : 0;
-            passengerRating.cargoArrivedUndamaged = 0;
-            passengerRating.passengerPleasantness = 0;
 
             ratings.ratingsAsPassenger.push(passengerRating);
         });
