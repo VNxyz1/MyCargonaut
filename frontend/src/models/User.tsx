@@ -1,3 +1,5 @@
+import { AverageRatings } from "../interfaces/Rating";
+
 export interface User {
     id?: number;
     firstName?: string;
@@ -10,4 +12,5 @@ export interface User {
     profilePicture?: string;
     password?: string;
     entryDate?: Date;
+    averageRatings?: AverageRatings;
 }
