@@ -38,9 +38,6 @@ export class GetOtherUserDto {
   @ApiProperty({ type: GetAverageRatingsDto })
   averageRatings: GetAverageRatingsDto;
 
-  @ApiProperty({ type: GetUserRatingsDto })
-  totalRatings: GetUserRatingsDto;
-
   @ApiProperty({type: [GetOfferResponseDto]})
   offers: GetOfferResponseDto[];
 

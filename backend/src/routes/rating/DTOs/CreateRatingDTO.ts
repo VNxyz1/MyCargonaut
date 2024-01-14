@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, Min, Max } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateRatingDto {
   @IsOptional()
@@ -38,4 +38,9 @@ export class CreateRatingDto {
   @Max(5)
   @ApiProperty()
   passengerPleasantness: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  comment: string;
 }
