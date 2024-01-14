@@ -10,15 +10,18 @@ import {
   } from '@nestjs/common';
 import { UserService } from '../user.service/user.service';
 import { MessageService } from '../message.service/message.service';
+import { OfferService } from '../offer.service/offer.service';
 import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { ISession } from '../../utils/ISession';
 import { CreateMessageDto } from './DTOs/CreateMessageRequestDTO';
+import { CreateTripMessageDto } from './DTOs/CreateTripMessageRequestDTO';
 import { GetAllMessagesDto } from './DTOs/GetAllMessagesResponseDTO';
 import { GetConversationDto } from './DTOs/GetConversationResponseDTO';
 import { GetMessageDto } from './DTOs/GetMessageResponseDTO';
 import { Message } from '../../database/Message';
+import { Offer } from '../../database/Offer';
 import { Conversation } from '../../database/Conversation';
 
 @ApiTags('message')
@@ -27,6 +30,7 @@ export class MessageController {
     constructor(
         private readonly messageService: MessageService,
         private readonly userService: UserService,
+        private readonly offerService: OfferService,
       ) {}
 
     @UseGuards(IsLoggedInGuard)
@@ -114,7 +118,7 @@ export class MessageController {
         type: ForbiddenException,
         description: 'Forbidden resource.',
     })
-    async createRating(
+    async createMessage(
         @Body() createMessageDto: CreateMessageDto,
         @Session() session: ISession,
     ) {
@@ -142,6 +146,55 @@ export class MessageController {
         message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
         await this.messageService.createMessage(message);
 
+        return new OKResponseWithMessageDTO(true, 'Message created successfully.');
+    }
+
+    @UseGuards(IsLoggedInGuard)
+    @Post('/trip/:tripId')
+    @ApiOperation({
+        summary: 'Write a message to a trip',
+        description: `Allows the driver of an offer to send a message to all clients.`,
+    })
+    @ApiResponse({
+        status: 201,
+        type: OKResponseWithMessageDTO,
+        description: 'Message created successfully.',
+    })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'Forbidden resource.',
+    })
+    async createTripMessage(
+        @Param('tripId') tripId: number,
+        @Body() createMessageDto: CreateTripMessageDto,
+        @Session() session: ISession,
+    ) {
+        const sender = await this.userService.getUserById(session.userData.id);
+        const trip: Offer = await this.offerService.getOffer(tripId);
+
+        if (sender.id != trip.provider.id) {
+            throw new ForbiddenException(false, 'You cannot send a message to this trip.');
+        }
+
+        for(const client of trip.clients) {
+            let conversation: Conversation = await this.messageService.getConversation(sender.id, client.id);
+
+            if (conversation == null) {
+                const newConversation: Conversation = new Conversation();
+                newConversation.user1 = sender;
+                newConversation.user2 = client;
+                newConversation.messages = [];
+                conversation = await this.messageService.createConversation(newConversation);
+            }
+    
+            const message: Message = new Message();
+            message.sender = sender;
+            message.conversation = conversation;
+            message.message = createMessageDto.message;
+            message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
+            await this.messageService.createMessage(message);
+        }
         return new OKResponseWithMessageDTO(true, 'Message created successfully.');
     }
 
