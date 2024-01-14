@@ -1,4 +1,4 @@
-import {User} from "./User.ts";
+//import {User} from "./User.ts";
 import {RoutePart} from "./RoutePart.ts";
 import {TransitRequest} from "./TransitRequest.ts";
 import {UserLight} from "./UserLight.ts";
@@ -6,7 +6,7 @@ import {UserLight} from "./UserLight.ts";
 export interface Offer {
     id: number;
 
-    provider: User | UserLight;
+    provider: UserLight;
 
     route: RoutePart[];
 

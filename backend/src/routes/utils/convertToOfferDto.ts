@@ -6,10 +6,6 @@ import { convertVehicleToCreateVehicleDto } from './convertToCreateVehicleDto';
 import { TripRequest } from "../../database/TripRequest";
 import { GetTripRequestResponseDto } from "../request/DTOs/GetTripRequestResponseDto";
 import { calcAge } from "./calcAge";
-import { convertVehicleToCreateVehicleDto } from './convertToCreateVehicleDto';
-import { TripRequest } from "../../database/TripRequest";
-import { GetTripRequestResponseDto } from "../request/DTOs/GetTripRequestResponseDto";
-import { calcAge } from "./calcAge";
 
 export const convertOfferToGetOfferDto = (offer: Offer) => {
   const getOfferResponseDto: GetOfferResponseDto = new GetOfferResponseDto();
@@ -71,20 +67,6 @@ export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
   dto.seats = tripRequest.seats;
 
   return dto;
-}
+};
 
 
-export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
-  const dto = new GetTripRequestResponseDto();
-  dto.id = tripRequest.id;
-  dto.requester = convertUserToOtherUser(tripRequest.requester);
-  dto.startPlz = tripRequest.startPlz;
-  dto.endPlz = tripRequest.endPlz;
-  dto.createdAt = new Date(tripRequest.createdAt);
-  dto.description = tripRequest.description;
-  dto.cargoImg = tripRequest.cargoImg;
-  dto.startDate = tripRequest.startDate;
-  dto.seats = tripRequest.seats;
-
-  return dto;
-}
