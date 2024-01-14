@@ -30,5 +30,5 @@ export class CreateVehicleDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  picture: string;
+  picture?: string;
 }

@@ -87,23 +87,16 @@ export class VehicleService {
     await this.vehicleRepository.remove(vehicle);
   }
 
-  async saveProfileImagePath(vehicleId: number, imagePath: string): Promise<void> {
+  async removeOldImage(vehicleId: number, userId: number): Promise<void> {
     const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
-
     if (!vehicle) {
       throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
     }
-
-    vehicle.picture = imagePath;
-    await this.vehicleRepository.save(vehicle);
-  }
-
-  async removeOldImage(vehicleId: number): Promise<void> {
-    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
-    if (!vehicle) {
-      throw new NotFoundException(`User with ID ${vehicleId} not found.`);
+    if (vehicle.provider.id !== userId) {
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
     }
-
     if (vehicle.picture.length > 0) {
       const oldImagePath = join(
         process.cwd(),
@@ -115,6 +108,21 @@ export class VehicleService {
         unlinkSync(oldImagePath);
       }
     }
+  }
+
+  async saveProfileImagePath(vehicleId: number, userId: number, imagePath: string): Promise<void> {
+    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
+    if (!vehicle) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
+    }
+
+    if (vehicle.provider.id !== userId) {
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
+    }
+    vehicle.picture = imagePath;
+    await this.vehicleRepository.save(vehicle);
   }
 
 }
