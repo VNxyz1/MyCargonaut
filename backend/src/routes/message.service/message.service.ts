@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from '../../database/Message';
 import { Conversation } from '../../database/Conversation';
@@ -31,6 +31,22 @@ export class MessageService {
         return conversation;
     }
 
+    async getConversationById(conversationId: number) {
+        const conversation = await this.conversationRepository
+        .createQueryBuilder('conversation')
+        .leftJoinAndSelect('conversation.user1', 'user1')
+        .leftJoinAndSelect('conversation.user2', 'user2')
+        .leftJoinAndSelect('conversation.messages', 'messages')
+        .leftJoinAndSelect('messages.sender', 'sender')
+        .where('conversation.id = :conversationId', {conversationId: conversationId})
+        .getOne();
+
+        if (conversation == null) {
+            throw new NotFoundException(`No Conversation with this Id found.`);
+        }
+        return conversation;
+    }
+
     async getAllConversations(userId: number) {
         const conversations = await this.conversationRepository
         .createQueryBuilder('conversation')
@@ -55,5 +71,17 @@ export class MessageService {
 
     async createMessage(message: Message) {
         return await this.messageRepository.save(message);
+    }
+
+    async markConversationAsRead(conversationId: number, userId: number) {
+        const conversation = await this.getConversationById(conversationId);
+
+        conversation.messages.forEach(async (message) => {
+            if (message.sender.id != userId) {
+                message.read = true;
+                await this.messageRepository.save(message);
+            }
+        });
+        await this.conversationRepository.save(conversation);
     }
 }

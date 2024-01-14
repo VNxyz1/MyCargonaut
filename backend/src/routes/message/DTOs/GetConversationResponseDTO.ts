@@ -4,6 +4,10 @@ import { GetMessageDto } from './GetMessageResponseDTO';
 export class GetConversationDto {
     @IsInt()
     @ApiProperty()
+    conversationId: number;
+    
+    @IsInt()
+    @ApiProperty()
     conversationPartnerId: number;
 
     @IsString()
