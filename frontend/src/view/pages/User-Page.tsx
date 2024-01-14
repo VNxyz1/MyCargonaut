@@ -2,7 +2,6 @@ import {useState, useEffect} from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
@@ -14,6 +13,7 @@ import {User} from "../../interfaces/User";
 
 import {getAUser} from "../../services/userService";
 import {useNavigate, useParams} from "react-router-dom";
+import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 
 function ProfilPage() {
     const { userId } = useParams();
@@ -113,28 +113,10 @@ function ProfilPage() {
                             <span className="section-seperator"></span>
 
                             <Row>
-                                <p style={{color: '#aeaeae'}}>40 Abgeschlossene Fahrten(nicht implementiert)</p>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-user"></i> Gesamt</span> <span>97%</span></div>
-                                    <ProgressBar now={97}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-car"></i> Fahrt</span> <span>85%</span></div>
-                                    <ProgressBar now={85}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-clock"></i> Pünktlich</span> <span>100%</span></div>
-                                    <ProgressBar now={100}/>
-                                </div>
-
-                                <div className="rating-wrapper">
-                                    <div className="rating-txt"><span><i className="icon-handshake"></i> Zuverlässig</span> <span>70%</span></div>
-                                    <ProgressBar now={70}/>
-                                </div>
-
+                                {userData?.averageRatings ?
+                                    <AverageRatingsComponent averageRatings={userData.averageRatings}/>
+                                    : <p>Bewertungen konnten nicht geladen werden.</p>
+                                }
                             </Row>
 
                         </div>
