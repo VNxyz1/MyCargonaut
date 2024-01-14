@@ -14,6 +14,7 @@ import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
 import {useEffect, useState} from "react";
 import {Offer} from "./interfaces/Offer.ts";
 import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
+import ChatPage from "./view/pages/Chat-Page.tsx";
 
 function RoutesComponent() {
     // @ts-ignore wird vielleicht noch gebraucht
@@ -56,6 +57,7 @@ function RoutesComponent() {
                 <Route path="/messages" element={<MessagesPage />} />
                 <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
                 <Route path="/404" element={<BadRequestPage/>} />
+                <Route path="/chat" element={<ChatPage/>} />
             </Routes>
             <FooterComponent />
         </BrowserRouter>

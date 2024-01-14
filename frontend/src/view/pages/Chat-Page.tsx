@@ -1,6 +1,7 @@
 import { Col, Container, Row } from "react-bootstrap";
 import AllChats from "../components/Chat-Page/All-Chats.tsx";
 import SingleChat from "../components/Chat-Page/Single-Chat.tsx";
+import OfferingsAndRequests from "../components/Chat-Page/Offerings-And-Requests.tsx";
 
 
 function ChatPage () {
@@ -16,6 +17,11 @@ function ChatPage () {
             <SingleChat/>
           </Col>
         </Row>
+      <Row>
+        <Col>
+          <OfferingsAndRequests/>
+        </Col>
+      </Row>
     </Container>
   );
 }
