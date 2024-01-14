@@ -7,7 +7,7 @@ import { TransitRequest } from '../database/TransitRequest';
 import { RoutePart } from '../database/RoutePart';
 import { TripRequest } from '../database/TripRequest';
 import { Rating } from '../database/Rating';
-import { Vehicle } from 'src/database/Vehicle';
+import { Vehicle } from '../database/Vehicle';
 
 export const entityArr: EntityClassOrSchema[] = [
   User,

@@ -20,6 +20,8 @@ import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
+import { VehicleService } from "./routes/vehicle.service/vehicle.service";
+import { VehicleController } from "./routes/vehicle/vehicle.controller";
 
 let user: Buffer;
 let pass: Buffer;
@@ -73,6 +75,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     TransitRequestController,
     RequestController,
     RatingController,
+    VehicleController
   ],
   providers: [
     UserService,
@@ -82,6 +85,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     RequestService,
     PlzService,
     RatingService,
+    VehicleService
   ],
 })
 export class AppModule {}
