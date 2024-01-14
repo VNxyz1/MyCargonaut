@@ -20,6 +20,8 @@ import { entityArr, sqlite_setup } from './utils/sqlite_setup';
 import { MessageController } from './routes/message/message.controller';
 import { MessageService } from './routes/message.service/message.service';
 import { RequestOfferingService } from './routes/request-offering.service/request-offering.service';
+import { MessageController } from './routes/message/message.controller';
+import { MessageService } from './routes/message.service/message.service';
 import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
