@@ -327,7 +327,7 @@ describe('RequestController', () => {
       await expect(
         requestController.transformToOffer(session, 1, {
           additionalSeats: 1,
-          vehicle: 'vehicle',
+          vehicleId: 'vehicle',
           startDate: 'startDate',
           description: 'description',
         }),
@@ -354,7 +354,7 @@ describe('RequestController', () => {
       const route = [crp1, crp2];
       await requestController.transformToOffer(session, 1, {
         additionalSeats: additionalSeats,
-        vehicle: vehicle,
+        vehicleId: vehicle,
         startDate: startDate,
         description: description,
         route: route,

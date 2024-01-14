@@ -18,7 +18,7 @@ export class PostTransformToOfferDto {
 
   @IsString()
   @ApiProperty()
-  vehicle: string;
+  vehicleId: number;
 
   @IsISO8601()
   @ApiProperty()

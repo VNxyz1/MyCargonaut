@@ -18,10 +18,10 @@ export class CreateOfferDto {
   })
   route: CreateRoutePartDto[];
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @ApiProperty()
-  vehicle: string;
+  vehicleId: number;
 
   @IsString()
   @IsNotEmpty()

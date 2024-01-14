@@ -11,6 +11,7 @@ import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
 import { PlzService } from '../plz.service/plz.service';
 import { createRoutePart } from '../utils/createRoutePart';
+import { Vehicle } from 'src/database/Vehicle';
 
 @Injectable()
 export class OfferService {
@@ -23,6 +24,8 @@ export class OfferService {
     private readonly transitRequestRepository: Repository<TransitRequest>,
     @InjectRepository(RoutePart)
     private readonly routePartRepository: Repository<RoutePart>,
+    @InjectRepository(Vehicle)
+    private readonly vehicleRepository: Repository<Vehicle>,
     private readonly plzService: PlzService,
   ) {}
 
@@ -36,7 +39,9 @@ export class OfferService {
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
     const offer = new Offer();
-    offer.vehicle = offerDto.vehicle;
+    offer.vehicle = await this.vehicleRepository.findOne({
+      where: { id: offerDto.vehicleId },
+    });
     offer.bookedSeats = offerDto.bookedSeats;
     offer.description = offerDto.description;
     offer.startDate = new Date(offerDto.startDate);
@@ -75,26 +80,26 @@ export class OfferService {
           { route: { plz: { location: Like(`%${searchFor}%`) } } },
           { route: { plz: { plz: Like(`%${searchFor}%`) } } },
         ],
-        relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
+        relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
       });
     }
 
     return await this.offerRepository.find({
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
     });
   }
 
   async getOffersOfUser(userId: number) {
     return await this.offerRepository.find({
       where: { provider: { id: userId } },
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
     });
   }
 
   async getOffer(id: number) {
     const offer = await this.offerRepository.findOne({
       where: { id: id },
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests'],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
     });
     if (!offer) {
       throw new InternalServerErrorException('Offer was not found!');
