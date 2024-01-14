@@ -246,9 +246,15 @@ export class RequestController {
       );
     }
 
-    const check = await this.requestService.userAlreadyPostedAOfferingToThisTripRequest(offeringUserId, requestId);
+    const check =
+      await this.requestService.userAlreadyPostedAOfferingToThisTripRequest(
+        offeringUserId,
+        requestId,
+      );
     if (check) {
-      throw new ForbiddenException('You already sent a offering to this trip request!');
+      throw new ForbiddenException(
+        'You already sent a offering to this trip request!',
+      );
     }
 
     const offering = new TripRequestOffering();
@@ -294,7 +300,8 @@ export class RequestController {
   @Post('offering/accept/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    description: 'Accepts a offering with the given id. And executes the payment action if the user has enough coins.',
+    description:
+      'Accepts a offering with the given id. And executes the payment action if the user has enough coins.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async acceptOffering(
@@ -309,9 +316,8 @@ export class RequestController {
       );
     }
 
-    const coinbalanceOfRequester = await this.userService.getCoinBalanceOfUser(
-      userId
-    );
+    const coinbalanceOfRequester =
+      await this.userService.getCoinBalanceOfUser(userId);
     if (coinbalanceOfRequester < offering.requestedCoins) {
       throw new ForbiddenException(
         'The coin balance of the requesting user is not valid.',
@@ -362,18 +368,15 @@ export class RequestController {
     return new OKResponseWithMessageDTO(true, 'Offering was converted.');
   }
 
-
   @Post('not-transform/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    description:
-      'Does not transform this TripRequest to an offer. Deletes it.',
+    description: 'Does not transform this TripRequest to an offer. Deletes it.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async notTransform(
     @Session() session: ISession,
-    @Param('id', ParseIntPipe) requestId: number,
-    @Body() body: PostTransformToOfferDto,
+    @Param('id', ParseIntPipe) requestId: number
   ) {
     const userId: number = session.userData.id;
 

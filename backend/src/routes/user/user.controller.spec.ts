@@ -104,7 +104,6 @@ describe('UserController', () => {
       total: 0,
     };
 
-
     const result = await userController.getLoggedInUser(session);
 
     expect(result).toEqual(userDto);

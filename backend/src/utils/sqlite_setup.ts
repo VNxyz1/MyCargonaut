@@ -19,7 +19,7 @@ export const entityArr: EntityClassOrSchema[] = [
   TripRequest,
   Rating,
   TripRequestOffering,
-  Vehicle
+  Vehicle,
 ];
 
 export const sqlite_setup = (path: string) => {

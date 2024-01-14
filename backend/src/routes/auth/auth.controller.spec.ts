@@ -15,8 +15,8 @@ import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { MockSession } from '../user/Mocks/MockSession';
 import { RatingService } from '../rating.service/rating.service';
-import { RatingController } from "../rating/rating.controller";
-import { OfferService } from "../offer.service/offer.service";
+import { RatingController } from '../rating/rating.controller';
+import { OfferService } from '../offer.service/offer.service';
 
 describe('AuthController', () => {
   let userController: UserController;
@@ -31,7 +31,13 @@ describe('AuthController', () => {
         TypeOrmModule.forFeature(entityArr),
       ],
       controllers: [UserController, AuthController, RatingController],
-      providers: [UserService, AuthService, PlzService, RatingService, OfferService],
+      providers: [
+        UserService,
+        AuthService,
+        PlzService,
+        RatingService,
+        OfferService,
+      ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
