@@ -1,8 +1,12 @@
-export interface Vehicle {
+
+export interface CreateVehicleData {
+    name: string,
+    seats: number,
+    type: number,
+    description: string,
+    picture?: string
+}
+
+export interface CreateVehicleResponse {
     id: number;
-    ownerId: number;
-    name: string;
-    vehiclePictureUrl: string;
-    seats: number;
-    description: string;
 }

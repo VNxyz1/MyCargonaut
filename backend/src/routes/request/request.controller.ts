@@ -30,7 +30,7 @@ import { User } from '../../database/User';
 import { UserService } from '../user.service/user.service';
 import { GetAllTripRequestResponseDto } from './DTOs/GetAllTripRequestResponseDto';
 import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
-import { convertUserToOtherUser } from '../utils/convertToOfferDto';
+import { convertTripRequestToGetDto, convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto';
 import { existsSync, unlinkSync } from 'fs';
 import { fileInterceptor } from './requesterFileInterceptor';
@@ -83,7 +83,7 @@ export class RequestController {
     const tRArr = await this.requestService.getAll();
     const dto = new GetAllTripRequestResponseDto();
     dto.tripRequests = tRArr.map((tR) => {
-      return this.convertToGetDto(tR);
+      return convertTripRequestToGetDto(tR);
     });
     return dto;
   }
@@ -94,7 +94,7 @@ export class RequestController {
   async getOne(@Param('id', ParseIntPipe) tripRequestId: number) {
     const tR = await this.requestService.getById(tripRequestId);
 
-    return this.convertToGetDto(tR);
+    return convertTripRequestToGetDto(tR);
   }
 
   @Get('search')
@@ -142,7 +142,7 @@ export class RequestController {
 
     const dto = new GetAllTripRequestResponseDto();
     dto.tripRequests = tRArr.map((tR) => {
-      return this.convertToGetDto(tR);
+      return convertTripRequestToGetDto(tR);
     });
     return dto;
   }
@@ -453,7 +453,7 @@ export class RequestController {
     const dto = new GetOfferingDto();
     dto.id = offering.id;
     dto.offeringUser = convertUserToOtherUser(offering.offeringUser);
-    dto.tripRequest = this.convertToGetDto(offering.tripRequest);
+    dto.tripRequest = convertTripRequestToGetDto(offering.tripRequest);
     dto.text = offering.text;
     dto.requestedCoins = offering.requestedCoins;
     dto.accepted = offering.accepted;
@@ -543,21 +543,6 @@ export class RequestController {
     }
 
     unlinkSync(oldImagePath);
-  }
-
-  convertToGetDto(tripRequest: TripRequest) {
-    const dto = new GetTripRequestResponseDto();
-    dto.id = tripRequest.id;
-    dto.requester = convertUserToOtherUser(tripRequest.requester);
-    dto.startPlz = tripRequest.startPlz;
-    dto.endPlz = tripRequest.endPlz;
-    dto.createdAt = new Date(tripRequest.createdAt);
-    dto.description = tripRequest.description;
-    dto.cargoImg = tripRequest.cargoImg;
-    dto.startDate = tripRequest.startDate;
-    dto.seats = tripRequest.seats;
-
-    return dto;
   }
 
   filterRequestsBySeats(

@@ -98,27 +98,33 @@ export class OfferController {
   @ApiQuery({
     name: 'search',
     description: 'A search string to filter offers by.',
+    required: false,
   })
   @ApiQuery({
     name: 'fromPLZ',
-    description: 'The starting postal code for filtering offers by location.',
+    description: 'The starting postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    required: false,
   })
   @ApiQuery({
     name: 'toPLZ',
-    description: 'The ending postal code for filtering offers by location.',
+    description: 'The ending postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    required: false,
   })
   @ApiQuery({
     name: 'seats',
     description: 'A number of seats to filter offers by.',
+    required: false,
   })
   @ApiQuery({
     name: 'date',
     description:
       'A date to filter offers by. Must be in the format YYYY-MM-DD.',
+    required: false,
   })
   @ApiQuery({
     name: 'rating',
     description: 'A rating to filter offers by. Must be between 0 and 5.',
+    required: false,
   })
   @ApiResponse({
     type: GetAllOffersResponseDto,

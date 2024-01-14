@@ -31,6 +31,7 @@ import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
 import { hash } from '../utils/hash';
 import { RatingService } from '../rating.service/rating.service';
+import { calcAge } from "../utils/calcAge";
 
 @ApiTags('user')
 @Controller('user')
@@ -82,7 +83,7 @@ export class UserController {
   @ApiOperation({ summary: 'Creates a new User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async postUser(@Body() body: CreateUserRequestDto) {
-    const age = this.calcAge(new Date(body.birthday));
+    const age = calcAge(new Date(body.birthday));
     if (age < 18) {
       throw new ForbiddenException(
         'You have to be at least 18 years old to create an account.',
@@ -230,14 +231,5 @@ export class UserController {
     }
   }
 
-  private calcAge(birthdate: Date) {
-    const aktuellesDatum = new Date();
 
-    const differenzInMillisekunden =
-      aktuellesDatum.getTime() - birthdate.getTime();
-
-    return Math.floor(
-      differenzInMillisekunden / (1000 * 60 * 60 * 24 * 365.25),
-    );
-  }
 }

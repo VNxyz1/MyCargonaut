@@ -7,7 +7,7 @@ export class GetOfferResponseDto {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({ type: GetOtherUserDto })
+  @ApiProperty({type: () => GetOtherUserDto} )
   provider: GetOtherUserDto;
 
   @ApiProperty({ type: [RoutePart] })
