@@ -15,6 +15,9 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { ISession } from '../../utils/ISession';
 import { CreateMessageDto } from './DTOs/CreateMessageRequestDTO';
+import { GetAllMessagesDto } from './DTOs/GetAllMessagesResponseDTO';
+import { GetConversationDto } from './DTOs/GetConversationResponseDTO';
+import { GetMessageDto } from './DTOs/GetMessageResponseDTO';
 import { Message } from '../../database/Message';
 import { Conversation } from '../../database/Conversation';
 
@@ -25,6 +28,56 @@ export class MessageController {
         private readonly messageService: MessageService,
         private readonly userService: UserService,
       ) {}
+
+    @UseGuards(IsLoggedInGuard)
+    @Get()
+    @ApiOperation({
+        summary: 'Gets all messages',
+        description: `Returns all messages of the logged-in user.`,
+    })
+    @ApiResponse({ type: GetAllMessagesDto })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'Forbidden resource.',
+    })
+    async getAllMessages(@Session() session: ISession) {
+        const user = await this.userService.getUserById(session.userData.id);
+
+        const conversations = await this.messageService.getAllConversations(user.id);
+
+        const getAllMessagesDto: GetAllMessagesDto = new GetAllMessagesDto();
+        getAllMessagesDto.conversations = [];
+
+        for (const conversation of conversations) {
+            const getConversationDto: GetConversationDto = new GetConversationDto();
+
+            const isUser1 = conversation.user1.id == user.id;
+            getConversationDto.conversationPartnerId = 
+                isUser1 ? conversation.user2.id : conversation.user1.id;
+            getConversationDto.conversationPartnerName = 
+                isUser1 ? `${conversation.user2.firstName} ${conversation.user2.lastName}` : 
+                `${conversation.user1.firstName} ${conversation.user1.lastName}`;
+            getConversationDto.messages = [];
+
+            for (const message of conversation.messages) {
+                const messageDto: GetMessageDto = new GetMessageDto();
+                messageDto.senderId = message.sender.id;
+                messageDto.message = message.message;
+                messageDto.timestamp = message.timestamp.toISOString();
+
+                if(message.sender.id != user.id) {
+                    messageDto.read = message.read;
+                }
+
+                getConversationDto.messages.push(messageDto);
+            }
+
+            getAllMessagesDto.conversations.push(getConversationDto);
+        }
+
+        return getAllMessagesDto;
+    }
 
     @UseGuards(IsLoggedInGuard)
     @Post()
