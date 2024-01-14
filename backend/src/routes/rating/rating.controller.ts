@@ -77,6 +77,9 @@ export class RatingController {
       ratingDto.comfortDuringTrip = rating.comfortDuringTrip;
       ratingDto.cargoArrivedUndamaged = rating.cargoArrivedUndamaged;
       ratingDto.passengerPleasantness = rating.passengerPleasantness;
+      if(rating.comment) {
+        ratingDto.comment = rating.comment;
+      }
 
       if (rating.driver) {
         response.driverRatings.push(ratingDto);
@@ -189,6 +192,9 @@ export class RatingController {
       driverRating.passengerPleasantness = rating.passengerPleasantness
         ? rating.passengerPleasantness
         : 0;
+      if(rating.comment) {
+        driverRating.comment = rating.comment;
+      }
 
       ratings.ratingsAsDriver.push(driverRating);
     });
@@ -205,6 +211,9 @@ export class RatingController {
       passengerRating.comfortDuringTrip = rating.comfortDuringTrip
         ? rating.comfortDuringTrip
         : 0;
+      if(rating.comment) {
+        passengerRating.comment = rating.comment;
+      }
 
       ratings.ratingsAsPassenger.push(passengerRating);
     });
@@ -282,6 +291,9 @@ export class RatingController {
     rating.trip = trip;
     rating.punctuality = createRatingDto.punctuality;
     rating.reliability = createRatingDto.reliability;
+    if(createRatingDto.comment) {
+      rating.comment = createRatingDto.comment;
+    }
 
     if (isRaterDriver) {
       if (!createRatingDto.comfortDuringTrip) {
