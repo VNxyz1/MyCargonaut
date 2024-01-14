@@ -31,6 +31,24 @@ export class MessageService {
         return conversation;
     }
 
+    async getAllConversations(userId: number) {
+        const conversations = await this.conversationRepository
+        .createQueryBuilder('conversation')
+        .leftJoinAndSelect('conversation.user1', 'user1')
+        .leftJoinAndSelect('conversation.user2', 'user2')
+        .leftJoinAndSelect('conversation.messages', 'messages')
+        .leftJoinAndSelect('messages.sender', 'sender')
+        .where('user1.id = :userId OR user2.id = :userId', {
+            userId: userId,
+        })
+        .getMany();
+
+        if (conversations == null) {
+            return null;
+        }
+        return conversations;
+    }
+
     async createConversation(conversation: Conversation) {
         return await this.conversationRepository.save(conversation);
     }
