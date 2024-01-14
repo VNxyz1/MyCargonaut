@@ -81,6 +81,24 @@ export class MessageController {
     }
 
     @UseGuards(IsLoggedInGuard)
+    @Get('/unread')
+    @ApiOperation({
+        summary: 'Gets all unread messages',
+        description: `Returns all unread messages of the logged-in user.`,
+    })
+    @ApiResponse({ type: GetAllMessagesDto })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'Forbidden resource.',
+    })
+    async getAllUnreadMessages(@Session() session: ISession) {
+        const user = await this.userService.getUserById(session.userData.id);
+
+        return await this.messageService.getUnreadMessages(user.id);
+    }
+
+    @UseGuards(IsLoggedInGuard)
     @Post()
     @ApiOperation({
         summary: 'Write a message',
