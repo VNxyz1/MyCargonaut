@@ -39,4 +39,7 @@ export class Rating {
 
   @Column({ default: false })
   complete: boolean;
+
+  @Column({ nullable: true })
+  comment: string;
 }
