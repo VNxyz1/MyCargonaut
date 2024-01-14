@@ -1,10 +1,12 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateVehicleDto } from '../vehicle/DTOs/CreateVehicleDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { Vehicle } from '../../database/Vehicle';
 import { ChangedDto } from '../vehicle/DTOs/ChangedDto';
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 @Injectable()
 export class VehicleService {
@@ -84,4 +86,35 @@ export class VehicleService {
   async deleteVehicle(vehicle: Vehicle) {
     await this.vehicleRepository.remove(vehicle);
   }
+
+  async saveProfileImagePath(vehicleId: number, imagePath: string): Promise<void> {
+    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
+
+    if (!vehicle) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
+    }
+
+    vehicle.picture = imagePath;
+    await this.vehicleRepository.save(vehicle);
+  }
+
+  async removeOldImage(vehicleId: number): Promise<void> {
+    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
+    if (!vehicle) {
+      throw new NotFoundException(`User with ID ${vehicleId} not found.`);
+    }
+
+    if (vehicle.picture.length > 0) {
+      const oldImagePath = join(
+        process.cwd(),
+        'uploads',
+        'profile-images',
+        vehicle.picture,
+      );
+      if (existsSync(oldImagePath)) {
+        unlinkSync(oldImagePath);
+      }
+    }
+  }
+
 }
