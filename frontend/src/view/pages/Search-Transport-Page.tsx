@@ -12,8 +12,30 @@ function SearchTransportPage(
         offers: Offer[]
     }
 ) {
-    const [offers] = useState<Offer[]>(props.offers);
+    const [offers, setOffers] = useState<Offer[]>(props.offers);
+    const [searchInput, setSearchInput] = useState<string>('');
 
+    const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
+    };
+
+    const searchOffers = async () => {
+        try {
+            const searchString = encodeURIComponent(searchInput);
+            const url = `/offers/search?search=${searchString}`;
+            
+            const res = await fetch(url);
+            if (res.ok) {
+                const data = await res.json();
+                setOffers(data.offerList);
+                console.error(data.offerList);
+            } else {
+                console.error('Anfrage fehlgeschlagen');
+            }
+        } catch (error) {
+            console.error('Fehler bei der Anfrage');
+        }
+    };
 
     return (
         <>
@@ -79,9 +101,23 @@ function SearchTransportPage(
                     </div>
                     <div className="col-sm-9">
                         <div className="input-group mb-3 searchBar">
-                            <input type="text" className="form-control" placeholder="Suche..." aria-label="Suchen" aria-describedby="basic-addon2"/>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Suche..."
+                                aria-label="Suchen"
+                                aria-describedby="basic-addon2"
+                                value={searchInput}
+                                onChange={handleSearchInputChange}
+                            />
                             <div className="input-group-append">
-                                <button className="btn btn-outline-secondary" type="button">Suchen</button>
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    type="button"
+                                    onClick={searchOffers}
+                                >
+                                    Suchen
+                                </button>                            
                             </div>
                         </div>
                         {offers.map((item: Offer) => (

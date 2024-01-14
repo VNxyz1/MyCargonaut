@@ -25,6 +25,10 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
     const [plzValue, setPlzValue] = useState<string>('');
     const [locationValue, setLocationValue] = useState<string>('');
     const [routes, setRoutes] = useState<Route[]>([]);
+    const [selectedVehicle, setSelectedVehicle] = useState<string>('');
+    const [descriptionValue] = useState<string>('');
+    const [dateValue, setDateValue] = useState<string>('');
+    const [seatNumberValue, setSeatNumberValue] = useState<number>(0);
 
     useEffect(() => {
         if (!props.show) {
@@ -32,11 +36,30 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
         }
     }, [props.show]);
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
         event.stopPropagation();
         
-        // TODO: send form data to backend
+        try {
+            const response = await fetch('/offer', {
+                method: 'POST',
+                body: JSON.stringify({
+                    route: routes,
+                    vehicle: selectedVehicle,
+                    description: descriptionValue,
+                    startDate: dateValue,
+                    bookedSeats: seatNumberValue,
+                }),
+            });    
+            if (response.ok) {
+                console.log('Anfrage erfolgreich gesendet');
+            } else {
+                console.error('Fehler bei der Anfrage an das Backend');
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden der Anfrage:', error);
+        }
+        
         props.onHide();
     };
 
@@ -126,15 +149,20 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                             <Form.Control
                                 required
                                 type="text"
+                                onChange={(e) => setDateValue(e.target.value)}
                                 placeholder="Datum"/>
                         </Form.Group>
                         <Form.Group as={Col} className="mb-3" controlId="vehicle">
-                            <Form.Select required>
-                                <option value="">Fahrzeugtyp</option>
-                                {vehicleList.map((type, index) => (
-                                    <option key={index} value={type}>{type}</option>
-                                ))}
-                            </Form.Select>
+                        <Form.Select
+                            required
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedVehicle(e.target.value)}
+                            value={selectedVehicle}
+                        >
+                            <option value="">Fahrzeugtyp</option>
+                            {vehicleList.map((type, index) => (
+                                <option key={index} value={type}>{type}</option>
+                            ))}
+                        </Form.Select>
                         </Form.Group>
                         <Form.Group as={Col} xs={3} className="mb-3" controlId="vehicleSeatNumber">
                             <Form.Control
@@ -143,7 +171,10 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                                 step={1}
                                 min={1}
                                 max={20}
-                                placeholder="Sitzplätze"/>
+                                placeholder="Sitzplätze"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSeatNumberValue(parseInt(e.target.value))}
+                                value={seatNumberValue}
+                            />
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-3" controlId="registerEmail">
