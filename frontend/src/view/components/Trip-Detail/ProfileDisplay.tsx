@@ -2,10 +2,11 @@ import {UserLight} from "../../../interfaces/UserLight.ts";
 import {Col, Row} from "react-bootstrap";
 import placeholderImg from "../../../assets/img/user-default-placeholder.png";
 import {useEffect, useState} from "react";
+import {User} from "../../../interfaces/User.ts";
 
 function ProfileDisplay(
     props: {
-        user: UserLight
+        user: UserLight | User
     }
 ) {
 
