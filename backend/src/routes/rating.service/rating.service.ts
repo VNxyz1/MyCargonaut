@@ -3,8 +3,6 @@ import { Rating } from '../../database/Rating';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Equal } from 'typeorm';
 import { GetAverageRatingsDto } from '../rating/DTOs/GetAverageRatingsResponseDTO';
-import { GetUserRatingsDto } from '../rating/DTOs/GetUserRatingsResponseDTO';
-import { GetRatingDto } from '../rating/DTOs/GetRatingResponseDTO';
 
 @Injectable()
 export class RatingService {
@@ -120,6 +118,8 @@ export class RatingService {
   }
 
   async selectAllRatingsByUserId(userId: number, driverRating: boolean) {
-    return await this.ratingRepository.find({where: {rated: Equal(userId), driver: driverRating, complete: true}});
+    return await this.ratingRepository.find({
+      where: { rated: Equal(userId), driver: driverRating, complete: true },
+    });
   }
 }

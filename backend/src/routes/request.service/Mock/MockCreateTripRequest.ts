@@ -20,6 +20,8 @@ export class MockCreateTripRequest {
 
   seats: number;
 
+  offerings: [];
+
   constructor(user: User, startPlz: Plz, endPlz: Plz, seats: number) {
     this.requester = user;
     this.startPlz = startPlz;
