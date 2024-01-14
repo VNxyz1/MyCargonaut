@@ -53,6 +53,7 @@ export class MessageController {
             const getConversationDto: GetConversationDto = new GetConversationDto();
 
             const isUser1 = conversation.user1.id == user.id;
+            getConversationDto.conversationId = conversation.id;
             getConversationDto.conversationPartnerId = 
                 isUser1 ? conversation.user2.id : conversation.user1.id;
             getConversationDto.conversationPartnerName = 
@@ -124,5 +125,37 @@ export class MessageController {
         await this.messageService.createMessage(message);
 
         return new OKResponseWithMessageDTO(true, 'Message created successfully.');
+    }
+
+    @UseGuards(IsLoggedInGuard)
+    @Post('/read/:conversationId')
+    @ApiOperation({
+        summary: 'Mark a conversation as read',
+        description: `Allows a logged-in user to mark all messages of a conversation as read.`,
+    })
+    @ApiResponse({
+        status: 200,
+        type: OKResponseWithMessageDTO,
+        description: 'Messages marked as read.',
+    })
+    @ApiResponse({
+        status: 403,
+        type: ForbiddenException,
+        description: 'You cannot mark this conversation as read.',
+    })
+    async markConversationAsRead(
+        @Session() session: ISession,
+        @Param('conversationId') conversationId: number,
+    ) {
+        const sender = await this.userService.getUserById(session.userData.id);
+        const conversation: Conversation = await this.messageService.getConversationById(conversationId);
+
+        if (sender.id != conversation.user1.id && sender.id != conversation.user2.id) {
+            throw new ForbiddenException(false, 'You cannot mark this conversation as read.');
+        }
+        
+        await this.messageService.markConversationAsRead(conversationId, sender.id);
+
+        return new OKResponseWithMessageDTO(true, 'Messages marked as read.');
     }
 }
