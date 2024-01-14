@@ -73,7 +73,8 @@ export class UserController {
   async getUser(@Param('id', ParseIntPipe) userId: number) {
     const user = await this.userService.getUserById(userId);
     const response = convertUserToOtherUser(user);
-    response.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
+    response.averageRatings =
+      await this.ratingService.selectAverageRatingForUser(user.id);
     return response;
   }
 

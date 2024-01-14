@@ -17,9 +17,12 @@ import { PlzService } from './routes/plz.service/plz.service';
 import { RatingController } from './routes/rating/rating.controller';
 import { RatingService } from './routes/rating.service/rating.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
+import { RequestOfferingService } from './routes/request-offering.service/request-offering.service';
 import * as process from 'process';
 import * as path from 'path';
 import * as fs from 'fs';
+import { VehicleService } from './routes/vehicle.service/vehicle.service';
+import { VehicleController } from './routes/vehicle/vehicle.controller';
 
 let user: Buffer;
 let pass: Buffer;
@@ -73,6 +76,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     TransitRequestController,
     RequestController,
     RatingController,
+    VehicleController,
   ],
   providers: [
     UserService,
@@ -82,6 +86,8 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     RequestService,
     PlzService,
     RatingService,
+    RequestOfferingService,
+    VehicleService,
   ],
 })
 export class AppModule {}

@@ -45,11 +45,13 @@ export class VehicleService {
       where: { id: id },
     });
     if (!vehicle) {
-      throw new InternalServerErrorException('Can\'t delete your legs!');
+      throw new InternalServerErrorException("Can't delete your legs!");
     }
 
     if (vehicle.provider.id !== userId) {
-      throw new InternalServerErrorException('You\'re not the owner of the vehicle.');
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
     }
 
     return vehicle;

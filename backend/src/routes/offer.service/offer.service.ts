@@ -4,13 +4,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { Offer } from '../../database/Offer';
-import { Plz } from '../../database/Plz';
 import { Like } from 'typeorm';
 import { UpdateOfferRequestDto } from '../offer/DTOs/UpdateOfferRequestDto';
 import { TripState } from '../../database/TripState';
 import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
 import { PlzService } from '../plz.service/plz.service';
+import { createRoutePart } from '../utils/createRoutePart';
 
 @Injectable()
 export class OfferService {
@@ -25,6 +25,14 @@ export class OfferService {
     private readonly routePartRepository: Repository<RoutePart>,
     private readonly plzService: PlzService,
   ) {}
+
+  async saveRoutePart(routePart: RoutePart) {
+    const rP = await this.routePartRepository.save(routePart);
+    if (!rP) {
+      throw new InternalServerErrorException('routePart could not be saved.');
+    }
+    return rP;
+  }
 
   async postOffer(providerId: number, offerDto: CreateOfferDto) {
     const offer = new Offer();
@@ -52,7 +60,8 @@ export class OfferService {
         routePartDto.plz,
         routePartDto.location,
       );
-      await this.createRoutePart(offerDb, plz, routePartDto.position);
+      const rP = await createRoutePart(offerDb, plz, routePartDto.position);
+      await this.saveRoutePart(rP);
     }
 
     return offerDb;
@@ -118,7 +127,12 @@ export class OfferService {
           createRoutePartDto.plz,
           createRoutePartDto.location,
         );
-        await this.createRoutePart(offer, plz, createRoutePartDto.position);
+        const rP = await createRoutePart(
+          offer,
+          plz,
+          createRoutePartDto.position,
+        );
+        await this.routePartRepository.save(rP);
       }
     }
 
@@ -146,13 +160,6 @@ export class OfferService {
     if (!updatedOffer) {
       throw new InternalServerErrorException('The offer could not be saved.');
     }
-  }
-
-  private async createRoutePart(offer: Offer, plz: Plz, position: number) {
-    const routePart = new RoutePart();
-    routePart.plz = plz;
-    routePart.position = position;
-    routePart.offer = offer;
-    return await this.routePartRepository.save(routePart);
+    return updatedOffer;
   }
 }
