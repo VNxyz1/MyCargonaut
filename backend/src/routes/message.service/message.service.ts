@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from '../../database/Message';
 import { Conversation } from '../../database/Conversation';
 import { Repository } from 'typeorm';
+import { GetUnreadMessageCountDto } from '../message/DTOs/GetUnreadMessageCountDTO';
+import { GetUnreadMessagesCountDto } from '../message/DTOs/GetUnreadMessagesCountDTO';
 
 @Injectable()
 export class MessageService {
@@ -83,5 +85,30 @@ export class MessageService {
             }
         });
         await this.conversationRepository.save(conversation);
+    }
+
+    async getUnreadMessages(userId: number) {
+        const conversations = await this.getAllConversations(userId);
+        const response: GetUnreadMessagesCountDto = new GetUnreadMessagesCountDto();
+        response.conversations = [];
+        let unreadMessages = 0;
+
+        conversations.forEach((conversation) => {
+            const unreadMessage = new GetUnreadMessageCountDto();
+            unreadMessage.conversationId = conversation.id;
+            unreadMessage.unreadMessages = 0;
+
+            conversation.messages.forEach((message) => {
+                if (message.sender.id != userId && message.read == false) {
+                    unreadMessage.unreadMessages += 1;
+                    unreadMessages++;
+                }
+            });
+            if(unreadMessage.unreadMessages > 0) {
+                response.conversations.push(unreadMessage);
+            }
+        });
+        response.totalUnreadMessages = unreadMessages;
+        return response;
     }
 }
