@@ -7,6 +7,9 @@ import { TripRequest } from "../../database/TripRequest";
 import { GetTripRequestResponseDto } from "../request/DTOs/GetTripRequestResponseDto";
 import { calcAge } from "./calcAge";
 import { convertVehicleToCreateVehicleDto } from './convertToCreateVehicleDto';
+import { TripRequest } from "../../database/TripRequest";
+import { GetTripRequestResponseDto } from "../request/DTOs/GetTripRequestResponseDto";
+import { calcAge } from "./calcAge";
 
 export const convertOfferToGetOfferDto = (offer: Offer) => {
   const getOfferResponseDto: GetOfferResponseDto = new GetOfferResponseDto();
