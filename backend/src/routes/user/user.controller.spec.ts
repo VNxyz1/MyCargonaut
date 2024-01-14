@@ -103,10 +103,6 @@ describe('UserController', () => {
       reliability: 0,
       total: 0,
     };
-    userDto.totalRatings = {
-      ratingsAsDriver: [],
-      ratingsAsPassenger: [],
-    };
 
     const result = await userController.getLoggedInUser(session);
 

@@ -11,6 +11,7 @@ import { Offer } from './Offer';
 import { TransitRequest } from './TransitRequest';
 import { TripRequest } from './TripRequest';
 import { Rating } from './Rating';
+import { TripRequestOffering } from './TripRequestOffering';
 
 @Entity()
 @Unique(['eMail'])
@@ -63,6 +64,12 @@ export class User {
 
   @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
   requestedTrips: TripRequest[];
+
+  @OneToMany(
+    () => TripRequestOffering,
+    (tripRequestOffering) => tripRequestOffering.offeringUser,
+  )
+  tripRequestOfferings: TripRequestOffering[];
 
   @OneToMany(() => Rating, (rating) => rating.rated)
   ratingsAsRated: Rating[];
