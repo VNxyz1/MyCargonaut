@@ -97,7 +97,7 @@ export class VehicleService {
         "You're not the owner of the vehicle.",
       );
     }
-    if (vehicle.picture.length > 0) {
+    if (vehicle.picture && vehicle.picture.length > 0) {
       const oldImagePath = join(
         process.cwd(),
         'uploads',
@@ -124,5 +124,4 @@ export class VehicleService {
     vehicle.picture = imagePath;
     await this.vehicleRepository.save(vehicle);
   }
-
 }
