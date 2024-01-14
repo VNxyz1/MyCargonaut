@@ -42,9 +42,33 @@ export const convertUserToOtherUser = (user: User) => {
   if (user.requestedTrips) {
     otherUserDto.tripRequests = user.requestedTrips.map((tR)=> convertTripRequestToGetDto(tR));
   }
+  otherUserDto.age = calcAge(new Date(user.birthday));
+  otherUserDto.phoneNumberProvided = !!user.phoneNumber;
+  if (user.offers) {
+    otherUserDto.offers = user.offers.map((o) => convertOfferToGetOfferDto(o));
+  }
+  if (user.requestedTrips) {
+    otherUserDto.tripRequests = user.requestedTrips.map((tR)=> convertTripRequestToGetDto(tR));
+  }
 
   return otherUserDto;
 };
+
+
+export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
+  const dto = new GetTripRequestResponseDto();
+  dto.id = tripRequest.id;
+  dto.requester = convertUserToOtherUser(tripRequest.requester);
+  dto.startPlz = tripRequest.startPlz;
+  dto.endPlz = tripRequest.endPlz;
+  dto.createdAt = new Date(tripRequest.createdAt);
+  dto.description = tripRequest.description;
+  dto.cargoImg = tripRequest.cargoImg;
+  dto.startDate = tripRequest.startDate;
+  dto.seats = tripRequest.seats;
+
+  return dto;
+}
 
 
 export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
