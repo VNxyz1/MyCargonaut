@@ -94,16 +94,16 @@ async deleteVehicle(
   return new OKResponseWithMessageDTO(true, 'Vehicle deleted!');
 }
 
-@Put('upload')
+@Put('upload/:id')
 @UseGuards(IsLoggedInGuard)
 @ApiOperation({
-  summary: 'Upload/Replace profile picture and update path in vehicle',
+  summary: 'Upload/Replace vehicle picture and update path in vehicle',
 })
 @ApiResponse({ type: OKResponseWithMessageDTO })
 @UseInterceptors(
   FileInterceptor('image', {
     storage: diskStorage({
-      destination: './uploads/profile-images',
+      destination: './uploads/vehicle-images',
       filename: (req: any, file, callback) => {
         const uniquSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const prefix = req.session.userData.id;
@@ -116,11 +116,12 @@ async deleteVehicle(
 )
 async uploadVehicleImage(
   @Session() session: ISession,
+  @Param('id', ParseIntPipe) vehicleId: number,
   @UploadedFile() file: any,
 ) {
   try {
-    this.vehicleService.removeOldImage(session.userData.id);
-    this.vehicleService.saveProfileImagePath(session.userData.id, file.filename);
+    this.vehicleService.removeOldImage(vehicleId, session.userData.id);
+    this.vehicleService.saveProfileImagePath(vehicleId, session.userData.id, file.filename);
     return new OKResponseWithMessageDTO(
       true,
       'Successfully updated vehicle image',
@@ -154,14 +155,17 @@ async findVehicleImage(
   }
 }
 
-@Delete('remove-vehicle-image')
+@Delete('remove-vehicle-image/:id')
 @UseGuards(IsLoggedInGuard)
 @ApiOperation({ summary: 'Remove vehicle picture' })
 @ApiResponse({ type: OKResponseWithMessageDTO })
-async removeProfileImage(@Session() session: ISession) {
+async removeProfileImage(
+  @Session() session: ISession,
+  @Param('id', ParseIntPipe) vehicleId: number,
+  ) {
   try {
-    this.vehicleService.removeOldImage(session.userData.id);
-    this.vehicleService.saveProfileImagePath(session.userData.id, '');
+    this.vehicleService.removeOldImage(vehicleId, session.userData.id);
+    this.vehicleService.saveProfileImagePath(vehicleId, session.userData.id, '');
     return new OKResponseWithMessageDTO(
       true,
       'Successfully removed vehicle image',
