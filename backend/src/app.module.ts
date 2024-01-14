@@ -17,6 +17,8 @@ import { PlzService } from './routes/plz.service/plz.service';
 import { RatingController } from './routes/rating/rating.controller';
 import { RatingService } from './routes/rating.service/rating.service';
 import { entityArr, sqlite_setup } from './utils/sqlite_setup';
+import { MessageController } from './routes/message/message.controller';
+import { MessageService } from './routes/message.service/message.service';
 import { RequestOfferingService } from './routes/request-offering.service/request-offering.service';
 import * as process from 'process';
 import * as path from 'path';
@@ -77,6 +79,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     RequestController,
     RatingController,
     VehicleController,
+    MessageController,
   ],
   providers: [
     UserService,
@@ -88,6 +91,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     RatingService,
     RequestOfferingService,
     VehicleService,
+    MessageService,
   ],
 })
 export class AppModule {}
