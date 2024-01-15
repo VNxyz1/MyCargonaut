@@ -6,7 +6,6 @@ import Col from 'react-bootstrap/Col';
 import {Image, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import ProgressBar from 'react-bootstrap/ProgressBar';
 
 import placeholderImg from "../../assets/img/user-default-placeholder.png";
 
@@ -21,11 +20,7 @@ import {User} from "../../interfaces/User";
 
 import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
-import {
-    CargoArrivedUndamagedRatingHeadline, ComfortDuringTripRatingHeadline, PassengerPleasantnessRatingHeadline,
-    PunctualityRatingHeadline, ReliabilityRatingHeadline,
-    TotalRatingHeadline
-} from '../components/Ratings/RatingHeadlines';
+import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 
 function UserPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
@@ -211,56 +206,8 @@ function UserPage() {
 
                             <Row>
                                 {userData?.averageRatings ?
-                                    <><p>{userData.averageRatings.amount} Bewertungen</p>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <TotalRatingHeadline/>
-                                                <span>{userData.averageRatings.totalRating > 0 ? userData.averageRatings.totalRating : 0}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.totalRating}/>
-                                        </div>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <PunctualityRatingHeadline/>
-                                                <span>{userData.averageRatings.punctuality}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.punctuality}/>
-                                        </div>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <ReliabilityRatingHeadline/>
-                                                <span>{userData.averageRatings.reliability}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.reliability}/>
-                                        </div>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <ComfortDuringTripRatingHeadline/>
-                                                <span>{userData.averageRatings.comfortDuringTrip}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.comfortDuringTrip}/>
-                                        </div>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <CargoArrivedUndamagedRatingHeadline/>
-                                                <span>{userData.averageRatings.cargoArrivedUndamaged}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.cargoArrivedUndamaged}/>
-                                        </div>
-                                        <div className="rating-wrapper">
-                                            <div className="rating-txt">
-                                                <PassengerPleasantnessRatingHeadline/>
-                                                <span>{userData.averageRatings.passengerPleasantness}%</span>
-                                            </div>
-                                            <ProgressBar
-                                                now={userData.averageRatings.passengerPleasantness}/>
-                                        </div></>
-                                    : <p>Bewerungen konnten nicht geladen werden.</p>
+                                    <AverageRatingsComponent averageRatings={userData.averageRatings}/>
+                                    : <p>Bewertungen konnten nicht geladen werden.</p>
                                 }
                             </Row>
 

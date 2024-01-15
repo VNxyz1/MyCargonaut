@@ -4,6 +4,8 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import {createVehicle, uploadVehicleImage} from "../../../services/vehicleService.tsx";
+import {CreateVehicleData} from "../../../interfaces/Vehicle.ts";
 
 interface VehicleAddModalProps extends ModalProps {
     onHide: () => void;
@@ -45,8 +47,25 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
 
         setValidated(true);
         if (form.checkValidity()) {
-            // TODO: send form data to backend
-            if (image) {} // only so that image is not unused for linting
+            const formData: CreateVehicleData = {
+                name: '',
+                type: 0,
+                seats: 0,
+                description: ''
+            };
+
+            formData.name = form.elements.name.value;
+            formData.type = vehicleTypes.findIndex(type => type === form.elements.type.value);
+            formData.seats = +form.elements.seats.value;
+            formData.description = form.elements.description.value;
+
+            createVehicle(formData)
+                .then(response => {
+                    if (response && image) {
+                        uploadVehicleImage(image, response.id);
+                    }
+                })
+                .catch(error => {console.error("Error updating user:", error);});
             props.onHide();
         }
     };
@@ -83,21 +102,20 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
             <Modal.Body>
                 <Form noValidate validated={validated} onSubmit={handleSubmit}>
                     <Row>
-                        <Form.Group as={Col} className="mb-3" controlId="vehicleName">
+                        <Form.Group as={Col} className="mb-3" controlId="name">
                             <Form.Control
                                 required
                                 type="text"
                                 placeholder="Name"/>
                         </Form.Group>
-                        <Form.Group as={Col} className="mb-3" controlId="vehicleType">
+                        <Form.Group as={Col} className="mb-3" controlId="type">
                             <Form.Select required>
-                                <option value="">Fahrzeugtyp</option>
                                 {vehicleTypes.map((type, index) => (
                                     <option key={index} value={type}>{type}</option>
                                 ))}
                             </Form.Select>
                         </Form.Group>
-                        <Form.Group as={Col} xs={3} className="mb-3" controlId="vehicleSeatNumber">
+                        <Form.Group as={Col} xs={3} className="mb-3" controlId="seats">
                             <Form.Control
                                 required
                                 type="number"
@@ -107,10 +125,10 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
                                 placeholder="Sitzplätze"/>
                         </Form.Group>
                     </Row>
-                    <Form.Group className="mb-3" controlId="registerEmail">
+                    <Form.Group className="mb-3" controlId="description">
                         <Form.Control as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="vehicleImage">
+                    <Form.Group className="mb-3" controlId="picture">
                         <Form.Label>Bild hinzufügen (optional)</Form.Label>
                         <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
                     </Form.Group>

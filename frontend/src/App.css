@@ -1,4 +1,4 @@
-/*__________Varaiblen__________*/
+/*__________Variablen__________*/
 :root {
     --color-1: #ffffff;
     --color-2: #f6f6f6;
@@ -535,15 +535,6 @@ nav input[type="checkbox"] {
     background-color: var(--color-5);
 }
 
-#prof-sidebar .rating-wrapper {
-    margin-bottom: 10px;
-}
-
-#prof-sidebar .rating-txt {
-    display: flex;
-    justify-content: space-between;
-}
-
 /*_____NumberFieldSpinner______*/
 
 /* Chrome, Safari, Edge, Opera */
@@ -648,11 +639,11 @@ input[type="number"] {
     background-color: var(--color-5);
 }
 
-#prof-ratings .rating-wrapper {
+.rating-wrapper {
     margin-bottom: 10px;
 }
 
-#prof-ratings .rating-txt{
+.rating-txt{
     display: flex;
     justify-content: space-between;
 }
