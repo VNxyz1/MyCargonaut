@@ -1,4 +1,4 @@
-import {CreateVehicleData, CreateVehicleResponse, Vehicle} from "../interfaces/Vehicle.ts";
+import {CreateVehicleData, CreateVehicleResponse, EditVehicleData, Vehicle} from "../interfaces/Vehicle.ts";
 
 
 export const getOwnVehicles = async (): Promise<Vehicle | null> => {
@@ -71,6 +71,28 @@ export const createVehicle = async (vehicleData: CreateVehicleData): Promise<Cre
     }
 };
 
+
+export const updateVehicle = async (id: number, vehicleData: EditVehicleData): Promise<boolean> => {
+    try {
+        const res = await fetch(`/vehicle/props/${id}`, {
+            method: "PUT",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify(vehicleData)
+        });
+
+        if (res.ok) {
+            console.log('Vehicle image deleted successfully');
+            return true;
+        } else {
+            console.error('Error deleting vehicle image');
+            return false;
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return false;
+    }
+};
+
 /*-----Image-----*/
 export const uploadVehicleImage = async (image: File, vehicleId: number): Promise<boolean> => {
     try {
@@ -96,7 +118,6 @@ export const uploadVehicleImage = async (image: File, vehicleId: number): Promis
     }
 };
 
-//Todo - geht noch nicht
 export const deleteVehicleProfileImage = async (vehicleId: number): Promise<boolean> => {
     try {
         const res = await fetch(`/vehicle/remove-vehicle-image/${vehicleId}`, {
