@@ -1,6 +1,6 @@
 import {Offer} from "../../../interfaces/Offer.ts";
 import {Image} from "react-bootstrap";
-import transporter from "../../../assets/img/home_transport.png";
+//import transporter from "../../../assets/img/home_transport.png";
 import Card from "react-bootstrap/Card";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -95,11 +95,12 @@ function DetailComponent(
             }
         }
         if("route" in props.trip) {
-            if(props.trip.vehicle === "porsche oder so") {
-                setImageUrl(`${window.location.protocol}//${window.location.host}/vehicle/image/`);
-                // TODO: wenn fahrzeug da ist bitte namen des bildes adden :)
-            } else {
+            if(props.trip.vehicle.picture === " ") {
                 setImageUrl(undefined);
+
+            } else {
+
+                setImageUrl(`${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}`);
             }
         }
     }
@@ -134,7 +135,7 @@ function DetailComponent(
     return (
         <div className="mt-4" style={{ width: "100%" }} >
             <div className="mb-3" style={{overflow: "hidden", height: "26rem", borderRadius: "0.5rem"}}>
-                <Image src={imageUrl ? imageUrl : transporter} alt={imageAltText}
+                <Image src={imageUrl} alt={imageAltText}
                        style={{width: "100%", height: "100%", objectFit: "cover"}}/>
             </div>
             <Card className="mb-3">

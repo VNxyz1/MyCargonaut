@@ -1,6 +1,7 @@
 import {RoutePart} from "./RoutePart.ts";
 import {TransitRequest} from "./TransitRequest.ts";
 import {UserLight} from "./UserLight.ts";
+import {Vehicle} from "./Vehicle.ts";
 
 export interface Offer {
     id: number;
@@ -13,7 +14,7 @@ export interface Offer {
 
     clients: UserLight[];
 
-    vehicle: string;
+    vehicle: Vehicle;
 
     bookedSeats: number;
 

@@ -61,7 +61,7 @@ function TripListItem (
                 overflow: "hidden",
                 borderRadius: "0.2rem 0 0 0.2rem"
               }}
-              src={img}
+              src={props.trip.vehicle.picture ? `${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}` :img}
               alt=""
             />
             <div className="col">
