@@ -1,55 +1,107 @@
+import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
-import { Vehicle } from "../../../interfaces/Vehicle";
 import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
-
-const exampleData: Vehicle[] = [
-    {
-        id: 1,
-        ownerId: 1,
-        name: "Porsche Cayenne",
-        vehiclePictureUrl: "",
-        seats: 3,
-        description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-    },
-    {
-        id: 2,
-        ownerId: 1,
-        name: "Golf GTI",
-        vehiclePictureUrl: "",
-        seats: 3,
-        description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-    },
-    {
-        id: 3,
-        ownerId: 1,
-        name: "Porsche GT3 RS",
-        vehiclePictureUrl: "",
-        seats: 1,
-        description: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-    },
-];
+import { deleteVehicle, getOwnVehicles } from "../../../services/vehicleService";
+import { Vehicle } from "../../../interfaces/Vehicle";
+import { Modal } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 function MyVehiclesComponent() {
+    const [vehicleData, setVehicleData] = useState<Vehicle[]>([]);
+    const [showDeleteVehicleModal, setShowDeleteVehicleModal] = useState(false);
+    const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+
+    /*-----Get-----*/
+    useEffect(() => {
+        fetchVehicle();
+    }, []);
+
+    const fetchVehicle = async () => {
+        try {
+            const data = await getOwnVehicles();
+            if (data !== null) {
+                setVehicleData(data as any);
+            }
+        } catch (error) {
+            console.error("Error fetching vehicle data", error);
+        }
+    };
+
+    /*-----Delete-----*/
+    const handleShowDeleteVehicleModal = (vehicleId: number) => {
+        setSelectedVehicleId(vehicleId);
+        setShowDeleteVehicleModal(true);
+    };
+
+    const handleCloseDeleteVehicleModal = () => {
+        setSelectedVehicleId(null);
+        setShowDeleteVehicleModal(false);
+    };
+
+    const handleConfirmDeleteVehicle = async () => {
+        if (selectedVehicleId !== null) {
+            const isDeleted = await deleteVehicle(selectedVehicleId);
+            if (isDeleted) {
+                fetchVehicle();
+                 handleCloseDeleteVehicleModal();
+            } else {
+                console.log("Fehler beim Löschen des Fahrzeugs");
+            }
+            setSelectedVehicleId(null);
+        } else {
+            console.log("Kein Fahrzeug ausgewählt");
+        }
+    };
 
     return (
         <Container>
-            {exampleData.length === 0 ? (
+            <Modal show={showDeleteVehicleModal} onHide={handleCloseDeleteVehicleModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Profil löschen</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Möchten du das Fahrzeug löschen?</p>
+                    <p>Stelle sicher, dass es in keiner Anzeige verwendet wird.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={handleConfirmDeleteVehicle}> Fahrzeug löschen </Button>
+                    <Button variant="secondary" onClick={handleCloseDeleteVehicleModal}> Abbrechen </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {vehicleData.length === 0 ? (
                 <p>Du hast noch keine Fahrzeuge angelegt.</p>
             ) : (
-                <div className="card-container">
-                    {exampleData.map(vehicle => (
-                        <Card className="vehicle-card">
-                            <img
-                                src={vehicle.vehiclePictureUrl ? `${window.location.protocol}//${window.location.host}/user/profile-image/${vehicle.vehiclePictureUrl}` : placeholderImg}
-                                alt="User profile image"
+                <div className="vehicleCard-container">
+                    {vehicleData.map(vehicle => (
+                        <Card key={vehicle.id} className="vehicle-card">
+                            <Card.Img
+                                variant="top"
+                                src={vehicle.picture ? `${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${vehicle.picture}` : placeholderImg}
+                                alt={`Bild von kann nicht angezeigt werden`}
                             />
                             <Card.Body>
-                                <Card.Text>
-                                    <strong>Sitze:</strong> {vehicle.seats}
+                                <Card.Text style={{ display: 'flex', gap: '30px', justifyContent: 'space-between' }}>
+                                    <Card.Title>{vehicle.name}</Card.Title>
+                                    <span style={{ display: 'flex', gap: '30px' }}>
+                                        <span className="vehicleCard-btn" onClick={() => handleShowDeleteVehicleModal(vehicle.id)}><i className="icon-trash"></i> Löschen</span>
+                                        <span className="vehicleCard-btn"><i className="icon-pen-to-square"></i> Bearbeiten</span>
+                                    </span>
+                                </Card.Text>
+                                <Card.Text style={{ display: 'flex', gap: '30px' }}>
+                                    <div>
+                                        <p className="prof-lable">Sitze</p>
+                                        <p>{vehicle.seats}</p>
+                                    </div>
+                                    <div>
+                                        <p className="prof-lable">Typ</p>
+                                        <p>{vehicle.type}</p>
+                                    </div>
                                 </Card.Text>
                                 <Card.Text>
-                                    <strong>Beschreibung:</strong> {vehicle.description}
+                                    <p className="prof-lable">Beschreibung</p>
+                                    <p>{vehicle.description}</p>
                                 </Card.Text>
                             </Card.Body>
                         </Card>

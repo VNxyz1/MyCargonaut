@@ -1,6 +1,7 @@
-import {CreateVehicleData, CreateVehicleResponse} from "../interfaces/Vehicle.ts";
+import {CreateVehicleData, CreateVehicleResponse, Vehicle} from "../interfaces/Vehicle.ts";
 
-export const getOwnVehicles = async (): Promise<boolean> => {
+
+export const getOwnVehicles = async (): Promise<Vehicle | null> => {
     try {
         const res = await fetch(`/vehicle/own`, {
             method: "GET",
@@ -8,21 +9,29 @@ export const getOwnVehicles = async (): Promise<boolean> => {
         });
 
         if (res.ok) {
-            console.log('Got own vehicles successfully');
-            return await res.json();
+            const data = await res.json();
+            return data.vehicleList;
         } else {
-            console.error('Error getting own vehicles');
-            return false;
+            console.error("Error fetching data");
+            return null;
         }
     } catch (error) {
         console.error("Error:", error);
-        return false;
+        return null;
     }
 };
 
 export const deleteVehicle = async (id: number): Promise<boolean> => {
     try {
-        const res = await fetch(`/vehicle/${id}`, {
+        // Vor dem Löschen des Fahrzeugs das Bild löschen
+        const imageDeleted = await deleteVehicleProfileImage(id);
+        if (!imageDeleted) {
+            console.error('Error deleting Vehicle image');
+            return false;
+        }
+
+        // Wenn das Bild erfolgreich gelöscht wurde, das Fahrzeug löschen
+        const res = await fetch(`/vehicle/delete/${id}`, {
             method: "DELETE",
             headers: { "Content-type": "application/json" },
         });
@@ -87,6 +96,7 @@ export const uploadVehicleImage = async (image: File, vehicleId: number): Promis
     }
 };
 
+//Todo - geht noch nicht
 export const deleteVehicleProfileImage = async (vehicleId: number): Promise<boolean> => {
     try {
         const res = await fetch(`/vehicle/remove-vehicle-image/${vehicleId}`, {
