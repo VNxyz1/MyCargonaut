@@ -20,7 +20,7 @@ export class Vehicle {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ nullable: true })
   picture: string;
 
   @ManyToOne(() => User, { eager: true })

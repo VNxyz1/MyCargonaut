@@ -1,4 +1,4 @@
-/*__________Varaiblen__________*/
+/*__________Variablen__________*/
 :root {
     --color-1: #ffffff;
     --color-2: #f6f6f6;
@@ -7,7 +7,7 @@
     --color-5: #005b52;
     --color-6: #c3a382;
 
-    --shadow_default: 0.15rem 0.15rem 0.15rem rgba(0, 0, 0, 0.21);
+    --shadow_default: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     --transition: all .3s ease-out;
 
     --max-content-width: 1300px;
@@ -37,13 +37,15 @@
 .back_btn:hover .back_btn-txt {
     margin-left: 10px;
 }
-.back_btn:hover{
+
+.back_btn:hover {
     color: var(--color-6);
 }
 
 .spacer {
     transition: var(--transition);
 }
+
 /*_____________________________*/
 .mainButton {
     background: var(--color-5) !important;
@@ -520,7 +522,7 @@ nav input[type="checkbox"] {
     width: 100%;
 }
 
-#prof-sidebar .prof-lable {
+.prof-lable {
     margin-bottom: 0px;
     font-size: 14px;
     color: #aeaeae;
@@ -533,15 +535,6 @@ nav input[type="checkbox"] {
 
 #prof-sidebar .progress-bar {
     background-color: var(--color-5);
-}
-
-#prof-sidebar .rating-wrapper {
-    margin-bottom: 10px;
-}
-
-#prof-sidebar .rating-txt {
-    display: flex;
-    justify-content: space-between;
 }
 
 /*_____NumberFieldSpinner______*/
@@ -640,19 +633,20 @@ input[type="number"] {
     color: var(--color-5); /* Active color for stars */
 }
 
-#prof-ratings .progress{
+#prof-ratings .progress {
     height: 10px;
     border-radius: 20px;
 }
-#prof-ratings .progress-bar{
+
+#prof-ratings .progress-bar {
     background-color: var(--color-5);
 }
 
-#prof-ratings .rating-wrapper {
+.rating-wrapper {
     margin-bottom: 10px;
 }
 
-#prof-ratings .rating-txt{
+.rating-txt{
     display: flex;
     justify-content: space-between;
 }
@@ -663,4 +657,35 @@ input[type="number"] {
 
 .rating-rows {
     padding-bottom: 10px;
+}
+
+/*_______Vehicle_______*/
+.vehicle-card {
+    display: flex !Important;
+    flex-direction: row !Important;
+    border: none !Important;
+    box-shadow: var(--shadow_default);
+    border-radius: 20px !Important;
+    overflow: hidden;
+}
+
+.vehicleCard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.vehicleCard-container img{
+    aspect-ratio: 3/2;
+    max-width: 250px;
+    object-fit: cover;
+}
+
+.vehicleCard-btn{
+transition: var(--transition);
+}
+
+.vehicleCard-btn:hover{
+    color: var(--color-5);
+    cursor: pointer;
+    transform: scale(1.03);
 }

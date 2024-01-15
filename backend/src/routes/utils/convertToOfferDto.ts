@@ -41,14 +41,6 @@ export const convertUserToOtherUser = (user: User) => {
   if (user.requestedTrips) {
     otherUserDto.tripRequests = user.requestedTrips.map((tR)=> convertTripRequestToGetDto(tR));
   }
-  otherUserDto.age = calcAge(new Date(user.birthday));
-  otherUserDto.phoneNumberProvided = !!user.phoneNumber;
-  if (user.offers) {
-    otherUserDto.offers = user.offers.map((o) => convertOfferToGetOfferDto(o));
-  }
-  if (user.requestedTrips) {
-    otherUserDto.tripRequests = user.requestedTrips.map((tR)=> convertTripRequestToGetDto(tR));
-  }
 
   return otherUserDto;
 };
@@ -67,6 +59,4 @@ export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
   dto.seats = tripRequest.seats;
 
   return dto;
-};
-
-
+}
