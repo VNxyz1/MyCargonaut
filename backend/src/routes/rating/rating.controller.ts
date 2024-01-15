@@ -77,7 +77,7 @@ export class RatingController {
       ratingDto.comfortDuringTrip = rating.comfortDuringTrip;
       ratingDto.cargoArrivedUndamaged = rating.cargoArrivedUndamaged;
       ratingDto.passengerPleasantness = rating.passengerPleasantness;
-      if(rating.comment) {
+      if (rating.comment) {
         ratingDto.comment = rating.comment;
       }
 
@@ -192,7 +192,7 @@ export class RatingController {
       driverRating.passengerPleasantness = rating.passengerPleasantness
         ? rating.passengerPleasantness
         : 0;
-      if(rating.comment) {
+      if (rating.comment) {
         driverRating.comment = rating.comment;
       }
 
@@ -211,7 +211,7 @@ export class RatingController {
       passengerRating.comfortDuringTrip = rating.comfortDuringTrip
         ? rating.comfortDuringTrip
         : 0;
-      if(rating.comment) {
+      if (rating.comment) {
         passengerRating.comment = rating.comment;
       }
 
@@ -291,7 +291,7 @@ export class RatingController {
     rating.trip = trip;
     rating.punctuality = createRatingDto.punctuality;
     rating.reliability = createRatingDto.reliability;
-    if(createRatingDto.comment) {
+    if (createRatingDto.comment) {
       rating.comment = createRatingDto.comment;
     }
 

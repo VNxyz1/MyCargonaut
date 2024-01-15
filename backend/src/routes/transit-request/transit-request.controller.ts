@@ -87,11 +87,47 @@ export class TransitRequestController {
     description: 'Returns a list of pending transit requests.',
   })
   @ApiResponse({ type: GetAllPendingTransitRequestsResponseDTO })
-  async getPendingTransitrequestOfLoggedInUser(@Session() session: ISession) {
+  async getPendingTransitRequestOfLoggedInUser(@Session() session: ISession) {
     const userId = session.userData.id;
 
     const requests =
       await this.transitRequestService.getAllTransitRequestsOfUser(userId);
+
+    const response = new GetAllPendingTransitRequestsResponseDTO();
+    response.transitRequests = requests.map((tR) => {
+      const tRDto = new GetTransitRequestDto();
+      tRDto.offer = convertOfferToGetOfferDto(tR.offer);
+      tRDto.requester = tR.requester;
+      tRDto.id = tR.id;
+      tRDto.offeredCoins = tR.offeredCoins;
+      tRDto.requestedSeats = tR.requestedSeats;
+      tRDto.text = tR.text;
+      return tRDto;
+    });
+
+    return response;
+  }
+
+  @Get('received')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Gets all pending transit requests received by the logged-in user',
+  })
+  @ApiResponse({
+    status: 200,
+    type: GetAllPendingTransitRequestsResponseDTO,
+    description: 'Returns a list of pending transit requests.',
+  })
+  @ApiResponse({ type: GetAllPendingTransitRequestsResponseDTO })
+  async getPendingTransitrequestLoggedInUserRecived(
+    @Session() session: ISession,
+  ) {
+    const userId = session.userData.id;
+
+    const requests =
+      await this.transitRequestService.getAllRecivedTransitRequestsOfUser(
+        userId,
+      );
 
     const response = new GetAllPendingTransitRequestsResponseDTO();
     response.transitRequests = requests.map((tR) => {

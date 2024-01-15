@@ -5,27 +5,11 @@ import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import {createVehicle, uploadVehicleImage} from "../../../services/vehicleService.tsx";
-import {CreateVehicleData} from "../../../interfaces/Vehicle.ts";
+import {CreateVehicleData, VehicleTypes} from "../../../interfaces/Vehicle.ts";
 
 interface VehicleAddModalProps extends ModalProps {
     onHide: () => void;
 }
-
-const vehicleTypes = [
-    "PKW",
-    "LKW",
-    "SUV",
-    "Kleinwagen",
-    "Kombi",
-    "Cabriolet",
-    "Coupé",
-    "Geländewagen",
-    "Van",
-    "Minivan",
-    "Sportwagen",
-    "Limousine",
-    "Nutzfahrzeug",
-];
 
 const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: VehicleAddModalProps) => {
     const [validated, setValidated] = useState<boolean>(false);
@@ -55,7 +39,7 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
             };
 
             formData.name = form.elements.name.value;
-            formData.type = vehicleTypes.findIndex(type => type === form.elements.type.value);
+            formData.type = VehicleTypes.findIndex(type => type === form.elements.type.value);
             formData.seats = +form.elements.seats.value;
             formData.description = form.elements.description.value;
 
@@ -110,7 +94,7 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
                         </Form.Group>
                         <Form.Group as={Col} className="mb-3" controlId="type">
                             <Form.Select required>
-                                {vehicleTypes.map((type, index) => (
+                                {VehicleTypes.map((type, index) => (
                                     <option key={index} value={type}>{type}</option>
                                 ))}
                             </Form.Select>

@@ -15,3 +15,12 @@ Content-Type: application/json
   "startDate": "2024-02-18",
   "seats": 1
 }
+
+### Trip Request Offer
+POST localhost:3000/request/offering/2 HTTP/2
+Content-Type: application/json
+
+{
+  "requestedCoins": 1100,
+  "text": "Wann soll ich da sein?"
+}

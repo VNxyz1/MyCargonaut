@@ -1,4 +1,3 @@
-//import {User} from "./User.ts";
 import {RoutePart} from "./RoutePart.ts";
 import {TransitRequest} from "./TransitRequest.ts";
 import {UserLight} from "./UserLight.ts";

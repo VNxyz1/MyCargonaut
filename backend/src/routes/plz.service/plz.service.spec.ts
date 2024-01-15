@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PlzService } from './plz.service';
 import { UserController } from '../user/user.controller';
 import { AuthController } from '../auth/auth.controller';
-import { User } from '../../database/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from '../user.service/user.service';
 import { AuthService } from '../auth.service/auth.service';
@@ -11,9 +10,9 @@ import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { RatingService } from '../rating.service/rating.service';
 
 describe('PlzService', () => {
-  let userController: UserController;
+  //let userController: UserController;
   let plzService: PlzService;
-  let userForThisTest: User;
+  //let userForThisTest: User;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,7 +24,7 @@ describe('PlzService', () => {
       providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();
 
-    userController = module.get<UserController>(UserController);
+    //userController = module.get<UserController>(UserController);
     plzService = module.get<PlzService>(PlzService);
   });
 

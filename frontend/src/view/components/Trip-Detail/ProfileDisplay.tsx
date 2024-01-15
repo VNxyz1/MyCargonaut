@@ -32,7 +32,7 @@ function ProfileDisplay(
             <Row>
                 <Col xs={"auto"}>
                     <img src={props.user.profilePicture ?
-                        `http://localhost:3000/user/profile-image/${props.user.profilePicture}` :
+                      `${window.location.protocol}//${window.location.host}/user/profile-image/${props.user.profilePicture}` :
                         placeholderImg}
                          style={{height: "60px", width: "60px", objectFit: "cover", borderRadius: "50px"}}
                          alt="Profilbild"/>

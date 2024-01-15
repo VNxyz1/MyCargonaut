@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
-import { deleteVehicle, getOwnVehicles } from "../../../services/vehicleService";
-import { Vehicle } from "../../../interfaces/Vehicle";
+import {deleteVehicle, getOwnVehicles} from "../../../services/vehicleService";
+import {Vehicle, VehicleTypes} from "../../../interfaces/Vehicle";
 import { Modal } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import VehicleEditModalComponent from "./VehicleEditModalComponent.tsx";
 
 function MyVehiclesComponent() {
     const [vehicleData, setVehicleData] = useState<Vehicle[]>([]);
     const [showDeleteVehicleModal, setShowDeleteVehicleModal] = useState(false);
+    const [showEditVehicleModal, setShowEditVehicleModal] = useState(false);
     const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
 
     /*-----Get-----*/
@@ -39,12 +41,24 @@ function MyVehiclesComponent() {
         setShowDeleteVehicleModal(false);
     };
 
+    /*-----Edit-----*/
+    const handleShowEditVehicleModal = (vehicleId: number) => {
+        setSelectedVehicleId(vehicleId);
+        setShowEditVehicleModal(true);
+    };
+
+    const handleCloseEditVehicleModal = () => {
+        setSelectedVehicleId(null);
+        setShowEditVehicleModal(false);
+        fetchVehicle();
+    };
+
     const handleConfirmDeleteVehicle = async () => {
         if (selectedVehicleId !== null) {
             const isDeleted = await deleteVehicle(selectedVehicleId);
             if (isDeleted) {
                 fetchVehicle();
-                 handleCloseDeleteVehicleModal();
+                handleCloseDeleteVehicleModal();
             } else {
                 console.log("Fehler beim Löschen des Fahrzeugs");
             }
@@ -69,6 +83,7 @@ function MyVehiclesComponent() {
                     <Button variant="secondary" onClick={handleCloseDeleteVehicleModal}> Abbrechen </Button>
                 </Modal.Footer>
             </Modal>
+            <VehicleEditModalComponent show={showEditVehicleModal} onHide={handleCloseEditVehicleModal} vehicle={vehicleData.find((vehicle) => vehicle.id === selectedVehicleId)} onEdit={fetchVehicle}/>
 
             {vehicleData.length === 0 ? (
                 <p>Du hast noch keine Fahrzeuge angelegt.</p>
@@ -86,7 +101,9 @@ function MyVehiclesComponent() {
                                     <Card.Title>{vehicle.name}</Card.Title>
                                     <span style={{ display: 'flex', gap: '30px' }}>
                                         <span className="vehicleCard-btn" onClick={() => handleShowDeleteVehicleModal(vehicle.id)}><i className="icon-trash"></i> Löschen</span>
-                                        <span className="vehicleCard-btn"><i className="icon-pen-to-square"></i> Bearbeiten</span>
+                                        <span className="vehicleCard-btn" onClick={() => {
+                                            handleShowEditVehicleModal(vehicle.id);
+                                        }}><i className="icon-pen-to-square"></i> Bearbeiten</span>
                                     </span>
                                 </Card.Text>
                                 <Card.Text style={{ display: 'flex', gap: '30px' }}>
@@ -96,7 +113,7 @@ function MyVehiclesComponent() {
                                     </div>
                                     <div>
                                         <p className="prof-lable">Typ</p>
-                                        <p>{vehicle.type}</p>
+                                        <p>{VehicleTypes[vehicle.type]}</p>
                                     </div>
                                 </Card.Text>
                                 <Card.Text>

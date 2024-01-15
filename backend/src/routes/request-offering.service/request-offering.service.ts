@@ -20,7 +20,7 @@ export class RequestOfferingService {
   async getAllPendingOfRequestingUser(id: number) {
     const offerings = await this.offeringRepository.find({
       where: { tripRequest: { requester: { id } } },
-      relations: ['offeringUser', 'tripRequest'],
+      relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {
       throw new NotFoundException('The offerings could not be found.');
@@ -31,7 +31,7 @@ export class RequestOfferingService {
   async getAllPendingOfOfferingUser(id: number) {
     const offerings = await this.offeringRepository.find({
       where: { offeringUser: { id } },
-      relations: ['offeringUser', 'tripRequest'],
+      relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {
       throw new NotFoundException('The offerings could not be found.');

@@ -39,12 +39,13 @@ export const convertUserToOtherUser = (user: User) => {
     otherUserDto.offers = user.offers.map((o) => convertOfferToGetOfferDto(o));
   }
   if (user.requestedTrips) {
-    otherUserDto.tripRequests = user.requestedTrips.map((tR)=> convertTripRequestToGetDto(tR));
+    otherUserDto.tripRequests = user.requestedTrips.map((tR) =>
+      convertTripRequestToGetDto(tR),
+    );
   }
 
   return otherUserDto;
 };
-
 
 export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
   const dto = new GetTripRequestResponseDto();
@@ -59,4 +60,4 @@ export const convertTripRequestToGetDto = (tripRequest: TripRequest) => {
   dto.seats = tripRequest.seats;
 
   return dto;
-}
+};

@@ -1,9 +1,8 @@
 import { IsInt, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { GetAverageRatingsDto } from '../../rating/DTOs/GetAverageRatingsResponseDTO';
-import { GetUserRatingsDto } from '../../rating/DTOs/GetUserRatingsResponseDTO';
-import { GetOfferResponseDto } from "./GetOfferResponseDto";
-import { GetTripRequestResponseDto } from "../../request/DTOs/GetTripRequestResponseDto";
+import { GetOfferResponseDto } from './GetOfferResponseDto';
+import { GetTripRequestResponseDto } from '../../request/DTOs/GetTripRequestResponseDto';
 
 export class GetOtherUserDto {
   @IsNotEmpty()
@@ -38,10 +37,9 @@ export class GetOtherUserDto {
   @ApiProperty({ type: GetAverageRatingsDto })
   averageRatings: GetAverageRatingsDto;
 
-  @ApiProperty({type: [GetOfferResponseDto]})
+  @ApiProperty({ type: [GetOfferResponseDto] })
   offers: GetOfferResponseDto[];
 
-  @ApiProperty({type: [GetTripRequestResponseDto]})
+  @ApiProperty({ type: [GetTripRequestResponseDto] })
   tripRequests: GetTripRequestResponseDto[];
-
 }
