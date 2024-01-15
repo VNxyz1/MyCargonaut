@@ -33,7 +33,7 @@ export class Offer {
   clients: User[];
 
  
-  @ManyToOne(()=> Offer, (offer) => offer.vehicle,)
+  @ManyToOne(()=> Vehicle)
   vehicle: Vehicle;
 
   @Column({ default: 0 })
