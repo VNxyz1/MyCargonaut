@@ -18,8 +18,8 @@ export class PostTripRequestRequestDto {
   endPlz: CreatePlzDto;
 
   @IsOptional()
-  @ApiProperty({ type: File, description: 'An image fie of the cargo.' })
-  cargoImg?: File;
+  @ApiProperty({ description: 'An image fie of the cargo.' })
+  cargoImg?: any;
 
   @IsString()
   @IsNotEmpty()
