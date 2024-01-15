@@ -66,7 +66,7 @@ export class VehicleService {
       vehicle.seats = changedInfo.seats;
     }
 
-    if (changedInfo.type) {
+    if (changedInfo.type >= 0) {
       vehicle.type = changedInfo.type;
     }
 
