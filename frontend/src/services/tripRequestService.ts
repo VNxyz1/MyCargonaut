@@ -1,15 +1,85 @@
-import {TripRequest} from "../interfaces/TripRequest.ts";
+import { TripRequest } from "../interfaces/TripRequest.ts";
+import { TripRequestOffering } from "../interfaces/TripRequestOffering.ts";
 
 export const getTripRequestById = async (id: number) => {
-    try {
-        const res = await fetch(`/request/one/${id}`);
-        if(res.ok){
-            const data: TripRequest = await res.json();
-            return data;
-        }
-        const data = await res.json();
-        console.error(data);
-    } catch (e) {
-        console.error(e)
+  try {
+    const res = await fetch(`/request/one/${id}`);
+    if (res.ok) {
+      const data: TripRequest = await res.json();
+      return data;
     }
+    const data = await res.json();
+    console.error(data);
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const deleteOffering = async (id: number) => {
+  console.log(id)
+  try {
+    //Todo: muss im backend implementiert werden
+    return false
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const acceptOffering = async (id: number) => {
+  try {
+    const response = await fetch(`/request/offering/accept/${id}`, {
+      method: "POST"
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const getOfferings = async () => {
+
+  let sentOfferings = await getOfferingsAsOfferingUser();
+  let incomingOfferings = await getOfferingsAsRequestingUser();
+
+  if (!sentOfferings) {
+    sentOfferings = []
+  }
+  if (!incomingOfferings) {
+    incomingOfferings = []
+  }
+
+  return {
+    incomingOfferings,
+    sentOfferings
+  }
+
+}
+
+const getOfferingsAsOfferingUser = async () => {
+  try {
+    const res = await fetch(`/request/offerings/offering-user`);
+    if (res.ok) {
+      const data: TripRequestOffering[] = await res.json();
+      return data;
+    }
+    const data = await res.json();
+    console.error(data);
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const getOfferingsAsRequestingUser = async () => {
+  try {
+    const res = await fetch(`/request/offerings/requesting-user`);
+    if (res.ok) {
+      const data: TripRequestOffering[] = await res.json();
+      return data;
+    }
+    const data = await res.json();
+    console.error(data);
+  } catch (e) {
+    console.error(e)
+  }
 }
