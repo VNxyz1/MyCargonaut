@@ -326,8 +326,8 @@ function UserPage(
                 setShowCreateCargoModal(false);
             }}/>
 
-            <CreateTripModal show={showCreateTripModal} onHide={() => {
-                props.reRender();
+            <CreateTripModal show={showCreateTripModal} userData={userData}  onHide={() => {
+                //props.reRender();
                 setShowCreateTripModal(false);
             }}/>
 
