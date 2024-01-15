@@ -7,7 +7,10 @@ import { TransitRequest } from '../database/TransitRequest';
 import { RoutePart } from '../database/RoutePart';
 import { TripRequest } from '../database/TripRequest';
 import { Rating } from '../database/Rating';
-import { Vehicle } from 'src/database/Vehicle';
+import { TripRequestOffering } from '../database/TripRequestOffering';
+import { Vehicle } from '../database/Vehicle';
+import { Conversation } from '../database/Conversation';
+import { Message } from '../database/Message';
 
 export const entityArr: EntityClassOrSchema[] = [
   User,
@@ -17,7 +20,10 @@ export const entityArr: EntityClassOrSchema[] = [
   RoutePart,
   TripRequest,
   Rating,
-  Vehicle
+  TripRequestOffering,
+  Vehicle,
+  Conversation,
+  Message,
 ];
 
 export const sqlite_setup = (path: string) => {

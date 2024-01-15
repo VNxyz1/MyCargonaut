@@ -95,10 +95,23 @@ export class TransitRequestService {
     return transitRequests;
   }
 
+  async getAllRecivedTransitRequestsOfUser(userId: number) {
+    const transitRequests = await this.transitRequestRepository.find({
+      where: {
+        offer: {provider: {id: userId}}
+      },
+      relations: ['requester', 'offer', 'offer.provider']
+    })
+    if (!transitRequests) {
+      throw new NotFoundException('No pending transit requests found');
+    }
+    return transitRequests;
+  }
+
   async getTransitRequestById(id: number) {
     const tR = await this.transitRequestRepository.findOne({
       where: { id },
-      relations: ['offer', 'requester'],
+      relations: ['offer', 'requester', 'offer.provider'],
     });
 
     if (!tR) {

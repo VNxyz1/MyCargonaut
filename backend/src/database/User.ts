@@ -11,6 +11,9 @@ import { Offer } from './Offer';
 import { TransitRequest } from './TransitRequest';
 import { TripRequest } from './TripRequest';
 import { Rating } from './Rating';
+import { TripRequestOffering } from './TripRequestOffering';
+import { Conversation } from './Conversation';
+import { Message } from './Message';
 
 @Entity()
 @Unique(['eMail'])
@@ -39,7 +42,7 @@ export class User {
   @Column({ nullable: true, default: '' })
   phoneNumber: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 500 })
   coins: number;
 
   @OneToMany(() => Offer, (offer) => offer.provider)
@@ -64,9 +67,24 @@ export class User {
   @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
   requestedTrips: TripRequest[];
 
+  @OneToMany(
+    () => TripRequestOffering,
+    (tripRequestOffering) => tripRequestOffering.offeringUser,
+  )
+  tripRequestOfferings: TripRequestOffering[];
+
   @OneToMany(() => Rating, (rating) => rating.rated)
   ratingsAsRated: Rating[];
 
   @OneToMany(() => Rating, (rating) => rating.rater)
   ratingsAsRater: Rating[];
+
+  @OneToMany(() => Conversation, (conversation) => conversation.user1)
+  conversationUser1: Conversation[];
+
+  @OneToMany(() => Conversation, (conversation) => conversation.user2)
+  conversationUser2: Conversation[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  messageSender: Message[];
 }

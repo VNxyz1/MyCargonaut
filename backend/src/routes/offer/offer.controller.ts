@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   ParseIntPipe,
@@ -22,11 +21,11 @@ import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 import { UpdateOfferRequestDto } from './DTOs/UpdateOfferRequestDto';
 import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
-import { User } from '../../database/User';
 import { TripState } from '../../database/TripState';
 import { Offer } from '../../database/Offer';
 import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
 import { UserService } from '../user.service/user.service';
+import { userIsValidToBeProvider } from '../utils/userIsValidToBeProvider';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -43,7 +42,7 @@ export class OfferController {
   async postUser(@Body() body: CreateOfferDto, @Session() session: ISession) {
     const userId = session.userData.id;
     const user = await this.userService.getUserById(userId);
-    this.userHasProfilePicAndPhoneNumber(user);
+    userIsValidToBeProvider(user);
 
     await this.offerService.postOffer(userId, body);
     return new OKResponseWithMessageDTO(true, 'Offer Created');
@@ -99,27 +98,33 @@ export class OfferController {
   @ApiQuery({
     name: 'search',
     description: 'A search string to filter offers by.',
+    required: false,
   })
   @ApiQuery({
     name: 'fromPLZ',
-    description: 'The starting postal code for filtering offers by location.',
+    description: 'The starting postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    required: false,
   })
   @ApiQuery({
     name: 'toPLZ',
-    description: 'The ending postal code for filtering offers by location.',
+    description: 'The ending postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    required: false,
   })
   @ApiQuery({
     name: 'seats',
     description: 'A number of seats to filter offers by.',
+    required: false,
   })
   @ApiQuery({
     name: 'date',
     description:
       'A date to filter offers by. Must be in the format YYYY-MM-DD.',
+    required: false,
   })
   @ApiQuery({
     name: 'rating',
     description: 'A rating to filter offers by. Must be between 0 and 5.',
+    required: false,
   })
   @ApiResponse({
     type: GetAllOffersResponseDto,
@@ -252,21 +257,6 @@ export class OfferController {
 
     await this.offerService.saveOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Offer is reopened');
-  }
-
-  userHasProfilePicAndPhoneNumber(user: User) {
-    let bothExisting: boolean;
-    if (user.profilePicture && user.phoneNumber) {
-      bothExisting = user.profilePicture !== '' && user.phoneNumber !== '';
-    }
-
-    if (!bothExisting) {
-      throw new ForbiddenException(
-        'Add a profile picture and phone number to your profile to proceed.',
-      );
-    }
-
-    return bothExisting;
   }
 
   filterOffersByPLZ(fromPlz: string, toPlz: string, offers: Offer[]): Offer[] {

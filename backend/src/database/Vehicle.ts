@@ -1,33 +1,27 @@
-import {
-    Column,
-    Entity,
-    ManyToOne,
-    PrimaryGeneratedColumn,
-  } from 'typeorm';
-  import { User } from './User';
-  import { VehicleType } from './VehicleType';
-  
-  @Entity()
-  export class Vehicle {
-    @PrimaryGeneratedColumn()
-    id: number;
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from './User';
+import { VehicleType } from './VehicleType';
 
-    @Column()
-    name: string;
+@Entity()
+export class Vehicle {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    seats: number;
+  @Column()
+  name: string;
 
-    @Column()
-    type: VehicleType;
+  @Column()
+  seats: number;
 
-    @Column()
-    description: string;
+  @Column()
+  type: VehicleType;
 
-    @Column()
-    picture: string;
+  @Column()
+  description: string;
 
-    @ManyToOne(() => User, { eager: true })
-    provider: User;
-  }
-  
+  @Column({ nullable: true })
+  picture: string;
+
+  @ManyToOne(() => User, { eager: true })
+  provider: User;
+}

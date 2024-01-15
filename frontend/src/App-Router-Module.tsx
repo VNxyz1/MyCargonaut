@@ -8,11 +8,11 @@ import PrivacyPage from "./view/pages/Privacy-Page.tsx";
 import NavigationComponent from "./view/components/NavigationComponent.tsx";
 import FooterComponent from "./view/components/FooterComponent.tsx";
 import SearchTransportPage from "./view/pages/Search-Transport-Page.tsx";
-import MessagesPage from "./view/pages/Messages-Page";
 import TripDetailPage from "./view/pages/Trip-Detail-Page.tsx";
 import {useEffect, useState} from "react";
 import {Offer} from "./interfaces/Offer.ts";
 import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
+import ChatPage from "./view/pages/Chat-Page.tsx";
 
 function RoutesComponent() {
     // @ts-ignore wird vielleicht noch gebraucht
@@ -51,7 +51,7 @@ function RoutesComponent() {
                 <Route path="/profil" element={<ProfilPage />} />
                 <Route path="/user/:userId" element={<UserPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
-                <Route path="/messages" element={<MessagesPage />} />
+                <Route path="/messages" element={<ChatPage />} />
                 <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
                 <Route path="/404" element={<BadRequestPage/>} />
             </Routes>

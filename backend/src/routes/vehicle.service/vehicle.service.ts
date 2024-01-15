@@ -1,10 +1,12 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateVehicleDto } from '../vehicle/DTOs/CreateVehicleDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { Vehicle } from '../../database/Vehicle';
 import { ChangedDto } from '../vehicle/DTOs/ChangedDto';
+import { join } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 @Injectable()
 export class VehicleService {
@@ -43,11 +45,13 @@ export class VehicleService {
       where: { id: id },
     });
     if (!vehicle) {
-      throw new InternalServerErrorException('Can\'t delete your legs!');
+      throw new InternalServerErrorException("Can't delete your legs!");
     }
 
     if (vehicle.provider.id !== userId) {
-      throw new InternalServerErrorException('You\'re not the owner of the vehicle.');
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
     }
 
     return vehicle;
@@ -62,7 +66,7 @@ export class VehicleService {
       vehicle.seats = changedInfo.seats;
     }
 
-    if (changedInfo.type) {
+    if (changedInfo.type >= 0) {
       vehicle.type = changedInfo.type;
     }
 
@@ -81,5 +85,43 @@ export class VehicleService {
 
   async deleteVehicle(vehicle: Vehicle) {
     await this.vehicleRepository.remove(vehicle);
+  }
+
+  async removeOldImage(vehicleId: number, userId: number): Promise<void> {
+    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
+    if (!vehicle) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
+    }
+    if (vehicle.provider.id !== userId) {
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
+    }
+    if (vehicle.picture && vehicle.picture.length > 0) {
+      const oldImagePath = join(
+        process.cwd(),
+        'uploads',
+        'profile-images',
+        vehicle.picture,
+      );
+      if (existsSync(oldImagePath)) {
+        unlinkSync(oldImagePath);
+      }
+    }
+  }
+
+  async saveProfileImagePath(vehicleId: number, userId: number, imagePath: string): Promise<void> {
+    const vehicle = await this.vehicleRepository.findOne({ where: { id: vehicleId } });
+    if (!vehicle) {
+      throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
+    }
+
+    if (vehicle.provider.id !== userId) {
+      throw new InternalServerErrorException(
+        "You're not the owner of the vehicle.",
+      );
+    }
+    vehicle.picture = imagePath;
+    await this.vehicleRepository.save(vehicle);
   }
 }
