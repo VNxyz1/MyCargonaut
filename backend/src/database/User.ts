@@ -42,7 +42,7 @@ export class User {
   @Column({ nullable: true, default: '' })
   phoneNumber: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 500 })
   coins: number;
 
   @OneToMany(() => Offer, (offer) => offer.provider)
