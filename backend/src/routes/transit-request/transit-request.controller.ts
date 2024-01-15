@@ -119,11 +119,15 @@ export class TransitRequestController {
     description: 'Returns a list of pending transit requests.',
   })
   @ApiResponse({ type: GetAllPendingTransitRequestsResponseDTO })
-  async getPendingTransitrequestLoggedInUserRecived(@Session() session: ISession) {
+  async getPendingTransitrequestLoggedInUserRecived(
+    @Session() session: ISession,
+  ) {
     const userId = session.userData.id;
 
     const requests =
-      await this.transitRequestService.getAllRecivedTransitRequestsOfUser(userId);
+      await this.transitRequestService.getAllRecivedTransitRequestsOfUser(
+        userId,
+      );
 
     const response = new GetAllPendingTransitRequestsResponseDTO();
     response.transitRequests = requests.map((tR) => {
@@ -139,7 +143,6 @@ export class TransitRequestController {
 
     return response;
   }
-
 
   @Put('update-params/:id')
   @UseGuards(IsLoggedInGuard)

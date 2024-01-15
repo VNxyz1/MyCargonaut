@@ -19,6 +19,6 @@ export class Message {
   @Column({ nullable: true })
   timestamp: Date;
 
-  @Column({default: false})
+  @Column({ default: false })
   read: boolean;
 }

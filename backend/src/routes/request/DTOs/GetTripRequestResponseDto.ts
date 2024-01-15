@@ -6,7 +6,7 @@ export class GetTripRequestResponseDto {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({type: () => GetOtherUserDto})
+  @ApiProperty({ type: () => GetOtherUserDto })
   requester: GetOtherUserDto;
 
   @ApiProperty()

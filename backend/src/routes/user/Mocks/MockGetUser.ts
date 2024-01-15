@@ -44,7 +44,7 @@ export class MockGetUser {
     this.description = 'Test';
     this.profilePicture = '';
     this.phoneNumber = '';
-    this.coins = 0;
+    this.coins = 500;
     this.requestedTransits = [];
 
     if (asProvider) {

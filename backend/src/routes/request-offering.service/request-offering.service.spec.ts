@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RequestOfferingService } from './request-offering.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  NotFoundException,
-} from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { User } from '../../database/User';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { MockCreateTripRequestOffering } from './Mocks/MockCreateTripRequestOffering';

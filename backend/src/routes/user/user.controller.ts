@@ -31,7 +31,7 @@ import { convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
 import { hash } from '../utils/hash';
 import { RatingService } from '../rating.service/rating.service';
-import { calcAge } from "../utils/calcAge";
+import { calcAge } from '../utils/calcAge';
 
 @ApiTags('user')
 @Controller('user')
@@ -230,6 +230,4 @@ export class UserController {
       throw new InternalServerErrorException('Error removing profile image');
     }
   }
-
-
 }

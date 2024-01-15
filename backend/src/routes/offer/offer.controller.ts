@@ -102,12 +102,14 @@ export class OfferController {
   })
   @ApiQuery({
     name: 'fromPLZ',
-    description: 'The starting postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    description:
+      'The starting postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
     required: false,
   })
   @ApiQuery({
     name: 'toPLZ',
-    description: 'The ending postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
+    description:
+      'The ending postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
     required: false,
   })
   @ApiQuery({
@@ -297,7 +299,7 @@ export class OfferController {
   }
 
   filterOffersByRating(rating: number, offers: Offer[]): Offer[] {
-    return offers.filter((o) => {
+    return offers.filter(() => {
       /* TODO: implement logic */
     });
   }

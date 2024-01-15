@@ -14,7 +14,7 @@ export class MockGetOffer {
     description: 'Test',
     profilePicture: '/profile-pictures/12341.png',
     phoneNumber: '+49 173 55555',
-    coins: 0,
+    coins: 500,
     password: '1234',
   };
 
