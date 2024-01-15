@@ -1,5 +1,5 @@
 ###Post transitrequest
-POST localhost:3000/transit-request/2 HTTP/2
+POST localhost:3000/transit-request/1 HTTP/2
 Content-Type: application/json
 
 {
@@ -14,12 +14,13 @@ GET localhost:3000/transit-request/all HTTP/2
 
 
 ###Put transitrequest
-PUT localhost:3000/transit-request/update-params/3 HTTP/2
+PUT localhost:3000/transit-request/update-params/1 HTTP/2
 Content-Type: application/json
 
 {
   "offeredCoins": 250,
-  "requestedSeats": 1
+  "requestedSeats": 1,
+  "text": "Ich muss hier weg!!1! Dringend!!!"
 }
 
 

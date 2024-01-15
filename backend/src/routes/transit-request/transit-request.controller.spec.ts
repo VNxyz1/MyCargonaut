@@ -154,7 +154,7 @@ describe('TransitRequestController', () => {
     it('should get all pending transit requests for the logged-in user', async () => {
       runTestAsClient();
       const result =
-        await transitController.getPendingTransitrequestOfLoggedInUser(session);
+        await transitController.getPendingTransitRequestOfLoggedInUser(session);
 
       expect(result).toBeDefined();
       expect(result.transitRequests).toHaveLength(1);
@@ -167,7 +167,7 @@ describe('TransitRequestController', () => {
     it('should return an empty array if the user is not logged in', async () => {
       runTestAsLoggedOutUser();
       const result =
-        await transitController.getPendingTransitrequestOfLoggedInUser(session);
+        await transitController.getPendingTransitRequestOfLoggedInUser(session);
 
       expect(result.transitRequests).toHaveLength(0);
     });

@@ -15,6 +15,27 @@ export const getTripRequestById = async (id: number) => {
   }
 }
 
+export const deleteOffering = async (id: number) => {
+  console.log(id)
+  try {
+    //Todo: muss im backend implementiert werden
+    return false
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const acceptOffering = async (id: number) => {
+  try {
+    const response = await fetch(`/request/offering/accept/${id}`, {
+      method: "POST"
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
 
 export const getOfferings = async () => {
 

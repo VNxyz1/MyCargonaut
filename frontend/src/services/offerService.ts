@@ -15,6 +15,45 @@ export const getOfferById = async (id: number) => {
     }
 }
 
+export const updateTransitRequest = async (id: number, data: any) => {
+    try {
+        const response = await fetch(`//transit-request/update-params/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify(data),
+        });
+        return response.ok;
+
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const deleteTransitRequest = async (id: number) => {
+    try {
+        const response = await fetch(`/transit-request/${id}`, {
+            method: "DELETE"
+        });
+        return response.ok;
+
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const acceptTransitRequest = async (id: number) => {
+    try {
+        const response = await fetch(`/transit-request/accept/${id}`, {
+            method: "PUT"
+        });
+        return response.ok;
+
+    } catch (e) {
+        console.error(e)
+    }
+}
 
 export const getTransitRequests = async () => {
 

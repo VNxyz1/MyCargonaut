@@ -9,7 +9,7 @@ function ChatPage () {
 
   return (
     <Container fluid="md">
-        <Row className="d-flex justify-content-center">
+        <Row className="d-flex justify-content-center mb-4">
           <Col md={3} className="d-flex justify-content-center justify-content-xl-end">
             <AllChats/>
           </Col>
@@ -17,7 +17,7 @@ function ChatPage () {
             <SingleChat/>
           </Col>
         </Row>
-      <Row>
+      <Row className='mb-4'>
         <Col>
           <OfferingsAndRequests/>
         </Col>

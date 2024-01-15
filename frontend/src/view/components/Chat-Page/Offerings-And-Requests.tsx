@@ -3,6 +3,10 @@ import { getOfferings } from "../../../services/tripRequestService.ts";
 import { TripRequestOffering } from "../../../interfaces/TripRequestOffering.ts";
 import { getTransitRequests } from "../../../services/offerService.ts";
 import { TransitRequest } from "../../../interfaces/TransitRequest.ts";
+import TransitRequestListItem from "./TransitRequestListItem.tsx";
+import OfferingListItem from "./OfferingListItem.tsx";
+import ListGroup from "react-bootstrap/ListGroup";
+import { Col, Row } from "react-bootstrap";
 
 interface SentAndIncomingOfferings {
   incomingOfferings: TripRequestOffering[];
@@ -13,46 +17,54 @@ interface SentAndIncomingTransitRequests {
   incomingTransitRequests: TransitRequest[];
   sentTransitRequests: TransitRequest[];
 }
+
 function OfferingsAndRequests() {
   const [offerings, setOfferings] = useState<SentAndIncomingOfferings>();
   const [transitRequests, setTransitRequests] = useState<SentAndIncomingTransitRequests>();
 
 
   useEffect(() => {
-    (async ()=> {
-      const offerings: SentAndIncomingOfferings = await getOfferings();
-      setOfferings(offerings);
-
-      const transitRequests: SentAndIncomingTransitRequests = await getTransitRequests();
-      setTransitRequests(transitRequests);
+    (async () => {
+      await getResources()
     })()
 
   }, []);
 
+  const getResources = async () => {
+    const offerings: SentAndIncomingOfferings = await getOfferings();
+    setOfferings(offerings);
+
+    const transitRequests: SentAndIncomingTransitRequests = await getTransitRequests();
+    setTransitRequests(transitRequests);
+  }
+  
+
   return (
     <>
-      <h4>Eingehende Anfragen:</h4>
-      {offerings?.incomingOfferings.map((o)=> (
-        <>
-          <p>Nutzer: {o.offeringUser.firstName} {o.offeringUser.lastName} hat da was für dich</p>
-        </>
-      ))}
-      {transitRequests?.incomingTransitRequests.map((tR)=> (
-        <>
-          <p>Nutzer: {tR.requester?.firstName} {tR.requester?.lastName} hat da was für dich</p>
-        </>
-      ))}
-      <h4>Versandte Anfragen:</h4>
-      {offerings?.sentOfferings.map((o)=> (
-        <>
-          <p>Du hast da was für {o.tripRequest.provider.firstName} {o.tripRequest.provider.lastName} verschickt</p>
-        </>
-      ))}
-      {transitRequests?.sentTransitRequests.map((tR)=> (
-        <>
-          <p>Du hast da was für {tR.offer?.provider.firstName} {tR.offer?.provider.lastName} verschickt</p>
-        </>
-      ))}
+      <Row>
+        <Col>
+          <ListGroup style={{borderRadius: '1rem'}}>
+            <h3>Eingehende Anfragen:</h3>
+            {offerings?.incomingOfferings.map((o) => (
+              <OfferingListItem offering={o} reRender={getResources} receiver/>
+            ))}
+            {transitRequests?.incomingTransitRequests.map((tR) => (
+              <TransitRequestListItem transitRequest={tR} reRender={getResources} receiver/>
+            ))}
+          </ListGroup>
+        </Col>
+        <Col>
+          <ListGroup>
+            <h3>Versandte Anfragen:</h3>
+            {offerings?.sentOfferings.map((o) => (
+              <OfferingListItem offering={o} reRender={getResources}/>
+            ))}
+            {transitRequests?.sentTransitRequests.map((tR) => (
+              <TransitRequestListItem transitRequest={tR} reRender={getResources}/>
+            ))}
+          </ListGroup>
+        </Col>
+      </Row>
     </>
   );
 }
