@@ -1,11 +1,8 @@
-import { useState } from 'react';
-import { Container, Row, Card, Image } from "react-bootstrap";
+import { useEffect, useState } from 'react';
+import { Container, Row, Card } from "react-bootstrap";
 import {Offer} from "../../interfaces/Offer.ts";
-import img from "../../assets/img/home_transport.png"
 import Button from "react-bootstrap/Button";
-import {faArrowRight} from "@fortawesome/free-solid-svg-icons/faArrowRight";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { Link } from 'react-router-dom';
+import TripListItem from "../components/Search-Transport-Page/Trip-List-Item.tsx";
 
 
 function SearchTransportPage(
@@ -28,6 +25,7 @@ function SearchTransportPage(
             const res = await fetch(url);
             if (res.ok) {
                 const data = await res.json();
+                console.log(data.offerList)
                 setOffers(data.offerList);
                 console.error(data.offerList);
             } else {
@@ -37,6 +35,10 @@ function SearchTransportPage(
             console.error('Fehler bei der Anfrage');
         }
     };
+
+    useEffect(() => {
+        setOffers(props.offers)
+    }, [props.offers]);
 
     return (
         <>
@@ -122,34 +124,7 @@ function SearchTransportPage(
                             </div>
                         </div>
                         {offers.map((item: Offer) => (
-                            <div className="mb-2" style={{height: "200px"}}>
-                                <Link to={`/trip/offer/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <Card key={item.id}>
-                                        <div className="d-flex">
-                                            <Image
-                                                style={{ width: "300px", height: "200px", objectFit: "cover", overflow: "hidden", borderRadius: "0.2rem 0 0 0.2rem"}}
-                                                src={img}
-                                                alt=""
-                                            />
-                                            <div className="col">
-                                                <Card.Header className="d-flex justify-content-between">
-                                                    <div className="d-flex">
-                                                        <h5><strong>{String(item.route[0].plz)}</strong></h5>
-                                                        <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight}/>
-                                                        <h5><strong>{String(item.route[item.route.length - 1].plz)}</strong></h5>
-                                                    </div>
-                                                    <p>{String(item.createdAt)}</p>
-                                                </Card.Header>
-                                                <Card.Body>
-                                                    {item.description.length > 320
-                                                        ? `${item.description.slice(0, 320)}...`
-                                                        : item.description}
-                                                </Card.Body>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </Link>
-                            </div>
+                            <TripListItem trip={item}/>
                         ))}
                     </div>
                 </Row>

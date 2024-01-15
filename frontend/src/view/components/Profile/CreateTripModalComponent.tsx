@@ -26,7 +26,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
     const [locationValue, setLocationValue] = useState<string>('');
     const [routes, setRoutes] = useState<Route[]>([]);
     const [selectedVehicle, setSelectedVehicle] = useState<string>('');
-    const [descriptionValue] = useState<string>('');
+    const [descriptionValue, setDescription] = useState<string>('');
     const [dateValue, setDateValue] = useState<string>('');
     const [seatNumberValue, setSeatNumberValue] = useState<number>(0);
 
@@ -43,6 +43,9 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
         try {
             const response = await fetch('/offer', {
                 method: 'POST',
+                headers: {
+                    "Content-type": "application/json"
+                },
                 body: JSON.stringify({
                     route: routes,
                     vehicle: selectedVehicle,
@@ -178,7 +181,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-3" controlId="registerEmail">
-                        <Form.Control as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
+                        <Form.Control onChange={(e)=> setDescription(e.target.value)} as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
                     </Form.Group>
 
                     <Row>

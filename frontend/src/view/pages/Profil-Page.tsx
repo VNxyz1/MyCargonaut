@@ -24,7 +24,11 @@ import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 
-function UserPage() {
+function UserPage(
+  props: {
+      reRender: ()=> void
+  }
+) {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
@@ -313,11 +317,19 @@ function UserPage() {
                 </Row>
             </Container>
 
-            <VehicleAddModal show={showVehicleAddModal} onHide={() => setShowVehicleAddModal(false)}/>
+            <VehicleAddModal show={showVehicleAddModal} onHide={() => {
+                setShowVehicleAddModal(false);
+            }}/>
 
-            <CreateCargoModal show={showCreateCargoModal} onHide={() => setShowCreateCargoModal(false)}/>
+            <CreateCargoModal show={showCreateCargoModal} onHide={() => {
+                props.reRender();
+                setShowCreateCargoModal(false);
+            }}/>
 
-            <CreateTripModal show={showCreateTripModal} onHide={() => setShowCreateTripModal(false)}/>
+            <CreateTripModal show={showCreateTripModal} onHide={() => {
+                props.reRender();
+                setShowCreateTripModal(false);
+            }}/>
 
 
             <ProfileEditModal
@@ -328,7 +340,6 @@ function UserPage() {
                 }}
                 userData={userData as User | null}
             />
-
 
         </>
     );

@@ -20,24 +20,25 @@ function RoutesComponent() {
 
 
     useEffect(() => {
-        const getAllPublicOffers = async ()  => {
-            try {
-                const res = await fetch("/offer");
-                if (res.ok) {
-                    const data = await res.json();
-                    setOffers(data.offerList);
-                    console.log(data.offerList);
-                } else {
-                    console.error("Error fetching offers");
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-
-        getAllPublicOffers()
-            .catch(console.error);
+        (async ()=> {
+            await getAllPublicOffers();
+        })()
     }, []);
+
+    const getAllPublicOffers = async ()  => {
+        try {
+            const res = await fetch("/offer");
+            if (res.ok) {
+                const data = await res.json();
+                setOffers(data.offerList);
+                console.log(data.offerList);
+            } else {
+                console.error("Error fetching offers");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
 
 
     return (
@@ -48,7 +49,7 @@ function RoutesComponent() {
                 <Route path="/login" element={<LoginAndRegisterPage/>}/>
                 <Route path="/imprint" element={<ImprintPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/profil" element={<ProfilPage />} />
+                <Route path="/profil" element={<ProfilPage  reRender={getAllPublicOffers}/>} />
                 <Route path="/user/:userId" element={<UserPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
                 <Route path="/messages" element={<ChatPage />} />
