@@ -126,7 +126,7 @@ const VehicleAddModalComponent: React.FC<VehicleAddModalProps> = (props: Vehicle
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-3" controlId="description">
-                        <Form.Control as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
+                        <Form.Control required as="textarea" rows={3} placeholder="Beschreibung"/>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="picture">
                         <Form.Label>Bild hinzufügen (optional)</Form.Label>
