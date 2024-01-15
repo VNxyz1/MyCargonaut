@@ -5,6 +5,7 @@ import img from "../../assets/img/home_transport.png"
 import Button from "react-bootstrap/Button";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { Link } from 'react-router-dom';
 
 
 function SearchTransportPage(
@@ -122,30 +123,32 @@ function SearchTransportPage(
                         </div>
                         {offers.map((item: Offer) => (
                             <div className="mb-2" style={{height: "200px"}}>
-                                <Card key={item.id}>
-                                    <div className="d-flex">
-                                        <Image
-                                            style={{ width: "300px", height: "200px", objectFit: "cover", overflow: "hidden", borderRadius: "0.2rem 0 0 0.2rem"}}
-                                            src={img}
-                                            alt=""
-                                        />
-                                        <div className="col">
-                                            <Card.Header className="d-flex justify-content-between">
-                                                <div className="d-flex">
-                                                    <h5><strong>{String(item.route[0].plz)}</strong></h5>
-                                                    <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight}/>
-                                                    <h5><strong>{String(item.route[item.route.length - 1].plz)}</strong></h5>
-                                                </div>
-                                                <p>{String(item.createdAt)}</p>
-                                            </Card.Header>
-                                            <Card.Body>
-                                                {item.description.length > 320
-                                                    ? `${item.description.slice(0, 320)}...`
-                                                    : item.description}
-                                            </Card.Body>
+                                <Link to={`/trip/offer/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <Card key={item.id}>
+                                        <div className="d-flex">
+                                            <Image
+                                                style={{ width: "300px", height: "200px", objectFit: "cover", overflow: "hidden", borderRadius: "0.2rem 0 0 0.2rem"}}
+                                                src={img}
+                                                alt=""
+                                            />
+                                            <div className="col">
+                                                <Card.Header className="d-flex justify-content-between">
+                                                    <div className="d-flex">
+                                                        <h5><strong>{String(item.route[0].plz)}</strong></h5>
+                                                        <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight}/>
+                                                        <h5><strong>{String(item.route[item.route.length - 1].plz)}</strong></h5>
+                                                    </div>
+                                                    <p>{String(item.createdAt)}</p>
+                                                </Card.Header>
+                                                <Card.Body>
+                                                    {item.description.length > 320
+                                                        ? `${item.description.slice(0, 320)}...`
+                                                        : item.description}
+                                                </Card.Body>
+                                            </div>
                                         </div>
-                                    </div>
-                                </Card>
+                                    </Card>
+                                </Link>
                             </div>
                         ))}
                     </div>
