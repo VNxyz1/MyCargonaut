@@ -29,7 +29,7 @@ export class VehicleService {
     vehicle.description = vehicleDto.description;
     vehicle.picture = vehicleDto.picture;
 
-    vehicle.provider = await this.userRepository.findOne({
+    vehicle.owner = await this.userRepository.findOne({
       where: { id: providerId },
     });
 
@@ -40,7 +40,7 @@ export class VehicleService {
 
   async getAllVehicle(userId: number) {
     return await this.vehicleRepository.find({
-      where: { provider: { id: userId } },
+      where: { owner: { id: userId } },
     });
   }
   async getExixtsVehicle(vehicleId: number) {
@@ -60,7 +60,7 @@ export class VehicleService {
       throw new InternalServerErrorException("Can't delete your legs!");
     }
 
-    if (vehicle.provider.id !== userId) {
+    if (vehicle.owner.id !== userId) {
       throw new InternalServerErrorException(
         "You're not the owner of the vehicle.",
       );
@@ -92,7 +92,7 @@ export class VehicleService {
 
     await this.vehicleRepository.save(vehicle);
 
-    return this.getVehicle(vehicle.id, vehicle.provider.id);
+    return this.getVehicle(vehicle.id, vehicle.owner.id);
   }
 
   async deleteVehicle(vehicle: Vehicle) {
@@ -106,7 +106,7 @@ export class VehicleService {
     if (!vehicle) {
       throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
     }
-    if (vehicle.provider.id !== userId) {
+    if (vehicle.owner.id !== userId) {
       throw new InternalServerErrorException(
         "You're not the owner of the vehicle.",
       );
@@ -136,7 +136,7 @@ export class VehicleService {
       throw new NotFoundException(`Vehicle with ID ${vehicleId} not found.`);
     }
 
-    if (vehicle.provider.id !== userId) {
+    if (vehicle.owner.id !== userId) {
       throw new InternalServerErrorException(
         "You're not the owner of the vehicle.",
       );

@@ -24,7 +24,7 @@ export class Vehicle {
   picture: string;
 
   @ManyToOne(() => User, { eager: true })
-  provider: User;
+  owner: User;
   @OneToMany(() => Offer,(offer)=>offer.vehicle)
   offers: Offer[];
 }

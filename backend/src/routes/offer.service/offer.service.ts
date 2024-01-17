@@ -11,7 +11,7 @@ import { TransitRequest } from '../../database/TransitRequest';
 import { RoutePart } from '../../database/RoutePart';
 import { PlzService } from '../plz.service/plz.service';
 import { createRoutePart } from '../utils/createRoutePart';
-import { Vehicle } from 'src/database/Vehicle';
+import { Vehicle } from '../../database/Vehicle';
 
 @Injectable()
 export class OfferService {

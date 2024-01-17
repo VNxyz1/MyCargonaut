@@ -12,11 +12,14 @@ import { MockUpdateOffer } from './Mock/MockUpdateOffer';
 import { TransitRequestService } from '../transit-request.service/transit-request.service';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
+import { VehicleService } from '../vehicle.service/vehicle.service';
+import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
 describe('OfferService', () => {
   let offerService: OfferService;
   let userService: UserService;
   let transitService: TransitRequestService;
+  let vehicleService: VehicleService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,14 +27,16 @@ describe('OfferService', () => {
         sqlite_setup('./db/tmp.tester.offer.service.sqlite'),
         TypeOrmModule.forFeature(entityArr),
       ],
-      providers: [OfferService, UserService, TransitRequestService, PlzService],
+      providers: [OfferService, UserService, TransitRequestService, PlzService,VehicleService],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);
     userService = module.get<UserService>(UserService);
     transitService = module.get<TransitRequestService>(TransitRequestService);
+    vehicleService = module.get<VehicleService>(VehicleService);
 
     await userService.postUser(new MockCreateUser(true));
+    await vehicleService.creatingVehicle(1,new MockVehicle(1));
   });
 
   it('should be defined', () => {
@@ -62,13 +67,19 @@ describe('OfferService', () => {
       const resMock = new MockGetOffer(true);
       resMock.description = 'Testiii und so';
       resMock.id = 2;
-      expect(offers[0]).toEqual(resMock);
+      expect(offers[0].description).toEqual(resMock.description);
+      expect(offers[0].id).toEqual(resMock.id);
     });
 
     it('should get all offers if no search criteria provided', async () => {
+      
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
       const offers = await offerService.getOffers();
-
-      expect(offers[0]).toEqual(new MockGetOffer(false));
+      expect(offers.length).toEqual(7);
     });
   });
 

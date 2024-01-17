@@ -24,6 +24,8 @@ import { MockPostOffering } from './Mock/MockPostOffering';
 import { OfferService } from '../offer.service/offer.service';
 import { CreateRoutePartDto } from '../offer/DTOs/CreateRoutePartDto';
 import { Offer } from '../../database/Offer';
+import { VehicleService } from '../vehicle.service/vehicle.service';
+import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
 describe('RequestController', () => {
   let requestService: RequestService;
@@ -34,6 +36,7 @@ describe('RequestController', () => {
   let userService: UserService;
   let userForThisTest: User;
   let offeringUser: User;
+  let vehicleService: VehicleService;
   const session: ISession = new MockSession(true);
 
   beforeAll(async () => {
@@ -50,6 +53,7 @@ describe('RequestController', () => {
         RatingService,
         RequestOfferingService,
         OfferService,
+        VehicleService,
       ],
     }).compile();
 
@@ -58,6 +62,7 @@ describe('RequestController', () => {
     offeringService = module.get<RequestOfferingService>(
       RequestOfferingService,
     );
+    vehicleService = module.get<VehicleService>(VehicleService);
     userService = module.get<UserService>(UserService);
     requestController = module.get<RequestController>(RequestController);
     userController = module.get<UserController>(UserController);
@@ -69,6 +74,7 @@ describe('RequestController', () => {
 
     await userController.postUser(new MockCreateUser(true, 1));
     offeringUser = await userService.getUserById(2);
+    await vehicleService.creatingVehicle(2,new MockVehicle(1));
   });
 
   it('should be defined', () => {
@@ -327,7 +333,7 @@ describe('RequestController', () => {
       await expect(
         requestController.transformToOffer(session, 1, {
           additionalSeats: 1,
-          vehicleId: 'vehicle',
+          vehicleId: 1,
           startDate: 'startDate',
           description: 'description',
         }),
@@ -337,7 +343,7 @@ describe('RequestController', () => {
     it('should transform the TripRequest, with an accepted Offering to an Offer.', async () => {
       session.userData = offeringUser;
       const additionalSeats = 1;
-      const vehicle = 'Auto';
+      const vehicleId = 1;
       const startDate = '2024-01-13T12:00:00+01:00';
       const description = 'Test offer with extended route';
 
@@ -354,7 +360,7 @@ describe('RequestController', () => {
       const route = [crp1, crp2];
       await requestController.transformToOffer(session, 1, {
         additionalSeats: additionalSeats,
-        vehicleId: vehicle,
+        vehicleId: vehicleId,
         startDate: startDate,
         description: description,
         route: route,

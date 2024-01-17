@@ -23,6 +23,8 @@ import { TripState } from '../../database/TripState';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
+import { VehicleService } from '../vehicle.service/vehicle.service';
+import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -32,7 +34,7 @@ describe('OfferController', () => {
   let providerForThisTest: User;
   let userForThisTest: User;
   let session: ISession = new MockSession(true);
-
+  let vehicleService: VehicleService;
   beforeAll(async () => {
     await setup();
   });
@@ -44,7 +46,7 @@ describe('OfferController', () => {
   describe('post offers', () => {
     it('should create a new offer', async () => {
       runTestAsProvider();
-      const result = await postNewOffer();
+      const result = await postNewOffer(1);
 
       expect(result).toEqual(
         new OKResponseWithMessageDTO(true, 'Offer Created'),
@@ -54,7 +56,7 @@ describe('OfferController', () => {
     it('should throw an error, because the user is not a provider', async () => {
       runTestAsClient();
 
-      await expect(postNewOffer()).rejects.toThrow();
+      await expect(postNewOffer(2)).rejects.toThrow();
     });
   });
 
@@ -145,7 +147,7 @@ describe('OfferController', () => {
 
     it('should throw BadRequestException when deleting offer with different provider', async () => {
       runTestAsProvider();
-      await postNewOffer();
+      await postNewOffer(1);
 
       runTestAsClient();
       const offerId = 2;
@@ -178,7 +180,7 @@ describe('OfferController', () => {
   describe('set offer as booked up route', () => {
     it('should reject the request', async () => {
       runTestAsProvider();
-      await postNewOffer();
+      await postNewOffer(1);
 
       runTestAsClient();
       const offerId = 3;
@@ -237,8 +239,8 @@ describe('OfferController', () => {
   describe('get filtered offers route', () => {
     it('should get filtered offers', async () => {
       runTestAsProvider();
-      await postNewOffer(true);
-      await postNewOffer();
+      await postNewOffer(1,true);
+      await postNewOffer(1);
 
       runTestAsLoggedOutUser();
       const searchString = 'test';
@@ -359,12 +361,12 @@ describe('OfferController', () => {
     session = new MockSession();
   };
 
-  const postNewOffer = async (alt?: boolean) => {
+  const postNewOffer = async (vehicleId:number,alt?: boolean) => {
     let createOfferDto: MockPostOffer;
     if (alt) {
-      createOfferDto = new MockPostOffer(alt);
+      createOfferDto = new MockPostOffer(vehicleId,alt);
     } else {
-      createOfferDto = new MockPostOffer();
+      createOfferDto = new MockPostOffer(vehicleId);
     }
     return await offerController.postUser(createOfferDto, session);
   };
@@ -382,6 +384,7 @@ describe('OfferController', () => {
         OfferService,
         PlzService,
         RatingService,
+        VehicleService,
       ],
     }).compile();
 
@@ -389,13 +392,16 @@ describe('OfferController', () => {
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
     offerService = module.get<OfferService>(OfferService);
+    vehicleService = module.get<VehicleService>(VehicleService);
 
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
     providerForThisTest = await userService.getUserById(1);
+    await vehicleService.creatingVehicle(1,new MockVehicle(1));
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
+    await vehicleService.creatingVehicle(2,new MockVehicle(2));
   };
 
   const deleteDbMock = async () => {

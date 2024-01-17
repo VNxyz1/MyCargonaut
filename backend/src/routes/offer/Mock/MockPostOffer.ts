@@ -16,12 +16,12 @@ export class MockPostOffer {
       position: 3,
     },
   ];
-  vehicle = 'test';
+  vehicleId = 1;
   description = 'Das ist ein Test!';
   startDate = '2024-02-18';
   bookedSeats = 1;
 
-  constructor(alt?: boolean) {
+  constructor(vehicleId: number,alt?: boolean,) {
     if (alt) {
       this.route = [
         {
@@ -42,5 +42,6 @@ export class MockPostOffer {
       ];
       this.startDate = '2024-02-17';
     }
+    this.vehicleId = vehicleId;
   }
 }

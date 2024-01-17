@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { GetOtherUserDto } from './GetOtherUserDto';
 import { TransitRequest } from '../../../database/TransitRequest';
 import { RoutePart } from '../../../database/RoutePart';
-import { CreateVehicleDto } from 'src/routes/vehicle/DTOs/CreateVehicleDto';
+import { CreateVehicleDto } from '../../vehicle/DTOs/CreateVehicleDto';
 
 export class GetOfferResponseDto {
   @ApiProperty()
