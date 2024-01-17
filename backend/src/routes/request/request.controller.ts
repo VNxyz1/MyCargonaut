@@ -51,7 +51,7 @@ import { createRoutePart } from '../utils/createRoutePart';
 import { OfferService } from '../offer.service/offer.service';
 import { VehicleController } from '../vehicle/vehicle.controller';
 import { VehicleService } from '../vehicle.service/vehicle.service';
-import { Vehicle } from 'src/database/Vehicle';
+import { Vehicle } from '../../database/Vehicle';
 
 @ApiTags('request')
 @Controller('request')

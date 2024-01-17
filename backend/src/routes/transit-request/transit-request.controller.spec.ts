@@ -24,10 +24,15 @@ import {
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
+import { VehicleController } from '../vehicle/vehicle.controller';
+import { Vehicle } from 'src/database/Vehicle';
+import { VehicleService } from '../vehicle.service/vehicle.service';
+import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
 describe('TransitRequestController', () => {
   let transitController: TransitRequestController;
   let transitService: TransitRequestService;
+  let vehicleService: VehicleService;
   let offerController: OfferController;
   let userController: UserController;
   let userService: UserService;
@@ -47,6 +52,7 @@ describe('TransitRequestController', () => {
         TransitRequestController,
         OfferController,
         UserController,
+        VehicleController,
       ],
       providers: [
         UserService,
@@ -55,34 +61,36 @@ describe('TransitRequestController', () => {
         OfferService,
         PlzService,
         RatingService,
+        VehicleService,
       ],
     }).compile();
 
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
-    transitController = module.get<TransitRequestController>(
-      TransitRequestController,
-    );
+    transitController = module.get<TransitRequestController>(TransitRequestController);
     transitService = module.get<TransitRequestService>(TransitRequestService);
-
+    vehicleService = module.get<VehicleService>(VehicleService);
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
     providerForThisTest = await userService.getUserById(1);
+    await vehicleService.creatingVehicle(1,new MockVehicle(1));
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
+    await vehicleService.creatingVehicle(2,new MockVehicle(2));
 
     await userController.postUser(new MockCreateUser(true, 2));
     secondProviderForThisTest = await userService.getUserById(3);
+    await vehicleService.creatingVehicle(3,new MockVehicle(3));
 
     // post first offer
     runTestAsProvider();
-    await postNewOffer();
+    await postNewOffer(1);
 
     // post second offer
     runTestAsSecondProvider();
-    await postNewOffer();
+    await postNewOffer(3);
   });
 
   it('should be defined', () => {
@@ -346,8 +354,8 @@ describe('TransitRequestController', () => {
     session = new MockSession();
   };
 
-  const postNewOffer = async () => {
-    const createOfferDto = new MockPostOffer();
+  const postNewOffer = async (vehicleId) => {
+    const createOfferDto = new MockPostOffer(vehicleId);
     return await offerController.postUser(createOfferDto, session);
   };
 });

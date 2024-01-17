@@ -44,7 +44,7 @@ describe('OfferController', () => {
   describe('post offers', () => {
     it('should create a new offer', async () => {
       runTestAsProvider();
-      const result = await postNewOffer();
+      const result = await postNewOffer(1);
 
       expect(result).toEqual(
         new OKResponseWithMessageDTO(true, 'Offer Created'),
@@ -54,7 +54,7 @@ describe('OfferController', () => {
     it('should throw an error, because the user is not a provider', async () => {
       runTestAsClient();
 
-      await expect(postNewOffer()).rejects.toThrow();
+      await expect(postNewOffer(2)).rejects.toThrow();
     });
   });
 
@@ -145,7 +145,7 @@ describe('OfferController', () => {
 
     it('should throw BadRequestException when deleting offer with different provider', async () => {
       runTestAsProvider();
-      await postNewOffer();
+      await postNewOffer(1);
 
       runTestAsClient();
       const offerId = 2;
@@ -178,7 +178,7 @@ describe('OfferController', () => {
   describe('set offer as booked up route', () => {
     it('should reject the request', async () => {
       runTestAsProvider();
-      await postNewOffer();
+      await postNewOffer(1);
 
       runTestAsClient();
       const offerId = 3;
@@ -237,8 +237,8 @@ describe('OfferController', () => {
   describe('get filtered offers route', () => {
     it('should get filtered offers', async () => {
       runTestAsProvider();
-      await postNewOffer(true);
-      await postNewOffer();
+      await postNewOffer(1,true);
+      await postNewOffer(1);
 
       runTestAsLoggedOutUser();
       const searchString = 'test';
@@ -359,12 +359,12 @@ describe('OfferController', () => {
     session = new MockSession();
   };
 
-  const postNewOffer = async (alt?: boolean) => {
+  const postNewOffer = async (vehicleId:number,alt?: boolean) => {
     let createOfferDto: MockPostOffer;
     if (alt) {
-      createOfferDto = new MockPostOffer(alt);
+      createOfferDto = new MockPostOffer(vehicleId,alt);
     } else {
-      createOfferDto = new MockPostOffer();
+      createOfferDto = new MockPostOffer(vehicleId);
     }
     return await offerController.postUser(createOfferDto, session);
   };

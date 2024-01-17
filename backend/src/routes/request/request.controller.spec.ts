@@ -327,7 +327,7 @@ describe('RequestController', () => {
       await expect(
         requestController.transformToOffer(session, 1, {
           additionalSeats: 1,
-          vehicleId: 'vehicle',
+          vehicleId: 1,
           startDate: 'startDate',
           description: 'description',
         }),
@@ -337,7 +337,7 @@ describe('RequestController', () => {
     it('should transform the TripRequest, with an accepted Offering to an Offer.', async () => {
       session.userData = offeringUser;
       const additionalSeats = 1;
-      const vehicle = 'Auto';
+      const vehicleId = 1;
       const startDate = '2024-01-13T12:00:00+01:00';
       const description = 'Test offer with extended route';
 
@@ -354,7 +354,7 @@ describe('RequestController', () => {
       const route = [crp1, crp2];
       await requestController.transformToOffer(session, 1, {
         additionalSeats: additionalSeats,
-        vehicleId: vehicle,
+        vehicleId: vehicleId,
         startDate: startDate,
         description: description,
         route: route,

@@ -87,6 +87,7 @@ export class TransitRequestService {
       .leftJoinAndSelect('offer.provider', 'provider')
       .leftJoinAndSelect('offer.route', 'route')
       .leftJoinAndSelect('offer.clients', 'clients')
+      .leftJoinAndSelect('offer.vehicle','vehicles')
       .where('transitRequest.requester.id = :userId', { userId })
       .getMany();
     if (!transitRequests) {

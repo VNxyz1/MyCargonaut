@@ -6,7 +6,7 @@ export class MockCreateOffer {
     { plz: '67890', location: 'test', position: 2 },
   ];
 
-  vehicle: string = 'Test Vehicle';
+  vehicleId: number = 1;
 
   description: string = 'Test Description';
 

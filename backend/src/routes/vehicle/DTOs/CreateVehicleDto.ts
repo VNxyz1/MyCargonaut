@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { VehicleType } from 'src/database/VehicleType';
+import { VehicleType } from '../../../database/VehicleType';
 export class CreateVehicleDto {
   @IsNumber()
   @IsNotEmpty()
