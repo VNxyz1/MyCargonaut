@@ -80,26 +80,50 @@ export class OfferService {
           { route: { plz: { location: Like(`%${searchFor}%`) } } },
           { route: { plz: { plz: Like(`%${searchFor}%`) } } },
         ],
-        relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
+        relations: [
+          'provider',
+          'route.plz',
+          'clients',
+          'transitRequests',
+          'vehicle',
+        ],
       });
     }
 
     return await this.offerRepository.find({
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
+      relations: [
+        'provider',
+        'route.plz',
+        'clients',
+        'transitRequests',
+        'vehicle',
+      ],
     });
   }
 
   async getOffersOfUser(userId: number) {
     return await this.offerRepository.find({
       where: { provider: { id: userId } },
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
+      relations: [
+        'provider',
+        'route.plz',
+        'clients',
+        'transitRequests',
+        'vehicle',
+      ],
     });
   }
 
   async getOffer(id: number) {
     const offer = await this.offerRepository.findOne({
       where: { id: id },
-      relations: ['provider', 'route.plz', 'clients', 'transitRequests','vehicle'],
+      relations: [
+        'provider',
+        'route.plz',
+        'clients',
+        'transitRequests',
+        'vehicle',
+      ],
     });
     if (!offer) {
       throw new InternalServerErrorException('Offer was not found!');

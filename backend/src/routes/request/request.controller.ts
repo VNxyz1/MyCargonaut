@@ -49,9 +49,7 @@ import { PostTransformToOfferDto } from './DTOs/PostTransformToOfferDto';
 import { TripState } from '../../database/TripState';
 import { createRoutePart } from '../utils/createRoutePart';
 import { OfferService } from '../offer.service/offer.service';
-import { VehicleController } from '../vehicle/vehicle.controller';
 import { VehicleService } from '../vehicle.service/vehicle.service';
-import { Vehicle } from '../../database/Vehicle';
 
 @ApiTags('request')
 @Controller('request')
@@ -62,7 +60,7 @@ export class RequestController {
     private readonly userService: UserService,
     private readonly offeringService: RequestOfferingService,
     private readonly offerService: OfferService,
-    private readonly vehicleService: VehicleService
+    private readonly vehicleService: VehicleService,
   ) {}
 
   @Post()
@@ -411,7 +409,10 @@ export class RequestController {
     offer.state = TripState.offer;
 
     offer.bookedSeats = tripRequest.seats + data.additionalSeats;
-    offer.vehicle = await this.vehicleService.getVehicle(data.vehicleId,provider.id);
+    offer.vehicle = await this.vehicleService.getVehicle(
+      data.vehicleId,
+      provider.id,
+    );
     offer.startDate = new Date(data.startDate);
     offer.description = data.description;
 

@@ -239,7 +239,7 @@ describe('OfferController', () => {
   describe('get filtered offers route', () => {
     it('should get filtered offers', async () => {
       runTestAsProvider();
-      await postNewOffer(1,true);
+      await postNewOffer(1, true);
       await postNewOffer(1);
 
       runTestAsLoggedOutUser();
@@ -361,10 +361,10 @@ describe('OfferController', () => {
     session = new MockSession();
   };
 
-  const postNewOffer = async (vehicleId:number,alt?: boolean) => {
+  const postNewOffer = async (vehicleId: number, alt?: boolean) => {
     let createOfferDto: MockPostOffer;
     if (alt) {
-      createOfferDto = new MockPostOffer(vehicleId,alt);
+      createOfferDto = new MockPostOffer(vehicleId, alt);
     } else {
       createOfferDto = new MockPostOffer(vehicleId);
     }
@@ -397,11 +397,11 @@ describe('OfferController', () => {
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
     providerForThisTest = await userService.getUserById(1);
-    await vehicleService.creatingVehicle(1,new MockVehicle(1));
+    await vehicleService.creatingVehicle(1, new MockVehicle(1));
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
-    await vehicleService.creatingVehicle(2,new MockVehicle(2));
+    await vehicleService.creatingVehicle(2, new MockVehicle(2));
   };
 
   const deleteDbMock = async () => {

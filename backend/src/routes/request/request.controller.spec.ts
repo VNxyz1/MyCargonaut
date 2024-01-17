@@ -74,7 +74,7 @@ describe('RequestController', () => {
 
     await userController.postUser(new MockCreateUser(true, 1));
     offeringUser = await userService.getUserById(2);
-    await vehicleService.creatingVehicle(2,new MockVehicle(1));
+    await vehicleService.creatingVehicle(2, new MockVehicle(1));
   });
 
   it('should be defined', () => {

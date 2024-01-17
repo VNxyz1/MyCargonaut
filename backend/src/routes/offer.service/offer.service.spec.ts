@@ -27,7 +27,13 @@ describe('OfferService', () => {
         sqlite_setup('./db/tmp.tester.offer.service.sqlite'),
         TypeOrmModule.forFeature(entityArr),
       ],
-      providers: [OfferService, UserService, TransitRequestService, PlzService,VehicleService],
+      providers: [
+        OfferService,
+        UserService,
+        TransitRequestService,
+        PlzService,
+        VehicleService,
+      ],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);
@@ -36,7 +42,7 @@ describe('OfferService', () => {
     vehicleService = module.get<VehicleService>(VehicleService);
 
     await userService.postUser(new MockCreateUser(true));
-    await vehicleService.creatingVehicle(1,new MockVehicle(1));
+    await vehicleService.creatingVehicle(1, new MockVehicle(1));
   });
 
   it('should be defined', () => {
@@ -72,12 +78,11 @@ describe('OfferService', () => {
     });
 
     it('should get all offers if no search criteria provided', async () => {
-      
-      await offerService.postOffer(1 ,new MockCreateOffer());
-      await offerService.postOffer(1 ,new MockCreateOffer());
-      await offerService.postOffer(1 ,new MockCreateOffer());
-      await offerService.postOffer(1 ,new MockCreateOffer());
-      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1, new MockCreateOffer());
+      await offerService.postOffer(1, new MockCreateOffer());
+      await offerService.postOffer(1, new MockCreateOffer());
+      await offerService.postOffer(1, new MockCreateOffer());
+      await offerService.postOffer(1, new MockCreateOffer());
       const offers = await offerService.getOffers();
       expect(offers.length).toEqual(7);
     });

@@ -45,43 +45,43 @@ export class VehicleController {
     return vehicleDto;
   }
 
-@Get('own')
-@UseGuards(IsLoggedInGuard)
-@ApiOperation({ summary: 'Gets all vehicles of logged in user' })
-@ApiResponse({ type: GetVehicleResponseDto })
-async getVehicleOfUser(@Session() session: ISession) {
-  const userId = session.userData.id;
-  const vehicleList = await this.vehicleService.getAllVehicle(userId);
-  const vehicleDto = new GetVehicleResponseDto();
-  vehicleDto.vehicleList = [];
-  for (const vehicle of vehicleList) {
-    const newVehicleList: CreateVehicleDto = new CreateVehicleDto();
-    newVehicleList.id = vehicle.id;
-    newVehicleList.name = vehicle.name;
-    newVehicleList.seats = vehicle.seats;
-    newVehicleList.type = vehicle.type;
-    newVehicleList.description = vehicle.description;
-    newVehicleList.picture = vehicle.picture;
+  @Get('own')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({ summary: 'Gets all vehicles of logged in user' })
+  @ApiResponse({ type: GetVehicleResponseDto })
+  async getVehicleOfUser(@Session() session: ISession) {
+    const userId = session.userData.id;
+    const vehicleList = await this.vehicleService.getAllVehicle(userId);
+    const vehicleDto = new GetVehicleResponseDto();
+    vehicleDto.vehicleList = [];
+    for (const vehicle of vehicleList) {
+      const newVehicleList: CreateVehicleDto = new CreateVehicleDto();
+      newVehicleList.id = vehicle.id;
+      newVehicleList.name = vehicle.name;
+      newVehicleList.seats = vehicle.seats;
+      newVehicleList.type = vehicle.type;
+      newVehicleList.description = vehicle.description;
+      newVehicleList.picture = vehicle.picture;
 
-    vehicleDto.vehicleList.push(newVehicleList);
+      vehicleDto.vehicleList.push(newVehicleList);
+    }
+    return vehicleDto;
   }
-  return vehicleDto;
-}
 
-@Put('props/:id')
-@UseGuards(IsLoggedInGuard)
-@ApiOperation({ summary: 'Updates a vehicle of logged in user' })
-@ApiResponse({ type: OKResponseWithMessageDTO })
-async updateOffer(
-  @Session() session: ISession,
-  @Param('id', ParseIntPipe) vehicleId: number,
-  @Body() body: ChangedDto,
-) {
-  const userId = session.userData.id;
-  const offer = await this.vehicleService.getVehicle(vehicleId, userId);
-  await this.vehicleService.changeVehicle(body, offer);
-  return new OKResponseWithMessageDTO(true, 'Vehicleinformation changed');
-}
+  @Put('props/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({ summary: 'Updates a vehicle of logged in user' })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async updateOffer(
+    @Session() session: ISession,
+    @Param('id', ParseIntPipe) vehicleId: number,
+    @Body() body: ChangedDto,
+  ) {
+    const userId = session.userData.id;
+    const offer = await this.vehicleService.getVehicle(vehicleId, userId);
+    await this.vehicleService.changeVehicle(body, offer);
+    return new OKResponseWithMessageDTO(true, 'Vehicleinformation changed');
+  }
 
   @Delete('delete/:id')
   @UseGuards(IsLoggedInGuard)

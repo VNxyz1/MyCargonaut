@@ -21,7 +21,7 @@ export class MockPostOffer {
   startDate = '2024-02-18';
   bookedSeats = 1;
 
-  constructor(vehicleId: number,alt?: boolean,) {
+  constructor(vehicleId: number, alt?: boolean) {
     if (alt) {
       this.route = [
         {

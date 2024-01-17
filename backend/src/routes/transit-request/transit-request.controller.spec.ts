@@ -25,7 +25,6 @@ import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
 import { VehicleController } from '../vehicle/vehicle.controller';
-import { Vehicle } from 'src/database/Vehicle';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
@@ -68,21 +67,23 @@ describe('TransitRequestController', () => {
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
-    transitController = module.get<TransitRequestController>(TransitRequestController);
+    transitController = module.get<TransitRequestController>(
+      TransitRequestController,
+    );
     transitService = module.get<TransitRequestService>(TransitRequestService);
     vehicleService = module.get<VehicleService>(VehicleService);
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
     providerForThisTest = await userService.getUserById(1);
-    await vehicleService.creatingVehicle(1,new MockVehicle(1));
+    await vehicleService.creatingVehicle(1, new MockVehicle(1));
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
-    await vehicleService.creatingVehicle(2,new MockVehicle(2));
+    await vehicleService.creatingVehicle(2, new MockVehicle(2));
 
     await userController.postUser(new MockCreateUser(true, 2));
     secondProviderForThisTest = await userService.getUserById(3);
-    await vehicleService.creatingVehicle(3,new MockVehicle(3));
+    await vehicleService.creatingVehicle(3, new MockVehicle(3));
 
     // post first offer
     runTestAsProvider();

@@ -1,7 +1,6 @@
 import {
   isPhoneNumber,
   registerDecorator,
-  ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -50,7 +49,7 @@ export class VehicleExistsValidator implements ValidatorConstraintInterface {
     return await this.vehicleService.getExixtsVehicle(value);
   }
 
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     return `Vehicle doesn't exist`;
   }
 }

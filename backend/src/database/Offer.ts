@@ -32,8 +32,7 @@ export class Offer {
   @ManyToMany(() => User, (user) => user.trips, { eager: true })
   clients: User[];
 
- 
-  @ManyToOne(()=> Vehicle)
+  @ManyToOne(() => Vehicle)
   vehicle: Vehicle;
 
   @Column({ default: 0 })

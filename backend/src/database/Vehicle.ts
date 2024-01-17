@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from './User';
 import { VehicleType } from './VehicleType';
 import { Offer } from './Offer';
@@ -25,6 +31,6 @@ export class Vehicle {
 
   @ManyToOne(() => User, { eager: true })
   owner: User;
-  @OneToMany(() => Offer,(offer)=>offer.vehicle)
+  @OneToMany(() => Offer, (offer) => offer.vehicle)
   offers: Offer[];
 }
