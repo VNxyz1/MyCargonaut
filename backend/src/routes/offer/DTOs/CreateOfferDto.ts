@@ -5,9 +5,11 @@ import {
   IsArray,
   ArrayMinSize,
   IsNumber,
+  Validate,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateRoutePartDto } from './CreateRoutePartDto';
+import { VehicleExistsValidator } from 'src/routes/utils/custom_validators';
 export class CreateOfferDto {
   @IsArray()
   @ArrayMinSize(2)
@@ -20,6 +22,7 @@ export class CreateOfferDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Validate(VehicleExistsValidator)
   @ApiProperty()
   vehicleId: number;
 

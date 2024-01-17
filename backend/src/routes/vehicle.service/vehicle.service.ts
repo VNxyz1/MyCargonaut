@@ -43,6 +43,14 @@ export class VehicleService {
       where: { provider: { id: userId } },
     });
   }
+  async getExixtsVehicle(vehicleId: number) {
+    let vehicle = await this.vehicleRepository.find({
+      where: { id: vehicleId },
+    });
+    console.log(vehicle[0]);
+    if(vehicle[0])return true;
+    return false;
+  }
 
   async getVehicle(id: number, userId: number) {
     const vehicle = await this.vehicleRepository.findOne({

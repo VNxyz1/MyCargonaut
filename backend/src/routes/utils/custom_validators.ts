@@ -1,9 +1,13 @@
 import {
   isPhoneNumber,
   registerDecorator,
+  ValidationArguments,
   ValidationOptions,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
 } from 'class-validator';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { VehicleService } from '../vehicle.service/vehicle.service';
 
 export function IsPhoneNumberOrEmptyString(
   property: string,
@@ -35,4 +39,18 @@ export function IsPhoneNumberOrEmptyString(
       },
     });
   };
+}
+
+@ValidatorConstraint({ name: 'VehicleExists', async: true })
+@Injectable()
+export class VehicleExistsValidator implements ValidatorConstraintInterface {
+  constructor(private readonly vehicleService: VehicleService) {}
+
+  async validate(value: number) {
+    return await this.vehicleService.getExixtsVehicle(value);
+  }
+
+  defaultMessage(args: ValidationArguments) {
+    return `Vehicle doesn't exist`;
+  }
 }
