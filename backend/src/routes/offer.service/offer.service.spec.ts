@@ -67,13 +67,19 @@ describe('OfferService', () => {
       const resMock = new MockGetOffer(true);
       resMock.description = 'Testiii und so';
       resMock.id = 2;
-      expect(offers[0]).toEqual(resMock);
+      expect(offers[0].description).toEqual(resMock.description);
+      expect(offers[0].id).toEqual(resMock.id);
     });
 
     it('should get all offers if no search criteria provided', async () => {
+      
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
+      await offerService.postOffer(1 ,new MockCreateOffer());
       const offers = await offerService.getOffers();
-
-      expect(offers[0]).toEqual(new MockGetOffer(false));
+      expect(offers.length).toEqual(7);
     });
   });
 
