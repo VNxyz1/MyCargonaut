@@ -23,6 +23,8 @@ import { TripState } from '../../database/TripState';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
+import { VehicleService } from '../vehicle.service/vehicle.service';
+import { MockVehicle } from '../vehicle/Mock/MockVehicle';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -32,7 +34,7 @@ describe('OfferController', () => {
   let providerForThisTest: User;
   let userForThisTest: User;
   let session: ISession = new MockSession(true);
-
+  let vehicleService: VehicleService;
   beforeAll(async () => {
     await setup();
   });
@@ -382,6 +384,7 @@ describe('OfferController', () => {
         OfferService,
         PlzService,
         RatingService,
+        VehicleService,
       ],
     }).compile();
 
@@ -389,13 +392,16 @@ describe('OfferController', () => {
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
     offerService = module.get<OfferService>(OfferService);
+    vehicleService = module.get<VehicleService>(VehicleService);
 
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
     providerForThisTest = await userService.getUserById(1);
+    await vehicleService.creatingVehicle(1,new MockVehicle(1));
 
     await userController.postUser(new MockCreateUser(false, 1));
     userForThisTest = await userService.getUserById(2);
+    await vehicleService.creatingVehicle(2,new MockVehicle(2));
   };
 
   const deleteDbMock = async () => {
