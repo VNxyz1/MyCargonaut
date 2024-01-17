@@ -2,9 +2,10 @@ import { Offer } from '../../database/Offer';
 import { GetOfferResponseDto } from '../offer/DTOs/GetOfferResponseDto';
 import { User } from '../../database/User';
 import { GetOtherUserDto } from '../offer/DTOs/GetOtherUserDto';
-import { TripRequest } from '../../database/TripRequest';
-import { GetTripRequestResponseDto } from '../request/DTOs/GetTripRequestResponseDto';
-import { calcAge } from './calcAge';
+import { convertVehicleToCreateVehicleDto } from './convertToCreateVehicleDto';
+import { TripRequest } from "../../database/TripRequest";
+import { GetTripRequestResponseDto } from "../request/DTOs/GetTripRequestResponseDto";
+import { calcAge } from "./calcAge";
 
 export const convertOfferToGetOfferDto = (offer: Offer) => {
   const getOfferResponseDto: GetOfferResponseDto = new GetOfferResponseDto();
@@ -14,7 +15,7 @@ export const convertOfferToGetOfferDto = (offer: Offer) => {
   getOfferResponseDto.clients = offer.clients.map((client) =>
     convertUserToOtherUser(client),
   );
-  getOfferResponseDto.vehicle = offer.vehicle;
+  getOfferResponseDto.vehicle = convertVehicleToCreateVehicleDto(offer.vehicle);
   getOfferResponseDto.bookedSeats = offer.bookedSeats;
   getOfferResponseDto.state = offer.state;
   getOfferResponseDto.description = offer.description;

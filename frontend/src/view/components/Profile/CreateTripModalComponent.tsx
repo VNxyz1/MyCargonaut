@@ -4,6 +4,10 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import { Vehicle } from "../../../interfaces/Vehicle";
+import { useAuth } from "../../../services/authService";
+import { User } from "../../../interfaces/User";
+import { getOwnVehicles } from "../../../services/vehicleService";
 
 interface Route {
     plz: string;
@@ -13,29 +17,38 @@ interface Route {
 
 interface CreateTripModalComponent extends ModalProps {
     onHide: () => void;
+    userData: User | null;
 }
 
-const vehicleList = [
-    "PKW1",
-    "PKW2",
-    "PKW3"
-];
 
 const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: CreateTripModalComponent) => {
     const [plzValue, setPlzValue] = useState<string>('');
     const [locationValue, setLocationValue] = useState<string>('');
     const [routes, setRoutes] = useState<Route[]>([]);
-    const [selectedVehicle, setSelectedVehicle] = useState<string>('');
+    const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>();
     const [descriptionValue, setDescription] = useState<string>('');
     const [dateValue, setDateValue] = useState<string>('');
     const [seatNumberValue, setSeatNumberValue] = useState<number>(0);
-
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const {isAuthenticated} = useAuth();
     useEffect(() => {
         if (!props.show) {
             setRoutes([]);
         }
-    }, [props.show]);
-
+        if (isAuthenticated && props.userData) {
+            fetchVehicle();
+        }
+    }, [isAuthenticated && props.show && props.userData]);
+    const fetchVehicle = async () => {
+        try {
+            const data = await getOwnVehicles();
+            if (data !== null) {
+                setVehicles(data as any);
+            }
+        } catch (error) {
+            console.error("Error fetching vehicle data", error);
+        }
+    };
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         event.stopPropagation();
@@ -48,7 +61,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                 },
                 body: JSON.stringify({
                     route: routes,
-                    vehicle: selectedVehicle,
+                    vehicleId: selectedVehicle?.id,
                     description: descriptionValue,
                     startDate: dateValue,
                     bookedSeats: seatNumberValue,
@@ -158,12 +171,12 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                         <Form.Group as={Col} className="mb-3" controlId="vehicle">
                         <Form.Select
                             required
-                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedVehicle(e.target.value)}
-                            value={selectedVehicle}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedVehicle(vehicles.filter((vehicle: { name: string; }) => vehicle.name === e.target.value)[0])}
+                            value={selectedVehicle?.name}
                         >
-                            <option value="">Fahrzeugtyp</option>
-                            {vehicleList.map((type, index) => (
-                                <option key={index} value={type}>{type}</option>
+                            <option value="">Fahrzeug</option>
+                            {vehicles.map((vehicle) => (
+                                <option key={vehicle.id} value={vehicle.name}>{vehicle.name}</option>
                             ))}
                         </Form.Select>
                         </Form.Group>

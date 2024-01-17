@@ -10,6 +10,7 @@ import { User } from './User';
 import { TransitRequest } from './TransitRequest';
 import { RoutePart } from './RoutePart';
 import { Rating } from './Rating';
+import { Vehicle } from './Vehicle';
 
 @Entity()
 export class Offer {
@@ -31,9 +32,9 @@ export class Offer {
   @ManyToMany(() => User, (user) => user.trips, { eager: true })
   clients: User[];
 
-  //TODO
-  @Column()
-  vehicle: string;
+ 
+  @ManyToOne(()=> Vehicle)
+  vehicle: Vehicle;
 
   @Column({ default: 0 })
   bookedSeats: number;
