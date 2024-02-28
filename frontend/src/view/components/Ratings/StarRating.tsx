@@ -8,7 +8,7 @@ interface StarRatingProps {
     disabled?: boolean;
 }
 
-function StarRating(props: StarRatingProps) {
+export function StarRating(props: StarRatingProps) {
     const [rating, setRating] = useState<number>(props.initialValue);
     const [hover, setHover] = useState<number | null>(null);
 
