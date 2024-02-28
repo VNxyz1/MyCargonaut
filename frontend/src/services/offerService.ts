@@ -1,4 +1,4 @@
-import {Offer} from "../interfaces/Offer.ts";
+import {Offer, OfferList} from "../interfaces/Offer.ts";
 import { TransitRequest } from "../interfaces/TransitRequest.ts";
 
 export const getOfferById = async (id: number) => {
@@ -6,6 +6,20 @@ export const getOfferById = async (id: number) => {
         const res = await fetch(`/offer/one/${id}`);
         if(res.ok){
             const data: Offer = await res.json();
+            return data;
+        }
+        const data = await res.json();
+        console.error(data);
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const getOwnOffers = async () => {
+    try {
+        const res = await fetch(`/offer/own`);
+        if(res.ok){
+            const data: OfferList = await res.json();
             return data;
         }
         const data = await res.json();

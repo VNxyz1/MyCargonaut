@@ -26,3 +26,7 @@ export interface Offer {
 
     transitRequests: TransitRequest[] | undefined;
 }
+
+export interface OfferList{
+    offerList: Offer[];
+}
