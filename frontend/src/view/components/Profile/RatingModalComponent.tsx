@@ -28,6 +28,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             //setValidated(false);
 
             setSelectedOffer(null);
+            setSelectedClient(null);
         }
     }, [props.show]);
     
@@ -51,8 +52,8 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
 
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
-        //event.preventDefault();
-        //event.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
 
         setValidated(true);
         if (form.checkValidity()) {
@@ -61,10 +62,10 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             if(selectedOffer.provider.id === 0){
             const formData: JustDriverRating = {
                 rateeId: selectedOffer.provider.id,
-                punctuality: Number(form.elements["punctuality"].value),
-                reliability: Number(form.elements["reliability"].value),
-                cargoArrivedUndamaged: Number(form.elements["cargoArriveUndamaged"].value),
-                passengerPleasantness: form.elements["passengerPleasentness"].value
+                punctuality: Number(form.elements["punctuality"]),
+                reliability: Number(form.elements["reliability"]),
+                cargoArrivedUndamaged: Number(form.elements["cargoArriveUndamaged"]),
+                passengerPleasantness: Number(form.elements["passengerPleasentness"])
             };
         
             ratingDriver(selectedOffer.id, formData)
@@ -77,9 +78,9 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         if(selectedOffer.provider.id === 1){
             const formData: JustPassengerRating = {
                 rateeId: selectedOffer.provider.id,
-                punctuality: Number(form.elements["punctuality"].value),
-                reliability: Number(form.elements["reliability"].value),
-                comfortDuringTrip: Number(form.elements["comfortDuringTrip"].value)
+                punctuality: Number(form.elements["punctuality"]),
+                reliability: Number(form.elements["reliability"]),
+                comfortDuringTrip: Number(form.elements["comfortDuringTrip"])
             };
         
             ratingPassenger(selectedOffer.id, formData)
