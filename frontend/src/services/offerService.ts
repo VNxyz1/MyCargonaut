@@ -29,6 +29,21 @@ export const getOwnOffers = async () => {
     }
 }
 
+export const getAllOffers = async () => {
+    try {
+        const res = await fetch(`/offer`);
+        if(res.ok){
+            const data: OfferList = await res.json();
+            return data;
+        }
+        const data = await res.json();
+        console.error(data);
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+
 export const updateTransitRequest = async (id: number, data: any) => {
     try {
         const response = await fetch(`//transit-request/update-params/${id}`, {

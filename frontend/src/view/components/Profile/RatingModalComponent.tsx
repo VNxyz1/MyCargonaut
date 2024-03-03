@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import { getOwnOffers } from "../../../services/offerService.ts";
+import { getOwnOffers , getAllOffers } from "../../../services/offerService.ts";
 import { Offer, OfferList } from "../../../interfaces/Offer.ts";
 //import { UserLight} from "../../../interfaces/UserLight.ts";
 import {ratingDriver, ratingPassenger } from "../../../services/ratingService.tsx";
@@ -19,6 +19,7 @@ interface RatingModalProps extends ModalProps {
 const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProps) => {
     const [validated, setValidated] = useState<boolean>(false);
     const [offers, setOffers] = useState<OfferList>();
+    const [allOffers, setAllOffers] = useState<OfferList>();
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
     //const [selectedOfferDriver, setSelectedOfferDriver] = useState<Offer | null>(null);
     const [selectedClient, setSelectedClient] = useState<number | null>(null); // Zustand für ausgewählten Clienten
@@ -34,6 +35,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
     
     useEffect(() => {
         const fetchData = async () => {
+
             const offersData = await getOwnOffers();
             const offersList: Offer[] = [];
             if (offersData) {
@@ -42,10 +44,29 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         offersList.push(offer);
                     }
                 });
+                console.log("Die erste Liste: " + offersList);
                 setOffers({offerList: offersList});
             }
         };
+        fetchData();
+    }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const offersData = await getAllOffers();
+            const offersList: Offer[] = [];
+            if (offersData) {
+                offersData.offerList.forEach((offer) => {
+                    // ToDo: eigene Id
+                    if(offer.clients.filter(values => values.id === 2))
+                    if(new Date(offer.startDate) < new Date()){
+                        offersList.push(offer);
+                    }
+                });
+                console.log("Die zweite Liste: " + offersList);
+                setAllOffers({offerList: offersList});
+            }
+        };
         fetchData();
     }, []);
 
@@ -97,9 +118,15 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
 
     const handleOfferChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOfferId = parseInt(event.target.value);
-        const selectedOffer = offers?.offerList.find(offer => offer.id === selectedOfferId) || null;
-        setSelectedOffer(selectedOffer);
+        const selectedOffers = offers?.offerList.find(offer => offer.id === selectedOfferId) || null;
+        const selectedAllOffers = allOffers?.offerList.find(offer => offer.id === selectedOfferId) || null;
+        console.log("Die Listen: " + selectedOffers);
+        console.log("Die anderen Listen: " + selectedAllOffers);
+        if (selectedOffers){setSelectedOffer(selectedOffers); console.log("Bei 1")}
+        if (selectedAllOffers) {setSelectedOffer(selectedAllOffers); console.log("Bei 2")}
         setSelectedClient(null);
+        console.log("Hier ist der Offer: " + selectedOffer?.id)
+        console.log("Hier ist die Person: " + selectedOffer?.provider.firstName)
     };
 
     const handleClientChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -135,23 +162,45 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                                         </option>
                                     );
                                 })}
+                                {allOffers && allOffers.offerList.map((offer, index) => {
+                                    const routeText = offer.route.map(routePart => routePart.plz.location).join(" -> ");
+                                    return (
+                                        <option key={index} value={offer.id}>
+                                            {routeText} 
+                                        </option>
+                                    );
+                                })}
                             </Form.Select>
                         </Form.Group>
                     </Row>
-                    <Row>
-                    {selectedOffer && selectedOffer.clients.length > 0 && (
-                            <Form.Group as={Col} className="mb-3" controlId="users">
+                    
+                    {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.provider.id === 0 &&(
+                        <Row>
+                            <Form.Group as={Col} className="mb-3" controlId="driver">
                                 <Form.Select required onChange={handleClientChange}>
-                                    <option value="">Person auswählen</option>
+                                    <option value="">Person auswählen1</option>
                                     {selectedOffer.clients.map((client, index) => (
                                         <option key={index} value={client.id}>
-                                            {`${client.firstName} ${client.lastName}`}
+                                            Testy{`${client.firstName} ${client.lastName}`}
                                         </option>
                                     ))}
                                 </Form.Select>
                             </Form.Group>
+                            </Row>
+                        )}                    
+                        
+                        {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.clients.find(client => client.id === 2) && (
+                            <Row>
+                                <Form.Group as={Col} className="mb-3" controlId="passenger">
+                                    <Form.Select required onChange={handleClientChange}>
+                                        <option value="">Person auswählen2</option>
+                                        <option value={`${selectedOffer.provider.id}`}>{`${selectedOffer.provider.firstName} ${selectedOffer.provider.lastName}`}</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Row>
                         )}
-                    </Row>
+
+                    
                     {selectedClient && (
                         <Row>
                             <div>
