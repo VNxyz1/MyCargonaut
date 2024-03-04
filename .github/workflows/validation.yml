@@ -1,9 +1,4 @@
-name: testing & linting
-
-on:
-  push:
-    branches:
-      - main
+name: validation
 
 jobs:
   test-and-lint-nestJs:
