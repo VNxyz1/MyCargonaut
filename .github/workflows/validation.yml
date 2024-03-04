@@ -1,5 +1,11 @@
 name: validation
 
+on:
+  push:
+    branches:
+      - main
+
+
 jobs:
   test-and-lint-nestJs:
     name: test the the backend with jest-ts
