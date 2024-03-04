@@ -15,7 +15,7 @@ export const convertOfferToGetOfferDto = (offer: Offer) => {
   getOfferResponseDto.clients = offer.clients.map((client) =>
     convertUserToOtherUser(client),
   );
-  getOfferResponseDto.vehicle = convertVehicleToCreateVehicleDto(offer.vehicle);
+  if(offer.vehicle)getOfferResponseDto.vehicle = convertVehicleToCreateVehicleDto(offer.vehicle);
   getOfferResponseDto.bookedSeats = offer.bookedSeats;
   getOfferResponseDto.state = offer.state;
   getOfferResponseDto.description = offer.description;
