@@ -12,6 +12,11 @@ services:
       MYSQL_USER_FILE: /run/secrets/user
       MYSQL_PASSWORD_FILE: /run/secrets/pass
       MYSQL_DATABASE: webappdb
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
     secrets:
       - rootUser
       - rootPass
@@ -19,8 +24,6 @@ services:
       - pass
     volumes:
       - db_data:/var/lib/mysql:Z
-    ports:
-      - "3306:3306"
     networks:
       - intern
 
@@ -40,7 +43,8 @@ services:
     build:
       context: ./
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DB_HOST: db
       DB_PORT: 3306
