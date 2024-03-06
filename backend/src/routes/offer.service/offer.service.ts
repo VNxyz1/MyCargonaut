@@ -114,6 +114,19 @@ export class OfferService {
     });
   }
 
+  async getOffersOfUserAsPassenger(userId: number) {
+    return await this.offerRepository.find({
+      where: { clients: { id: userId } },
+      relations: [
+        'provider',
+        'route.plz',
+        'clients',
+        'transitRequests',
+        'vehicle',
+      ],
+    });
+  }
+
   async getOffer(id: number) {
     const offer = await this.offerRepository.findOne({
       where: { id: id },

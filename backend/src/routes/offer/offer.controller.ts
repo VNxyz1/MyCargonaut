@@ -88,6 +88,23 @@ export class OfferController {
     return offerListDto;
   }
 
+  @Get('own/passenger')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({ summary: 'gets offers of logged in user as passenger' })
+  @ApiResponse({ type: GetAllOffersResponseDto })
+  async getOffersOfLoggedInUserAsPassenger(@Session() session: ISession) {
+    const userId = session.userData.id;
+    const offerList = await this.offerService.getOffersOfUserAsPassenger(userId);
+    const offerListDto = new GetAllOffersResponseDto();
+    offerListDto.offerList = [];
+    for (const offer of offerList) {
+      const convertOffer = convertOfferToGetOfferDto(offer);
+      offerListDto.offerList.push(convertOffer);
+    }
+
+    return offerListDto;
+  }
+
   @Get('search')
   @ApiOperation({
     summary:
