@@ -1,0 +1,11 @@
+FROM node:21-alpine
+
+WORKDIR /app
+
+COPY *.json ./
+COPY ./src /app/src
+COPY ./test /app/test
+
+RUN npm install
+
+RUN npm run test
