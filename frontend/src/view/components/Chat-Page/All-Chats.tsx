@@ -1,22 +1,18 @@
-import { Conversation } from "../../../interfaces/Message.ts";
 import { ListGroup } from "react-bootstrap";
+import { chatStore } from './chats-zustand.ts';
 
-function AllChats (
-  props: {
-    chats: Conversation[]
-  }
-) {
+function AllChats() {
 
+  const {chats} = chatStore();
 
 
   return (
     <ListGroup style={{overflow: 'auto'}}>
-      {props.chats.map((c)=> (
+      {chats.map((c)=> (
         <ListGroup.Item>
           <h3>{c.conversationPartnerName}</h3>
         </ListGroup.Item>
       ))}
-
     </ListGroup>
   );
 }
