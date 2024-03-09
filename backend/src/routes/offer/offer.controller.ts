@@ -134,7 +134,8 @@ export class OfferController {
   })
   @ApiQuery({
     name: 'seats',
-    description: 'A number of seats to filter offers by.',
+    description:
+      'A number of seats to filter offers by. Returns offers with the requested number of available seats or more.',
     required: false,
   })
   @ApiQuery({

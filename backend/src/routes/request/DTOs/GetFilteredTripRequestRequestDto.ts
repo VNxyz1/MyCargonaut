@@ -27,7 +27,8 @@ export class GetFilteredTripRequestRequestDto {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    description: 'Filter trip requests by the number of requested seats.',
+    description:
+      'Filter trip requests by the number of requested seats. Returns trip requests with the requested number of seats or less.',
   })
   seats?: string;
 
