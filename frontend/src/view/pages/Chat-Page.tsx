@@ -8,12 +8,13 @@ import AllChats from '../components/Chat-Page/All-Chats.tsx';
 
 function ChatPage() {
 
-  const {setChats} = chatStore();
+  const {setChats, sortByDateDesc} = chatStore();
 
   const getChats = async () => {
     const chats = await getAllMessages();
     if (chats) {
       setChats(chats);
+      sortByDateDesc();
     }
   };
 
