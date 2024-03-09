@@ -198,7 +198,14 @@ describe('RequestController', () => {
       const query = new GetFilteredTripRequestRequestDto();
       query.seats = '6';
       const filteredRequests = await requestController.getFilter(query);
-      expect(filteredRequests.tripRequests.length).toBe(0); // No trip request has 6 seats
+      expect(filteredRequests.tripRequests.length).toBe(1);
+    });
+
+    it('should get filtered trip requests by seats. There are no trip requests with 1 or less seats.', async () => {
+      const query = new GetFilteredTripRequestRequestDto();
+      query.seats = '1';
+      const filteredRequests = await requestController.getFilter(query);
+      expect(filteredRequests.tripRequests.length).toBe(0);
     });
 
     it('should get filtered trip requests by fromPLZ', async () => {

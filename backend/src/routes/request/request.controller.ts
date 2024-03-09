@@ -348,7 +348,7 @@ export class RequestController {
     return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
   }
 
-  async convertToOffer(
+  private async convertToOffer(
     tripRequest: TripRequest,
     provider: User,
     client: User,
@@ -386,13 +386,13 @@ export class RequestController {
     }
   }
 
-  convertToGetOfferingDtoArr(offerings: TripRequestOffering[]): GetOfferingDto[] {
+  private convertToGetOfferingDtoArr(offerings: TripRequestOffering[]): GetOfferingDto[] {
     return offerings.map((o) => {
       return this.convertToGetOfferingDto(o);
     });
   }
 
-  convertToGetOfferingDto(offering: TripRequestOffering): GetOfferingDto {
+  private convertToGetOfferingDto(offering: TripRequestOffering): GetOfferingDto {
     const dto = new GetOfferingDto();
     dto.id = offering.id;
     dto.offeringUser = convertUserToOtherUser(offering.offeringUser);
@@ -403,13 +403,17 @@ export class RequestController {
     return dto;
   }
 
-  loggedInUserIsRequester(userId: number, tripRequest: TripRequest) {
+  private loggedInUserIsRequester(userId: number, tripRequest: TripRequest) {
     if (userId !== tripRequest.requester.id) {
       throw new ForbiddenException('You are not the requester of this trip request.');
     }
   }
 
-  async createTripRequest(dto: PostTripRequestRequestDto, user: User, cargoImg?: Express.Multer.File) {
+  private async createTripRequest(
+    dto: PostTripRequestRequestDto,
+    user: User,
+    cargoImg?: Express.Multer.File,
+  ) {
     const tR = new TripRequest();
 
     if (cargoImg) {
@@ -429,7 +433,7 @@ export class RequestController {
     return tR;
   }
 
-  async updateTripRequest(tR: TripRequest, updateData: UpdateTripRequestRequestDto) {
+  private async updateTripRequest(tR: TripRequest, updateData: UpdateTripRequestRequestDto) {
     if (updateData.description) {
       tR.description = updateData.description;
     }
@@ -453,7 +457,7 @@ export class RequestController {
     return tR;
   }
 
-  deletePicture(imageName: string) {
+  private deletePicture(imageName: string) {
     const oldImagePath = join(process.cwd(), 'uploads', 'cargo-images', imageName);
     if (!existsSync(oldImagePath)) {
       throw new NotFoundException('The picture to delete could not be found.');
@@ -462,11 +466,11 @@ export class RequestController {
     unlinkSync(oldImagePath);
   }
 
-  filterRequestsBySeats(seats: number, tripRequests: TripRequest[]): TripRequest[] {
-    return tripRequests.filter((tR) => tR.seats === seats);
+  private filterRequestsBySeats(seats: number, tripRequests: TripRequest[]): TripRequest[] {
+    return tripRequests.filter((tR) => tR.seats <= seats);
   }
 
-  filterAndSortByDate(date: Date, tripRequests: TripRequest[]) {
+  private filterAndSortByDate(date: Date, tripRequests: TripRequest[]) {
     const filteredRequests = tripRequests.filter((tR) => {
       return tR.startDate >= date;
     });
@@ -480,20 +484,20 @@ export class RequestController {
     return filteredRequests;
   }
 
-  filterStartByPlz(startPlz: string, tripRequests: TripRequest[]) {
+  private filterStartByPlz(startPlz: string, tripRequests: TripRequest[]) {
     return tripRequests.filter((tR) => tR.startPlz.plz === startPlz);
   }
 
-  filterEndByPlz(endPlz: string, tripRequests: TripRequest[]) {
+  private filterEndByPlz(endPlz: string, tripRequests: TripRequest[]) {
     return tripRequests.filter((tR) => tR.endPlz.plz === endPlz);
   }
 
-  filterStartToEndPlz(fromPlz: string, toPlz: string, tripRequests: TripRequest[]): TripRequest[] {
+  private filterStartToEndPlz(fromPlz: string, toPlz: string, tripRequests: TripRequest[]): TripRequest[] {
     return tripRequests.filter((tR) => {
       return tR.endPlz.plz === toPlz && tR.startPlz.plz === fromPlz;
     });
   }
-  async filterByRating(rating: number, tripRequests: TripRequest[]) {
+  private async filterByRating(rating: number, tripRequests: TripRequest[]) {
     const cache = new Map<number, number>();
     const filteredTripeRequests: TripRequest[] = [];
 
