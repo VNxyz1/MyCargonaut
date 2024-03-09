@@ -28,7 +28,7 @@ function sortByDateDesc(chats: Conversation[]): Conversation[] {
     const newestMessageB = findNewestMessage(b.messages);
     const dateA = new Date(newestMessageA.timestamp);
     const dateB = new Date(newestMessageB.timestamp);
-    return dateA.getTime() - dateB.getTime();
+    return dateB.getTime() - dateA.getTime();
   });
 }
 

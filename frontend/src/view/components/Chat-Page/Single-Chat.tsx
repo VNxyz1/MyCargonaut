@@ -5,9 +5,21 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane'
+import { useState } from 'react';
+import { postMessage } from '../../../services/messageService.ts';
 
 function SingleChat () {
   const {selectedChat} = chatStore();
+
+  const [messageToSend, setMessageToSend] = useState<string>("");
+
+  const submitMessage = async () => {
+    const sent = await postMessage(selectedChat.conversationPartnerId, messageToSend);
+    if (sent) {
+      setMessageToSend("");
+    }
+    return;
+  }
 
   return (
     <Container>
@@ -19,10 +31,13 @@ function SingleChat () {
         ))}
       </Row>
       <Row>
-        <Form className='w-100'>
+        <Form onSubmit={submitMessage} className='w-100'>
           <Row>
             <Col>
-              <Form.Control className='w-100' type="text" placeholder="Nachricht..."/>
+              <Form.Control
+                onChange={(e) => setMessageToSend(e.target.value)}
+                value={messageToSend}
+                className='w-100' type="text" placeholder="Nachricht..."/>
             </Col>
             <Col sm='auto'>
               <Button className="mainButton w-100">

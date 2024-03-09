@@ -25,7 +25,8 @@ export const getUnreadMessages = async () => {
   }
 }
 
-export const postMessage = async (data: PostMessageData) => {
+export const postMessage = async (receiverId: number, message: string) => {
+  const data: PostMessageData = {receiverId: receiverId, message: message, timestamp: new Date().toISOString()}
   try {
     const res = await fetch('/message', {
       method: "POST",
@@ -40,16 +41,8 @@ export const postMessage = async (data: PostMessageData) => {
   }
 }
 
-class PostMessageData {
-  // @ts-ignore
+interface PostMessageData {
   receiverId: number;
-  // @ts-ignore
   message: string;
-  // @ts-ignore
-  private timestamp: string;
-
-  constructor() {
-    this.timestamp = new Date().toISOString()
-  }
-
+  timestamp: string;
 }
