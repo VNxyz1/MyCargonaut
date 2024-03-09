@@ -29,6 +29,20 @@ export const getOwnOffers = async () => {
     }
 }
 
+export const getPassengerOffers = async () => {
+    try {
+        const res = await fetch(`/offer/own/passenger`);
+        if(res.ok){
+            const data: OfferList = await res.json();
+            return data;
+        }
+        const data = await res.json();
+        console.error(data);
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 export const getAllOffers = async () => {
     try {
         const res = await fetch(`/offer`);

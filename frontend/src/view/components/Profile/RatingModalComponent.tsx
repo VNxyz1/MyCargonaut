@@ -4,13 +4,12 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import { getOwnOffers , getAllOffers } from "../../../services/offerService.ts";
+import { getOwnOffers , getPassengerOffers } from "../../../services/offerService.tsx";
 import { Offer, OfferList } from "../../../interfaces/Offer.ts";
-//import { UserLight} from "../../../interfaces/UserLight.ts";
 import {ratingDriver, ratingPassenger } from "../../../services/ratingService.tsx";
-//import {CreateVehicleData, VehicleTypes} from "../../../interfaces/Vehicle.ts";
 import { JustDriverRating , JustPassengerRating} from "../../../interfaces/Rating.ts";
 import { StarRating } from "../Ratings/StarRating.tsx";
+import { getLoggedInUser } from "../../../services/userService.tsx";
 
 interface RatingModalProps extends ModalProps {
     onHide: () => void;
@@ -19,10 +18,11 @@ interface RatingModalProps extends ModalProps {
 const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProps) => {
     const [validated, setValidated] = useState<boolean>(false);
     const [offers, setOffers] = useState<OfferList>();
-    const [allOffers, setAllOffers] = useState<OfferList>();
+    const [userId, setUserId] = useState<number | null>(null);
+    const [passengerOffers, setPassengerOffers] = useState<OfferList>();
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
-    //const [selectedOfferDriver, setSelectedOfferDriver] = useState<Offer | null>(null);
-    const [selectedClient, setSelectedClient] = useState<number | null>(null); // Zustand für ausgewählten Clienten
+    const [selectedClient, setSelectedClient] = useState<number | null>(null);
+    const [switched, setSwitched] = useState<boolean>(false);
     
     useEffect(() => {
         if (!props.show) {
@@ -32,6 +32,21 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             setSelectedClient(null);
         }
     }, [props.show]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const userData = await getLoggedInUser();
+            console.log("Der User " + userData);
+            if (userData && userData.id) {
+                setUserId(userData.id);
+                console.log("Die UserID: " + userData.id);
+            }
+            console.log("Die UserID: ANSCHEINEND LEER");
+            
+        };
+        fetchData();
+    }, []);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -53,23 +68,21 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
 
     useEffect(() => {
         const fetchData = async () => {
-            const offersData = await getAllOffers();
+
+            const offersData = await getPassengerOffers();
             const offersList: Offer[] = [];
             if (offersData) {
                 offersData.offerList.forEach((offer) => {
-                    // ToDo: eigene Id
-                    if(offer.clients.filter(values => values.id === 2))
                     if(new Date(offer.startDate) < new Date()){
                         offersList.push(offer);
                     }
                 });
-                console.log("Die zweite Liste: " + offersList);
-                setAllOffers({offerList: offersList});
+                console.log("Die erste Liste: " + offersList);
+                setPassengerOffers({offerList: offersList});
             }
         };
         fetchData();
     }, []);
-
 
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
@@ -79,8 +92,8 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         setValidated(true);
         if (form.checkValidity()) {
             if(selectedOffer){
-                //ToDO: eigene Id!
-            if(selectedOffer.provider.id === 0){
+                if(selectedOffer.provider.id !== userId){
+                console.log("Driver wird bewertet!!!");
             const formData: JustDriverRating = {
                 rateeId: selectedOffer.provider.id,
                 punctuality: Number(form.elements["punctuality"]),
@@ -95,9 +108,10 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                     {console.error("Error rating driver:", error);
                 });
             }
-                //ToDO: eigene Id!
-        if(selectedOffer.provider.id === 1){
+        if(selectedOffer.provider.id === userId){
+            console.log("Passenger werden bewertet!!!");
             const formData: JustPassengerRating = {
+                //ToDo: PassengerId verwenden
                 rateeId: selectedOffer.provider.id,
                 punctuality: Number(form.elements["punctuality"]),
                 reliability: Number(form.elements["reliability"]),
@@ -119,14 +133,15 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
     const handleOfferChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOfferId = parseInt(event.target.value);
         const selectedOffers = offers?.offerList.find(offer => offer.id === selectedOfferId) || null;
-        const selectedAllOffers = allOffers?.offerList.find(offer => offer.id === selectedOfferId) || null;
+        const selectedPassengerOffers = passengerOffers?.offerList.find(offer => offer.id === selectedOfferId) || null;
         console.log("Die Listen: " + selectedOffers);
-        console.log("Die anderen Listen: " + selectedAllOffers);
-        if (selectedOffers){setSelectedOffer(selectedOffers); console.log("Bei 1")}
-        if (selectedAllOffers) {setSelectedOffer(selectedAllOffers); console.log("Bei 2")}
+        console.log("Die anderen Listen: " + selectedPassengerOffers);
+        if (selectedOffers){setSelectedOffer(selectedOffers); setSwitched(false);console.log("Bei 1")}
+        if (selectedPassengerOffers){setSelectedOffer(selectedPassengerOffers); setSwitched(true); console.log("Bei 2")}
         setSelectedClient(null);
         console.log("Hier ist der Offer: " + selectedOffer?.id)
         console.log("Hier ist die Person: " + selectedOffer?.provider.firstName)
+        console.log("Die UserID: " + userId);
     };
 
     const handleClientChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -162,7 +177,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                                         </option>
                                     );
                                 })}
-                                {allOffers && allOffers.offerList.map((offer, index) => {
+                                {passengerOffers && passengerOffers.offerList.map((offer, index) => {
                                     const routeText = offer.route.map(routePart => routePart.plz.location).join(" -> ");
                                     return (
                                         <option key={index} value={offer.id}>
@@ -174,7 +189,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         </Form.Group>
                     </Row>
                     
-                    {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.provider.id === 0 &&(
+                    {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.provider.id === userId &&(
                         <Row>
                             <Form.Group as={Col} className="mb-3" controlId="driver">
                                 <Form.Select required onChange={handleClientChange}>
@@ -189,7 +204,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                             </Row>
                         )}                    
                         
-                        {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.clients.find(client => client.id === 2) && (
+                        {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.clients.find(client => client.id === userId) && (
                             <Row>
                                 <Form.Group as={Col} className="mb-3" controlId="passenger">
                                     <Form.Select required onChange={handleClientChange}>
@@ -219,7 +234,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                             </div>
                         </Row>
                     )}
-                    {selectedClient && selectedClient !== 1 && (
+                    {selectedClient && !switched && (
                         <Row>
                                 <Row>
                                     <Form.Group as={Col} className="mb-3" controlId="comfortDuringTrip">
@@ -230,7 +245,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                                                     
                         </Row>
                     )}
-                    {selectedClient && selectedClient === 0 && (
+                    {selectedClient && switched && (
                         <Row>
                                 <Row>
                                     <Form.Group as={Col} className="mb-3" controlId="cargoArrivedUndamaged">
