@@ -4,6 +4,7 @@ import { getAllMessages } from '../../services/messageService.ts';
 import { useEffect } from 'react';
 import { chatStore } from '../components/Chat-Page/chats-zustand.ts';
 import AllChats from '../components/Chat-Page/All-Chats.tsx';
+import SingleChat from '../components/Chat-Page/Single-Chat.tsx';
 
 
 function ChatPage() {
@@ -27,11 +28,12 @@ function ChatPage() {
 
   return (
     <Container fluid="md" style={{ minHeight: '70vh' }}>
-      <Row className="d-flex justify-content-center mb-4">
+      <Row className="d-flex justify-content-center my-4">
         <Col md={3} className="d-flex justify-content-center justify-content-xl-end">
           <AllChats/>
         </Col>
         <Col md={8} className="d-flex justify-content-center justify-content-xl-start">
+          <SingleChat/>
         </Col>
       </Row>
       <Row className="mb-4">

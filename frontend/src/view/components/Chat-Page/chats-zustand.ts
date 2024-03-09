@@ -5,7 +5,7 @@ type Store = {
   chats: Conversation[]
   selectedChat: Conversation
   setChats: (conversations: Conversation[]) => void
-  setSelectedChatId: (id: number) => void
+  setSelectedChat: (id: number) => void
   sortByDateDesc: () => void
 }
 
@@ -18,7 +18,7 @@ export const chatStore = create<Store>()((set) => ({
     messages: [],
   },
   setChats: (conversations) => set(() => ({ chats: conversations })),
-  setSelectedChatId: (id) => set((state) => ({ selectedChat: findConversation(id, state.chats) })),
+  setSelectedChat: (id) => set((state) => ({ selectedChat: findConversation(id, state.chats) })),
   sortByDateDesc: () => set((store) => ({ chats: sortByDateDesc(store.chats) })),
 }));
 
