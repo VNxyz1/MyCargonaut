@@ -299,7 +299,8 @@ export class OfferController {
 
   filterOffersBySeats(seats: number, offers: Offer[]): Offer[] {
     return offers.filter((o) => {
-      return o.bookedSeats /* TODO: muss mit den sitzen des fahrzeugs verrechnet werden */ === seats;
+      const availableSeats = o.vehicle.seats - o.bookedSeats;
+      return availableSeats >= seats;
     });
   }
 

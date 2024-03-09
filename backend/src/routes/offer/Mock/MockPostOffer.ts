@@ -41,6 +41,7 @@ export class MockPostOffer {
         },
       ];
       this.startDate = '2024-02-17';
+      this.bookedSeats = 3;
     }
     this.vehicleId = vehicleId;
   }

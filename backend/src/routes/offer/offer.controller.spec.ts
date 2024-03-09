@@ -22,6 +22,7 @@ import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
+import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 
 describe('OfferController', () => {
   let offerController: OfferController;
@@ -323,6 +324,53 @@ describe('OfferController', () => {
         undefined,
         undefined,
         5,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+    it('should return offers, with 1 or more available seats.', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        1,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(4);
+    });
+
+    it('should return offers, with 2 or more available seats.', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        2,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(3);
+    });
+
+    it('should return offers, with 3 or more available seats', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        3,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(3);
+    });
+
+    it('should return offers, with 4 or more available seats (none existing)', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        4,
       );
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
