@@ -30,10 +30,7 @@ import { User } from '../../database/User';
 import { UserService } from '../user.service/user.service';
 import { GetAllTripRequestResponseDto } from './DTOs/GetAllTripRequestResponseDto';
 import { GetTripRequestResponseDto } from './DTOs/GetTripRequestResponseDto';
-import {
-  convertTripRequestToGetDto,
-  convertUserToOtherUser,
-} from '../utils/convertToOfferDto';
+import { convertTripRequestToGetDto, convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { UpdateTripRequestRequestDto } from './DTOs/UpdateTripRequestRequestDto';
 import { existsSync, unlinkSync } from 'fs';
 import { fileInterceptor } from './requesterFileInterceptor';
@@ -50,6 +47,7 @@ import { TripState } from '../../database/TripState';
 import { createRoutePart } from '../utils/createRoutePart';
 import { OfferService } from '../offer.service/offer.service';
 import { VehicleService } from '../vehicle.service/vehicle.service';
+import { RatingService } from '../rating.service/rating.service';
 
 @ApiTags('request')
 @Controller('request')
@@ -61,6 +59,7 @@ export class RequestController {
     private readonly offeringService: RequestOfferingService,
     private readonly offerService: OfferService,
     private readonly vehicleService: VehicleService,
+    private readonly ratingService: RatingService,
   ) {}
 
   @Post()
@@ -114,9 +113,7 @@ export class RequestController {
     let tRArr: TripRequest[];
 
     if (query.searchString) {
-      tRArr = await this.requestService.getFilteredBySearchstring(
-        query.searchString,
-      );
+      tRArr = await this.requestService.getFilteredBySearchstring(query.searchString);
     } else {
       tRArr = await this.requestService.getAll();
     }
@@ -143,7 +140,9 @@ export class RequestController {
       tRArr = this.filterStartToEndPlz(query.fromPLZ, query.toPLZ, tRArr);
     }
 
-    /* TODO: filterByRating */
+    if (query.rating) {
+      tRArr = await this.filterByRating(query.rating, tRArr);
+    }
 
     const dto = new GetAllTripRequestResponseDto();
     dto.tripRequests = tRArr.map((tR) => {
@@ -155,14 +154,10 @@ export class RequestController {
   @Delete(':id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary:
-      'deletes the trip request by id. Only if the requester is the logged in user.',
+    summary: 'deletes the trip request by id. Only if the requester is the logged in user.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async delete(
-    @Param('id', ParseIntPipe) tripRequestId: number,
-    @Session() session: ISession,
-  ) {
+  async delete(@Param('id', ParseIntPipe) tripRequestId: number, @Session() session: ISession) {
     const userId: number = session.userData.id;
     const tR = await this.requestService.getById(tripRequestId);
 
@@ -177,8 +172,7 @@ export class RequestController {
   @UseGuards(IsLoggedInGuard)
   @UseInterceptors(fileInterceptor())
   @ApiOperation({
-    description:
-      'Updates the params of a transit request. Logged in user must be the requester.',
+    description: 'Updates the params of a transit request. Logged in user must be the requester.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async updateParams(
@@ -210,17 +204,9 @@ export class RequestController {
     description: 'The retrieved cargo image',
     type: 'image/png',
   })
-  async findCargoImage(
-    @Param('imagename') imagename: string,
-    @Res() res: Response,
-  ) {
+  async findCargoImage(@Param('imagename') imagename: string, @Res() res: Response) {
     try {
-      const imagePath = join(
-        process.cwd(),
-        'uploads',
-        'cargo-images',
-        imagename,
-      );
+      const imagePath = join(process.cwd(), 'uploads', 'cargo-images', imagename);
       res.sendFile(imagePath);
     } catch (error) {
       return new InternalServerErrorException('Image not found');
@@ -230,8 +216,7 @@ export class RequestController {
   @Post('offering/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    description:
-      'Send an offer to the requester of the request with the given ID.',
+    description: 'Send an offer to the requester of the request with the given ID.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async offerTransit(
@@ -246,20 +231,15 @@ export class RequestController {
     const tR = await this.requestService.getById(requestId);
 
     if (tR.requester.id === offeringUserId) {
-      throw new ForbiddenException(
-        'You are not allowed to make a offering to your own trip request!',
-      );
+      throw new ForbiddenException('You are not allowed to make a offering to your own trip request!');
     }
 
-    const check =
-      await this.requestService.userAlreadyPostedAOfferingToThisTripRequest(
-        offeringUserId,
-        requestId,
-      );
+    const check = await this.requestService.userAlreadyPostedAOfferingToThisTripRequest(
+      offeringUserId,
+      requestId,
+    );
     if (check) {
-      throw new ForbiddenException(
-        'You already sent a offering to this trip request!',
-      );
+      throw new ForbiddenException('You already sent a offering to this trip request!');
     }
 
     const offering = new TripRequestOffering();
@@ -281,8 +261,7 @@ export class RequestController {
   @ApiResponse({ type: [GetOfferingDto] })
   async getOfferingsAsOfferingUser(@Session() session: ISession) {
     const userId: number = session.userData.id;
-    const offerings =
-      await this.offeringService.getAllPendingOfOfferingUser(userId);
+    const offerings = await this.offeringService.getAllPendingOfOfferingUser(userId);
 
     return this.convertToGetOfferingDtoArr(offerings);
   }
@@ -290,14 +269,12 @@ export class RequestController {
   @Get('offerings/requesting-user')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    description:
-      'Gets all pending Offerings for which trip request you are the requester',
+    description: 'Gets all pending Offerings for which trip request you are the requester',
   })
   @ApiResponse({ type: [GetOfferingDto] })
   async getOfferingsAsRequestingUser(@Session() session: ISession) {
     const userId: number = session.userData.id;
-    const offerings =
-      await this.offeringService.getAllPendingOfRequestingUser(userId);
+    const offerings = await this.offeringService.getAllPendingOfRequestingUser(userId);
 
     return this.convertToGetOfferingDtoArr(offerings);
   }
@@ -309,37 +286,23 @@ export class RequestController {
       'Accepts a offering with the given id. And executes the payment action if the user has enough coins.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async acceptOffering(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) offeringId: number,
-  ) {
+  async acceptOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
     const userId: number = session.userData.id;
     const offering = await this.offeringService.getById(offeringId);
     if (offering.tripRequest.requester.id !== userId) {
-      throw new ForbiddenException(
-        'You are not allowed to accept this offering!',
-      );
+      throw new ForbiddenException('You are not allowed to accept this offering!');
     }
 
-    const coinbalanceOfRequester =
-      await this.userService.getCoinBalanceOfUser(userId);
+    const coinbalanceOfRequester = await this.userService.getCoinBalanceOfUser(userId);
     if (coinbalanceOfRequester < offering.requestedCoins) {
-      throw new ForbiddenException(
-        'The coin balance of the requesting user is not valid.',
-      );
+      throw new ForbiddenException('The coin balance of the requesting user is not valid.');
     }
 
     offering.accepted = true;
     await this.offeringService.save(offering);
 
-    await this.userService.decreaseCoinBalanceOfUser(
-      userId,
-      offering.requestedCoins,
-    );
-    await this.userService.increaseCoinBalanceOfUser(
-      offering.offeringUser.id,
-      offering.requestedCoins,
-    );
+    await this.userService.decreaseCoinBalanceOfUser(userId, offering.requestedCoins);
+    await this.userService.increaseCoinBalanceOfUser(offering.offeringUser.id, offering.requestedCoins);
 
     return new OKResponseWithMessageDTO(true, 'Offering was accepted.');
   }
@@ -347,8 +310,7 @@ export class RequestController {
   @Post('transform-to-offer/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    description:
-      'Transforms a TripRequest, with an accepted Offering to an Offer.',
+    description: 'Transforms a TripRequest, with an accepted Offering to an Offer.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async transformToOffer(
@@ -358,10 +320,7 @@ export class RequestController {
   ) {
     const userId: number = session.userData.id;
 
-    const tR = await this.requestService.getWhereOfferingFromUserIsAccepted(
-      userId,
-      requestId,
-    );
+    const tR = await this.requestService.getWhereOfferingFromUserIsAccepted(userId, requestId);
 
     const provider = await this.userService.getUserById(userId);
     const client = await this.userService.getUserById(tR.requester.id);
@@ -379,23 +338,17 @@ export class RequestController {
     description: 'Does not transform this TripRequest to an offer. Deletes it.',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async notTransform(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) requestId: number,
-  ) {
+  async notTransform(@Session() session: ISession, @Param('id', ParseIntPipe) requestId: number) {
     const userId: number = session.userData.id;
 
-    const tR = await this.requestService.getWhereOfferingFromUserIsAccepted(
-      userId,
-      requestId,
-    );
+    const tR = await this.requestService.getWhereOfferingFromUserIsAccepted(userId, requestId);
 
     await this.requestService.delete(tR);
 
     return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
   }
 
-  async convertToOffer(
+  private async convertToOffer(
     tripRequest: TripRequest,
     provider: User,
     client: User,
@@ -409,10 +362,7 @@ export class RequestController {
     offer.state = TripState.offer;
 
     offer.bookedSeats = tripRequest.seats + data.additionalSeats;
-    offer.vehicle = await this.vehicleService.getVehicle(
-      data.vehicleId,
-      provider.id,
-    );
+    offer.vehicle = await this.vehicleService.getVehicle(data.vehicleId, provider.id);
     offer.startDate = new Date(data.startDate);
     offer.description = data.description;
 
@@ -420,28 +370,15 @@ export class RequestController {
 
     if (data.route) {
       data.route.map(async (routePartDto) => {
-        const plz = await this.plzService.createPlz(
-          routePartDto.plz,
-          routePartDto.location,
-        );
-        const routePart = await createRoutePart(
-          offerDb,
-          plz,
-          routePartDto.position,
-        );
+        const plz = await this.plzService.createPlz(routePartDto.plz, routePartDto.location);
+        const routePart = await createRoutePart(offerDb, plz, routePartDto.position);
         await this.offerService.saveRoutePart(routePart);
       });
     }
 
     if (!data.route) {
-      const plz1 = await this.plzService.createPlz(
-        tripRequest.startPlz.plz,
-        tripRequest.startPlz.location,
-      );
-      const plz2 = await this.plzService.createPlz(
-        tripRequest.endPlz.plz,
-        tripRequest.endPlz.location,
-      );
+      const plz1 = await this.plzService.createPlz(tripRequest.startPlz.plz, tripRequest.startPlz.location);
+      const plz2 = await this.plzService.createPlz(tripRequest.endPlz.plz, tripRequest.endPlz.location);
       const routePart1 = await createRoutePart(offerDb, plz1, 1);
       const routePart2 = await createRoutePart(offerDb, plz2, 2);
       await this.offerService.saveRoutePart(routePart1);
@@ -449,15 +386,13 @@ export class RequestController {
     }
   }
 
-  convertToGetOfferingDtoArr(
-    offerings: TripRequestOffering[],
-  ): GetOfferingDto[] {
+  private convertToGetOfferingDtoArr(offerings: TripRequestOffering[]): GetOfferingDto[] {
     return offerings.map((o) => {
       return this.convertToGetOfferingDto(o);
     });
   }
 
-  convertToGetOfferingDto(offering: TripRequestOffering): GetOfferingDto {
+  private convertToGetOfferingDto(offering: TripRequestOffering): GetOfferingDto {
     const dto = new GetOfferingDto();
     dto.id = offering.id;
     dto.offeringUser = convertUserToOtherUser(offering.offeringUser);
@@ -468,15 +403,13 @@ export class RequestController {
     return dto;
   }
 
-  loggedInUserIsRequester(userId: number, tripRequest: TripRequest) {
+  private loggedInUserIsRequester(userId: number, tripRequest: TripRequest) {
     if (userId !== tripRequest.requester.id) {
-      throw new ForbiddenException(
-        'You are not the requester of this trip request.',
-      );
+      throw new ForbiddenException('You are not the requester of this trip request.');
     }
   }
 
-  async createTripRequest(
+  private async createTripRequest(
     dto: PostTripRequestRequestDto,
     user: User,
     cargoImg?: Express.Multer.File,
@@ -489,14 +422,8 @@ export class RequestController {
 
     tR.requester = user;
 
-    tR.startPlz = await this.plzService.createPlz(
-      dto.startPlz.plz,
-      dto.startPlz.location,
-    );
-    tR.endPlz = await this.plzService.createPlz(
-      dto.endPlz.plz,
-      dto.endPlz.location,
-    );
+    tR.startPlz = await this.plzService.createPlz(dto.startPlz.plz, dto.startPlz.location);
+    tR.endPlz = await this.plzService.createPlz(dto.endPlz.plz, dto.endPlz.location);
 
     tR.startDate = new Date(dto.startDate);
 
@@ -506,26 +433,17 @@ export class RequestController {
     return tR;
   }
 
-  async updateTripRequest(
-    tR: TripRequest,
-    updateData: UpdateTripRequestRequestDto,
-  ) {
+  private async updateTripRequest(tR: TripRequest, updateData: UpdateTripRequestRequestDto) {
     if (updateData.description) {
       tR.description = updateData.description;
     }
 
     if (updateData.startPlz) {
-      tR.startPlz = await this.plzService.createPlz(
-        updateData.startPlz.plz,
-        updateData.startPlz.location,
-      );
+      tR.startPlz = await this.plzService.createPlz(updateData.startPlz.plz, updateData.startPlz.location);
     }
 
     if (updateData.endPlz) {
-      tR.endPlz = await this.plzService.createPlz(
-        updateData.endPlz.plz,
-        updateData.endPlz.location,
-      );
+      tR.endPlz = await this.plzService.createPlz(updateData.endPlz.plz, updateData.endPlz.location);
     }
 
     if (updateData.cargoImgString) {
@@ -539,13 +457,8 @@ export class RequestController {
     return tR;
   }
 
-  deletePicture(imageName: string) {
-    const oldImagePath = join(
-      process.cwd(),
-      'uploads',
-      'cargo-images',
-      imageName,
-    );
+  private deletePicture(imageName: string) {
+    const oldImagePath = join(process.cwd(), 'uploads', 'cargo-images', imageName);
     if (!existsSync(oldImagePath)) {
       throw new NotFoundException('The picture to delete could not be found.');
     }
@@ -553,14 +466,11 @@ export class RequestController {
     unlinkSync(oldImagePath);
   }
 
-  filterRequestsBySeats(
-    seats: number,
-    tripRequests: TripRequest[],
-  ): TripRequest[] {
-    return tripRequests.filter((tR) => tR.seats === seats);
+  private filterRequestsBySeats(seats: number, tripRequests: TripRequest[]): TripRequest[] {
+    return tripRequests.filter((tR) => tR.seats <= seats);
   }
 
-  filterAndSortByDate(date: Date, tripRequests: TripRequest[]) {
+  private filterAndSortByDate(date: Date, tripRequests: TripRequest[]) {
     const filteredRequests = tripRequests.filter((tR) => {
       return tR.startDate >= date;
     });
@@ -574,21 +484,42 @@ export class RequestController {
     return filteredRequests;
   }
 
-  filterStartByPlz(startPlz: string, tripRequests: TripRequest[]) {
+  private filterStartByPlz(startPlz: string, tripRequests: TripRequest[]) {
     return tripRequests.filter((tR) => tR.startPlz.plz === startPlz);
   }
 
-  filterEndByPlz(endPlz: string, tripRequests: TripRequest[]) {
+  private filterEndByPlz(endPlz: string, tripRequests: TripRequest[]) {
     return tripRequests.filter((tR) => tR.endPlz.plz === endPlz);
   }
 
-  filterStartToEndPlz(
-    fromPlz: string,
-    toPlz: string,
-    tripRequests: TripRequest[],
-  ): TripRequest[] {
+  private filterStartToEndPlz(fromPlz: string, toPlz: string, tripRequests: TripRequest[]): TripRequest[] {
     return tripRequests.filter((tR) => {
       return tR.endPlz.plz === toPlz && tR.startPlz.plz === fromPlz;
     });
+  }
+  private async filterByRating(rating: number, tripRequests: TripRequest[]) {
+    const cache = new Map<number, number>();
+    const filteredTripeRequests: TripRequest[] = [];
+
+    for (const tr of tripRequests) {
+      const providerId = tr.requester.id;
+      let foundRating: number | undefined = undefined;
+
+      if (cache.has(providerId)) {
+        foundRating = cache.get(providerId);
+      }
+
+      if (foundRating == undefined) {
+        const avgRatings = await this.ratingService.selectAverageRatingForUser(providerId);
+        foundRating = avgRatings.total;
+        cache.set(providerId, foundRating);
+      }
+
+      if (foundRating <= rating && foundRating > rating - 1) {
+        filteredTripeRequests.push(tr);
+      }
+    }
+
+    return filteredTripeRequests;
   }
 }

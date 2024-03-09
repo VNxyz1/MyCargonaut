@@ -15,22 +15,21 @@ import { UserController } from '../user/user.controller';
 import { UserService } from '../user.service/user.service';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { MockUpdateOffer } from '../offer.service/Mock/MockUpdateOffer';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { TripState } from '../../database/TripState';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
+import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 
 describe('OfferController', () => {
   let offerController: OfferController;
   let offerService: OfferService;
   let userController: UserController;
   let userService: UserService;
+  let ratingService: RatingService;
   let providerForThisTest: User;
   let userForThisTest: User;
   let session: ISession = new MockSession(true);
@@ -48,9 +47,7 @@ describe('OfferController', () => {
       runTestAsProvider();
       const result = await postNewOffer(1);
 
-      expect(result).toEqual(
-        new OKResponseWithMessageDTO(true, 'Offer Created'),
-      );
+      expect(result).toEqual(new OKResponseWithMessageDTO(true, 'Offer Created'));
     });
 
     it('should throw an error, because the user is not a provider', async () => {
@@ -98,14 +95,8 @@ describe('OfferController', () => {
       runTestAsProvider();
       const offerId = 1;
       const updateOfferDto = new MockUpdateOffer();
-      const result = await offerController.updateOffer(
-        session,
-        offerId,
-        updateOfferDto,
-      );
-      expect(result).toEqual(
-        new OKResponseWithMessageDTO(true, 'Offer Updated'),
-      );
+      const result = await offerController.updateOffer(session, offerId, updateOfferDto);
+      expect(result).toEqual(new OKResponseWithMessageDTO(true, 'Offer Updated'));
     });
 
     it('should throw BadRequestException when updating offer with different provider', async () => {
@@ -113,9 +104,9 @@ describe('OfferController', () => {
       const offerId = 1;
       const updateOfferDto = new MockUpdateOffer();
 
-      await expect(
-        offerController.updateOffer(session, offerId, updateOfferDto),
-      ).rejects.toThrow('You are not the Provider of this Offer!');
+      await expect(offerController.updateOffer(session, offerId, updateOfferDto)).rejects.toThrow(
+        'You are not the Provider of this Offer!',
+      );
     });
 
     it('should throw BadRequestException when updating non-existing offer', async () => {
@@ -123,13 +114,7 @@ describe('OfferController', () => {
       const nonExistingOfferId = 999;
       const updateOfferDto = new MockUpdateOffer();
 
-      await expect(
-        offerController.updateOffer(
-          session,
-          nonExistingOfferId,
-          updateOfferDto,
-        ),
-      ).rejects.toThrow(
+      await expect(offerController.updateOffer(session, nonExistingOfferId, updateOfferDto)).rejects.toThrow(
         new InternalServerErrorException('Offer was not found!'),
       );
     });
@@ -140,9 +125,7 @@ describe('OfferController', () => {
       runTestAsProvider();
       const offerId = 1;
       const result = await offerController.deleteOffer(session, offerId);
-      expect(result).toEqual(
-        new OKResponseWithMessageDTO(true, 'Offer Deleted'),
-      );
+      expect(result).toEqual(new OKResponseWithMessageDTO(true, 'Offer Deleted'));
     });
 
     it('should throw BadRequestException when deleting offer with different provider', async () => {
@@ -152,17 +135,15 @@ describe('OfferController', () => {
       runTestAsClient();
       const offerId = 2;
 
-      await expect(
-        offerController.deleteOffer(session, offerId),
-      ).rejects.toThrow('You are not the Provider of this Offer!');
+      await expect(offerController.deleteOffer(session, offerId)).rejects.toThrow(
+        'You are not the Provider of this Offer!',
+      );
     });
     it('should throw BadRequestException when deleting non-existing offer', async () => {
       runTestAsProvider();
       const nonExistingOfferId = 999;
 
-      await expect(
-        offerController.deleteOffer(session, nonExistingOfferId),
-      ).rejects.toThrow(
+      await expect(offerController.deleteOffer(session, nonExistingOfferId)).rejects.toThrow(
         new InternalServerErrorException('Offer was not found!'),
       );
     });
@@ -171,9 +152,9 @@ describe('OfferController', () => {
       runTestAsProvider();
       const invalidOfferId = 'invalid';
 
-      await expect(
-        offerController.deleteOffer(session, Number(invalidOfferId)),
-      ).rejects.toThrow('SQLITE_ERROR: no such column: NaN');
+      await expect(offerController.deleteOffer(session, Number(invalidOfferId))).rejects.toThrow(
+        'SQLITE_ERROR: no such column: NaN',
+      );
     });
   });
 
@@ -185,9 +166,7 @@ describe('OfferController', () => {
       runTestAsClient();
       const offerId = 3;
 
-      await expect(
-        offerController.setOfferAsBookedUp(session, offerId),
-      ).rejects.toThrow(
+      await expect(offerController.setOfferAsBookedUp(session, offerId)).rejects.toThrow(
         new BadRequestException('You are not the Provider of this Offer!'),
       );
     });
@@ -197,9 +176,7 @@ describe('OfferController', () => {
 
       const offerId = 3;
 
-      await expect(
-        offerController.setOfferAsBookedUp(session, offerId),
-      ).resolves.toEqual(
+      await expect(offerController.setOfferAsBookedUp(session, offerId)).resolves.toEqual(
         new OKResponseWithMessageDTO(true, 'Offer is set as booked up'),
       );
 
@@ -213,9 +190,7 @@ describe('OfferController', () => {
       runTestAsClient();
       const offerId = 3;
 
-      await expect(
-        offerController.reopenOffer(session, offerId),
-      ).rejects.toThrow(
+      await expect(offerController.reopenOffer(session, offerId)).rejects.toThrow(
         new BadRequestException('You are not the Provider of this Offer!'),
       );
     });
@@ -225,9 +200,7 @@ describe('OfferController', () => {
 
       const offerId = 3;
 
-      await expect(
-        offerController.reopenOffer(session, offerId),
-      ).resolves.toEqual(
+      await expect(offerController.reopenOffer(session, offerId)).resolves.toEqual(
         new OKResponseWithMessageDTO(true, 'Offer is reopened'),
       );
 
@@ -244,47 +217,29 @@ describe('OfferController', () => {
 
       runTestAsLoggedOutUser();
       const searchString = 'test';
-      const result = await offerController.getFilteredOffers(
-        searchString,
-        '63679',
-        '64002',
-      );
+      const result = await offerController.getFilteredOffers(searchString, '63679', '64002');
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(3);
-      expect(
-        result.offerList[0].description.toLowerCase().includes(searchString),
-      ).toBe(true);
+      expect(result.offerList[0].description.toLowerCase().includes(searchString)).toBe(true);
     });
 
     it('should return an empty list, because there is no connection between the two plz', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        '35390',
-        '64002',
-      );
+      const result = await offerController.getFilteredOffers(undefined, '35390', '64002');
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
 
     it('should get filtered offers by route v2', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        '64002',
-        '63679',
-      );
+      const result = await offerController.getFilteredOffers(undefined, '64002', '63679');
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
     });
 
     it('should return an empty list, because there is no connection between the two plz', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        '64002',
-        '64002',
-      );
+      const result = await offerController.getFilteredOffers(undefined, '64002', '64002');
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
@@ -325,21 +280,100 @@ describe('OfferController', () => {
       runTestAsLoggedOutUser();
       const searchString = 'test';
       const date = '2024-01-01';
-      const result = await offerController.getFilteredOffers(
-        searchString,
-        '64002',
-        '63679',
-        undefined,
-        date,
-      );
+      const result = await offerController.getFilteredOffers(searchString, '64002', '63679', undefined, date);
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
-      expect(
-        result.offerList[0].description.toLowerCase().includes(searchString),
+      expect(result.offerList[0].description.toLowerCase().includes(searchString));
+      expect(result.offerList[0].startDate.getTime()).toBeGreaterThanOrEqual(new Date(date).getTime());
+    });
+
+    it('should get filtered offers with 5 star ratings', async () => {
+      runTestAsLoggedOutUser();
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        4,
       );
-      expect(result.offerList[0].startDate.getTime()).toBeGreaterThanOrEqual(
-        new Date(date).getTime(),
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(4);
+      const userRating = await ratingService.selectAverageRatingForUser(result.offerList[0].provider.id);
+      expect(userRating.total).toEqual(4);
+    });
+    it('should return nothing, since there are no 3 star ratings.', async () => {
+      runTestAsLoggedOutUser();
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        3,
       );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+    it('should return nothing, since there are no 5 star ratings.', async () => {
+      runTestAsLoggedOutUser();
+      const result = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        5,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
+    });
+    it('should return offers, with 1 or more available seats.', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        1,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(4);
+    });
+
+    it('should return offers, with 2 or more available seats.', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        2,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(3);
+    });
+
+    it('should return offers, with 3 or more available seats', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        3,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(3);
+    });
+
+    it('should return offers, with 4 or more available seats (none existing)', async () => {
+      runTestAsLoggedOutUser();
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
+        undefined,
+        undefined,
+        undefined,
+        4,
+      );
+      expect(result.offerList).toBeDefined();
+      expect(result.offerList.length).toBe(0);
     });
   });
 
@@ -373,10 +407,7 @@ describe('OfferController', () => {
 
   const setup = async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.offer.controller.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.offer.controller.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController, AuthController, OfferController],
       providers: [
         UserService,
@@ -385,6 +416,7 @@ describe('OfferController', () => {
         PlzService,
         RatingService,
         VehicleService,
+        RatingService,
       ],
     }).compile();
 
@@ -393,9 +425,25 @@ describe('OfferController', () => {
     offerController = module.get<OfferController>(OfferController);
     offerService = module.get<OfferService>(OfferService);
     vehicleService = module.get<VehicleService>(VehicleService);
+    ratingService = module.get<RatingService>(RatingService);
 
     // create users for testing
     await userController.postUser(new MockCreateUser(true, 0));
+    await ratingService.createRating({
+      cargoArrivedUndamaged: 4,
+      comfortDuringTrip: 4,
+      comment: undefined,
+      complete: true,
+      driver: true,
+      id: undefined,
+      passengerPleasantness: 4,
+      punctuality: 4,
+      rated: await userService.getUserById(1),
+      rater: undefined,
+      reliability: 5,
+      trip: undefined,
+      totalRating: 4,
+    });
     providerForThisTest = await userService.getUserById(1);
     await vehicleService.creatingVehicle(1, new MockVehicle(1));
 
