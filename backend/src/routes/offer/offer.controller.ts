@@ -26,6 +26,7 @@ import { Offer } from '../../database/Offer';
 import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
 import { UserService } from '../user.service/user.service';
 import { userIsValidToBeProvider } from '../utils/userIsValidToBeProvider';
+import { RatingService } from '../rating.service/rating.service';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -33,6 +34,7 @@ export class OfferController {
   constructor(
     private readonly offerService: OfferService,
     private readonly userService: UserService,
+    private readonly ratingService: RatingService,
   ) {}
 
   @Post()
@@ -90,7 +92,9 @@ export class OfferController {
 
   @Get('own/passenger')
   @UseGuards(IsLoggedInGuard)
-  @ApiOperation({ summary: 'gets offers of logged in user as passenger' })
+  @ApiOperation({
+    summary: 'gets offers of logged in user as passenger',
+  })
   @ApiResponse({ type: GetAllOffersResponseDto })
   async getOffersOfLoggedInUserAsPassenger(@Session() session: ISession) {
     const userId = session.userData.id;
@@ -107,8 +111,7 @@ export class OfferController {
 
   @Get('search')
   @ApiOperation({
-    summary:
-      'Gets offers that match a search string, including the description, location (plz), and date.',
+    summary: 'Gets offers that match a search string, including the description, location (plz), and date.',
     description:
       'Example request: "offers/search?search=test&fromPLZ=63679&toPLZ=64002&rating=4&date=2025-01-01".',
   })
@@ -136,8 +139,7 @@ export class OfferController {
   })
   @ApiQuery({
     name: 'date',
-    description:
-      'A date to filter offers by. Must be in the format YYYY-MM-DD.',
+    description: 'A date to filter offers by. Must be in the format YYYY-MM-DD.',
     required: false,
   })
   @ApiQuery({
@@ -170,7 +172,7 @@ export class OfferController {
     }
 
     if (rating) {
-      offerList = this.filterOffersByRating(rating, offerList);
+      offerList = await this.filterOffersByRating(rating, offerList);
     }
 
     if (date) {
@@ -219,10 +221,7 @@ export class OfferController {
     summary: 'Deletes Offer. Only if the Logged in User is the Provider',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async deleteOffer(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) offerId: number,
-  ) {
+  async deleteOffer(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
     const userId = session.userData.id;
     const offer = await this.offerService.getOffer(offerId);
     if (offer.provider.id !== userId) {
@@ -235,14 +234,10 @@ export class OfferController {
   @Put('booked-up/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary:
-      'Sets the selected Offer as "booked up". Only if the Logged in User is the Provider',
+    summary: 'Sets the selected Offer as "booked up". Only if the Logged in User is the Provider',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async setOfferAsBookedUp(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) offerId: number,
-  ) {
+  async setOfferAsBookedUp(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
     const userId = session.userData.id;
     const offer = await this.offerService.getOffer(offerId);
     if (offer.provider.id !== userId) {
@@ -258,14 +253,10 @@ export class OfferController {
   @Put('reopen/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary:
-      'Reopens the selected offer. Only if the Logged in User is the Provider',
+    summary: 'Reopens the selected offer. Only if the Logged in User is the Provider',
   })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async reopenOffer(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) offerId: number,
-  ) {
+  async reopenOffer(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
     const userId = session.userData.id;
     const offer = await this.offerService.getOffer(offerId);
     if (offer.provider.id !== userId) {
@@ -308,17 +299,34 @@ export class OfferController {
 
   filterOffersBySeats(seats: number, offers: Offer[]): Offer[] {
     return offers.filter((o) => {
-      return (
-        o.bookedSeats /* TODO: muss mit den sitzen des fahrzeugs verrechnet werden */ ===
-        seats
-      );
+      return o.bookedSeats /* TODO: muss mit den sitzen des fahrzeugs verrechnet werden */ === seats;
     });
   }
 
-  filterOffersByRating(rating: number, offers: Offer[]): Offer[] {
-    return offers.filter(() => {
-      /* TODO: implement logic */
-    });
+  async filterOffersByRating(rating: number, offers: Offer[]): Promise<Offer[]> {
+    const cache = new Map<number, number>();
+    const filteredOffers: Offer[] = [];
+
+    for (const o of offers) {
+      const providerId = o.provider.id;
+      let foundRating: number | undefined = undefined;
+
+      if (cache.has(providerId)) {
+        foundRating = cache.get(providerId);
+      }
+
+      if (foundRating == undefined) {
+        const avgRatings = await this.ratingService.selectAverageRatingForUser(providerId);
+        foundRating = avgRatings.total;
+        cache.set(providerId, foundRating);
+      }
+
+      if (foundRating <= rating && foundRating > rating - 1) {
+        filteredOffers.push(o);
+      }
+    }
+
+    return filteredOffers;
   }
 
   filterAndSortByDate(date: Date, offers: Offer[]) {
