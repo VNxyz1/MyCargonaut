@@ -5,28 +5,47 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane'
-import { useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { postMessage } from '../../../services/messageService.ts';
+
+const chatWindowStyle: CSSProperties = {
+  maxHeight: '40rem',
+  overflowY: 'scroll'
+}
 
 function SingleChat () {
   const {selectedChat} = chatStore();
 
   const [messageToSend, setMessageToSend] = useState<string>("");
+  const chatWindowRef = useRef<HTMLDivElement>(null);
 
-  const submitMessage = async () => {
+  const scrollToBottom = () => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedChat.messages, chatWindowRef]);
+
+  const submitMessage = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const sent = await postMessage(selectedChat.conversationPartnerId, messageToSend);
     if (sent) {
       setMessageToSend("");
+      scrollToBottom();
     }
     return;
   }
 
   return (
     <Container>
-      <Row>
+      <Row className="mb-3" style={chatWindowStyle} ref={chatWindowRef}>
         {selectedChat.messages.map((message) => (
-          <Row className={message.senderId == selectedChat.conversationPartnerId ? 'justify-content-start' : 'justify-content-end'}>
-              <MessageComp message={message}/>
+          <Row
+            className={message.senderId == selectedChat.conversationPartnerId ? 'justify-content-start' : 'justify-content-end'}>
+            <MessageComp message={message} />
           </Row>
         ))}
       </Row>
