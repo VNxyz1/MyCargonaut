@@ -15,6 +15,7 @@ interface ProfileEditModalComponentProps extends ModalProps {
 
 const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (props) => {
     const {isAuthenticated} = useAuth();
+    const [feedback, setFeedback] = useState<string | undefined>(undefined);
     const [formData, setFormData] = useState<User>({
         firstName: '',
         lastName: '',
@@ -40,16 +41,15 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
         setFormData((prevData) => ({...prevData, [name]: value}));
     };
 
-    //TODO Ü18 Prüfung
-    //TODO Entfernen und prüfung der Nummer
-    //TODO Beschreibung Enfernen
     const handleSubmit = async (event: any) => {
         event.preventDefault();
+
         const res = await updateUser(formData);
 
         if (res.success) {
             props.onHide();
         } else {
+            setFeedback(res.error);
             console.error("Error updating user:", res.error);
         }
     };
@@ -65,9 +65,9 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
             </Modal.Header>
 
             <Modal.Body>
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} className="editUserModalBody">
                     <Row>
-                        <Form.Group as={Col} className="sm-6" controlId="firstName">
+                        <Form.Group as={Col} className="sm-6 editField" controlId="firstName">
                             <Form.Label>Vorname</Form.Label>
                             <Form.Control
                                 type="text"
@@ -78,7 +78,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                             />
                         </Form.Group>
 
-                        <Form.Group as={Col} className="sm-6" controlId="lastName">
+                        <Form.Group as={Col} className="sm-6 editField" controlId="lastName" >
                             <Form.Label>Nachname</Form.Label>
                             <Form.Control
                                 type="text"
@@ -91,7 +91,7 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                     </Row>
 
                     <Row>
-                        <Form.Group as={Col} className="sm-6" controlId="birthday">
+                        <Form.Group as={Col} className="sm-6" controlId="birthday" >
                             <Form.Label>Geburtsdatum</Form.Label>
                             <Form.Control
                                 type="date"
@@ -109,13 +109,18 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                                 name="phoneNumber"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
+                                placeholder="z.B. +49 123456789"
                             />
+                            <small>
+                                Bitte verwende deine Ländervorwahl (z.B. +49).<br />
+                                Deine Nummer ist nicht für andere Nutzer sichtbar.
+                            </small>
                         </Form.Group>
                     </Row>
 
-                    <p>Die Handynummer ist nicht für andere Nutzer sichtbar.</p>
 
-                    <Form.Group controlId="description">
+
+                    <Form.Group controlId="description" className="editField">
                         <Form.Label>Beschreibung</Form.Label>
                         <Form.Control
                             as="textarea"
@@ -126,6 +131,15 @@ const ProfileEditModalComponent: React.FC<ProfileEditModalComponentProps> = (pro
                         />
                     </Form.Group>
 
+                    {!feedback ?
+                        <></>
+                        :
+                        <div className="editField">
+                            <Form.Text style={{color: 'red'}}>
+                                {feedback}
+                            </Form.Text>
+                        </div>
+                    }
                     <Button type="submit" className="mainButton"> Speichern </Button>
                 </Form>
             </Modal.Body>

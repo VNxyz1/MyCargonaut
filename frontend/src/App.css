@@ -537,6 +537,11 @@ nav input[type="checkbox"] {
     background-color: var(--color-5);
 }
 
+.editUserModalBody .editField{
+    margin-bottom: 20px;
+
+}
+
 /*_____NumberFieldSpinner______*/
 
 /* Chrome, Safari, Edge, Opera */

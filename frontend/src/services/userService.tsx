@@ -79,7 +79,7 @@ export const updateUser = async (userData: User): Promise<any> => {
 
         if (!res.ok) {
             const data = await res.json();
-            return {success: false, error: data};
+            return {success: false, error: data.message};
         } else {
             const data = await res.json();
             return {success: true, data};
