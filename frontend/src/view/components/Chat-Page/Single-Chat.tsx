@@ -73,7 +73,7 @@ function SingleChat () {
 function MessageComp( props: { message: Message }) {
 
   return (
-      <Card className='w-auto mb-3 mx-3'>
+      <Card className='w-auto mb-3 mx-3' style={{maxWidth: '70%'}}>
         <Card.Body>
           {props.message.message}
         </Card.Body>
