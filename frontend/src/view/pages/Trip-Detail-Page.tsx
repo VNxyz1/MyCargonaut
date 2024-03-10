@@ -4,7 +4,7 @@ import {Offer} from "../../interfaces/Offer.ts";
 import DetailComponent from "../components/Trip-Detail/Detail-Component.tsx";
 import {Col, Container, Row} from "react-bootstrap";
 import DetailSidebar from "../components/Trip-Detail/Trip-Detail-Sidebar.tsx";
-import {getOfferById} from "../../services/offerService.ts";
+import {getOfferById} from "../../services/offerService.tsx";
 import {getTripRequestById} from "../../services/tripRequestService.ts";
 import {TripRequest} from "../../interfaces/TripRequest.ts";
 

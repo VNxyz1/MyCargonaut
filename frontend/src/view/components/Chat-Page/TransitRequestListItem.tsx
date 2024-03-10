@@ -2,7 +2,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import { TransitRequest } from "../../../interfaces/TransitRequest.ts";
 import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import { acceptTransitRequest, deleteTransitRequest } from "../../../services/offerService.ts";
+import { acceptTransitRequest, deleteTransitRequest } from "../../../services/offerService.tsx";
 
 function TransitRequestListItem (
   props: {

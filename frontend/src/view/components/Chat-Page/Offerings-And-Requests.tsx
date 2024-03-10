@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getOfferings } from "../../../services/tripRequestService.ts";
 import { TripRequestOffering } from "../../../interfaces/TripRequestOffering.ts";
-import { getTransitRequests } from "../../../services/offerService.ts";
+import { getTransitRequests } from "../../../services/offerService.tsx";
 import { TransitRequest } from "../../../interfaces/TransitRequest.ts";
 import TransitRequestListItem from "./TransitRequestListItem.tsx";
 import OfferingListItem from "./OfferingListItem.tsx";
