@@ -10,6 +10,7 @@ import {ratingDriver, ratingPassenger } from "../../../services/ratingService.ts
 import { JustDriverRating , JustPassengerRating} from "../../../interfaces/Rating.ts";
 import { StarRating } from "../Ratings/StarRating.tsx";
 import { getLoggedInUser } from "../../../services/userService.tsx";
+import { UserLight } from "../../../interfaces/UserLight.ts";
 
 interface RatingModalProps extends ModalProps {
     onHide: () => void;
@@ -21,13 +22,17 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
     const [userId, setUserId] = useState<number | null>(null);
     const [passengerOffers, setPassengerOffers] = useState<OfferList>();
     const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
-    const [selectedClient, setSelectedClient] = useState<number | null>(null);
+    const [selectedClient, setSelectedClient] = useState<UserLight | null>(null);
     const [switched, setSwitched] = useState<boolean>(false);
-    
+    const [punctualityRating, setPunctualityRating] = useState<number>(3);
+    const [reliabilityRating, setReliabilityRating] = useState<number>(3);
+    const [comfortDuringTripRating, setComfortDuringTripRating] = useState<number>(3);
+    const [cargoArrivedUndamagedRating, setCargoArrivedUndamagedRating] = useState<number>(3);
+    const [passengerPleasantnessRating, setPassengerPleasantnessRating] = useState<number>(3);
+
     useEffect(() => {
         if (!props.show) {
-            //setValidated(false);
-
+            setValidated(false);
             setSelectedOffer(null);
             setSelectedClient(null);
         }
@@ -37,12 +42,11 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         const fetchData = async () => {
 
             const userData = await getLoggedInUser();
-            console.log("Der User " + userData);
+
             if (userData && userData.id) {
                 setUserId(userData.id);
-                console.log("Die UserID: " + userData.id);
+
             }
-            console.log("Die UserID: ANSCHEINEND LEER");
             
         };
         fetchData();
@@ -59,7 +63,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         offersList.push(offer);
                     }
                 });
-                console.log("Die erste Liste: " + offersList);
+
                 setOffers({offerList: offersList});
             }
         };
@@ -77,7 +81,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         offersList.push(offer);
                     }
                 });
-                console.log("Die erste Liste: " + offersList);
+
                 setPassengerOffers({offerList: offersList});
             }
         };
@@ -93,13 +97,13 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         if (form.checkValidity()) {
             if(selectedOffer){
                 if(selectedOffer.provider.id !== userId){
-                console.log("Driver wird bewertet!!!");
+
             const formData: JustDriverRating = {
                 rateeId: selectedOffer.provider.id,
-                punctuality: Number(form.elements["punctuality"]),
-                reliability: Number(form.elements["reliability"]),
-                cargoArrivedUndamaged: Number(form.elements["cargoArriveUndamaged"]),
-                passengerPleasantness: Number(form.elements["passengerPleasentness"])
+                punctuality: punctualityRating,
+                reliability: reliabilityRating,
+                cargoArrivedUndamaged: cargoArrivedUndamagedRating,
+                passengerPleasantness: passengerPleasantnessRating
             };
         
             ratingDriver(selectedOffer.id, formData)
@@ -109,21 +113,22 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                 });
             }
         if(selectedOffer.provider.id === userId){
-            console.log("Passenger werden bewertet!!!");
+
+            if (selectedClient){
             const formData: JustPassengerRating = {
-                //ToDo: PassengerId verwenden
-                rateeId: selectedOffer.provider.id,
-                punctuality: Number(form.elements["punctuality"]),
-                reliability: Number(form.elements["reliability"]),
-                comfortDuringTrip: Number(form.elements["comfortDuringTrip"])
+                rateeId: selectedClient.id,
+                punctuality: punctualityRating,
+                reliability: reliabilityRating,
+                comfortDuringTrip: comfortDuringTripRating
             };
+
         
             ratingPassenger(selectedOffer.id, formData)
                 .then()
                 .catch(error => 
                     {console.error("Error rating passenger:", error);
                 });
-            }
+            }}
         }
             props.onHide();
         
@@ -134,19 +139,24 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         const selectedOfferId = parseInt(event.target.value);
         const selectedOffers = offers?.offerList.find(offer => offer.id === selectedOfferId) || null;
         const selectedPassengerOffers = passengerOffers?.offerList.find(offer => offer.id === selectedOfferId) || null;
-        console.log("Die Listen: " + selectedOffers);
-        console.log("Die anderen Listen: " + selectedPassengerOffers);
-        if (selectedOffers){setSelectedOffer(selectedOffers); setSwitched(false);console.log("Bei 1")}
-        if (selectedPassengerOffers){setSelectedOffer(selectedPassengerOffers); setSwitched(true); console.log("Bei 2")}
+
+        if (selectedOffers){setSelectedOffer(selectedOffers); setSwitched(false);}
+        if (selectedPassengerOffers){setSelectedOffer(selectedPassengerOffers); setSwitched(true);}
         setSelectedClient(null);
-        console.log("Hier ist der Offer: " + selectedOffer?.id)
-        console.log("Hier ist die Person: " + selectedOffer?.provider.firstName)
-        console.log("Die UserID: " + userId);
+
     };
 
     const handleClientChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedClientId = parseInt(event.target.value);
-        setSelectedClient(selectedClientId);
+        const selectedClient = selectedOffer?.clients.find(client => client.id === selectedClientId) || null;
+        setSelectedClient(selectedClient);
+
+
+    };
+
+    const handleDriverChange = () => {
+        const selectedProvider = selectedOffer?.provider || null;
+        setSelectedClient(selectedProvider);
 
 
     };
@@ -193,10 +203,10 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         <Row>
                             <Form.Group as={Col} className="mb-3" controlId="driver">
                                 <Form.Select required onChange={handleClientChange}>
-                                    <option value="">Person auswählen1</option>
+                                    <option value="">Mitfahrer auswählen</option>
                                     {selectedOffer.clients.map((client, index) => (
                                         <option key={index} value={client.id}>
-                                            Testy{`${client.firstName} ${client.lastName}`}
+                                            {`${client.firstName} ${client.lastName}`}
                                         </option>
                                     ))}
                                 </Form.Select>
@@ -207,8 +217,8 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         {selectedOffer && selectedOffer.clients.length > 0 && selectedOffer.clients.find(client => client.id === userId) && (
                             <Row>
                                 <Form.Group as={Col} className="mb-3" controlId="passenger">
-                                    <Form.Select required onChange={handleClientChange}>
-                                        <option value="">Person auswählen2</option>
+                                    <Form.Select required onChange={handleDriverChange}>
+                                        <option value="">Fahrer auswählen</option>
                                         <option value={`${selectedOffer.provider.id}`}>{`${selectedOffer.provider.firstName} ${selectedOffer.provider.lastName}`}</option>
                                     </Form.Select>
                                 </Form.Group>
@@ -220,15 +230,25 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                         <Row>
                             <div>
                                 <Row>
+                                    <div>Pünktlichkeit</div>
                                     <Form.Group as={Col} className="mb-3" controlId="punctuality">
-                                        <Form.Label>Pünktlichkeit</Form.Label>
-                                        <StarRating initialValue={3} />
+                                    <StarRating
+                                        initialValue={3}
+                                        onRatingChange={(value) => {
+                                            setPunctualityRating(value);
+                                        }}
+                                    />
                                     </Form.Group>
                                 </Row>
                                 <Row>
+                                    <div>Zuverlässigkeit</div>
                                     <Form.Group as={Col} className="mb-3" controlId="reliability">
-                                        <Form.Label>Zuverlässigkeit</Form.Label>
-                                        <StarRating initialValue={3} />
+                                    <StarRating
+                                        initialValue={3}
+                                        onRatingChange={(value) => {
+                                            setReliabilityRating(value);
+                                        }}
+                                    />
                                     </Form.Group>
                                 </Row>
                             </div>
@@ -237,9 +257,14 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                     {selectedClient && !switched && (
                         <Row>
                                 <Row>
+                                    <div>Atmosphäre</div>
                                     <Form.Group as={Col} className="mb-3" controlId="comfortDuringTrip">
-                                        <Form.Label>Atmosphäre</Form.Label>
-                                        <StarRating initialValue={3} />
+                                    <StarRating
+                                        initialValue={3}
+                                        onRatingChange={(value) => {
+                                            setComfortDuringTripRating(value);
+                                        }}
+                                    />
                                     </Form.Group>
                                 </Row>
                                                     
@@ -248,15 +273,25 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                     {selectedClient && switched && (
                         <Row>
                                 <Row>
+                                    <div>Ohne Schaden</div>
                                     <Form.Group as={Col} className="mb-3" controlId="cargoArrivedUndamaged">
-                                        <Form.Label>Ohne Schaden</Form.Label>
-                                        <StarRating initialValue={3} />
+                                    <StarRating
+                                        initialValue={3}
+                                        onRatingChange={(value) => {
+                                            setCargoArrivedUndamagedRating(value);
+                                        }}
+                                    />
                                     </Form.Group>
                                 </Row>
                                 <Row>
+                                    <div>Atmosphäre</div>
                                     <Form.Group as={Col} className="mb-3" controlId="passengerPleasantness">
-                                        <Form.Label>Atmosphäre</Form.Label>
-                                        <StarRating initialValue={3} />
+                                    <StarRating
+                                        initialValue={3}
+                                        onRatingChange={(value) => {
+                                            setPassengerPleasantnessRating(value);
+                                        }}
+                                    />
                                     </Form.Group>
                                 </Row>
                         </Row>
