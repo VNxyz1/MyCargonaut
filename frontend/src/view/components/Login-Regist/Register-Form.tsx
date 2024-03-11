@@ -71,7 +71,7 @@ function RegisterForm() {
 
                 if (loginRes.success) {
                     login();
-                    navigate('/profil');
+                    navigate('/');
                 } else {
                     setFeedback(loginRes.error);
                 }

@@ -25,7 +25,7 @@ function LoginForm() {
 
             if (res.success) {
                 login();
-                navigate('/profil');
+                navigate('/');
             } else {
                 setFeedback(res.error);
             }
