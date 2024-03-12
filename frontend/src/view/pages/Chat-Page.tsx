@@ -36,10 +36,10 @@ function ChatPage() {
   return (
     <Container fluid="md" style={{ minHeight: '70vh' }}>
       <Row className="d-flex justify-content-center my-4">
-        <Col md={3} className="d-flex justify-content-center justify-content-xl-end">
+        <Col xs={3} className="d-flex justify-content-end">
           <AllChats />
         </Col>
-        <Col md={8} className="d-flex justify-content-center justify-content-xl-start">
+        <Col xs={8} className={"d-flex justify-content-start justify-content-md-start"}>
           <SingleChat />
         </Col>
       </Row>

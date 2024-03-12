@@ -24,10 +24,10 @@ function AllChats() {
   }
 
   return (
-    <ListGroup style={{ overflow: 'auto' }}>
+    <ListGroup style={{ minWidth: "100%", overflow: 'auto' }}>
       {chats.map((c) => (
-          <ListGroup.Item onClick={()=> setSelectedChat(c.conversationId)}>
-            <h3>{c.conversationPartnerName}</h3>
+          <ListGroup.Item className='d-flex justify-content-between' style={{ minWidth: "100%"}} onClick={()=> setSelectedChat(c.conversationId)}>
+            <span>{c.conversationPartnerName}</span>
             {unreadMessages(c.conversationId) > 0 ?
               <span className='unread-message-badge'>{unreadMessages(c.conversationId)}</span> :
               <></>

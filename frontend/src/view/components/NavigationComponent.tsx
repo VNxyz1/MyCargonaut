@@ -59,7 +59,8 @@ function NavigationComponent() {
                                     <>
                                         <li><Link to="/profil">Fahrt veröffentlichen</Link></li>
                                         <li><Link to="/profil">Cargo veröffentlichen</Link></li>
-                                        <ListGroup.Item>
+                                        <li className='d-lg-none'><Link to="/messages">Nachrichten</Link></li>
+                                        <ListGroup.Item className='d-none d-lg-block'>
                                             <Link to="/messages">Nachrichten</Link>
                                             {unreadMessagesTotal > 0 ?
                                               <span className="unread-message-badge-slim"></span>

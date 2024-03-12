@@ -48,7 +48,7 @@ function SingleChat () {
   }
 
   return (
-    <Container onClick={markMessagesAsRead} onFocus={markMessagesAsRead}>
+    <Container fluid onClick={markMessagesAsRead} onFocus={markMessagesAsRead}>
       <Row className="mb-3" style={chatWindowStyle} ref={chatWindowRef}>
         {selectedChat.messages.map((message) => (
           <Row

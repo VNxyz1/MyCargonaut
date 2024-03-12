@@ -194,14 +194,12 @@ nav input[type="checkbox"] {
 }
 
 .unread-message-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
     background-color: red;
     color: white;
     border-radius: 50%;
-    padding: 0 5px;
+    padding: 5px;
     height: 20px;
+    min-width: 20px;
     font-size: 12px;
     display: flex;
     justify-content: center;
@@ -219,7 +217,7 @@ nav input[type="checkbox"] {
     width: 10px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 992px) {
     .nav-login-btn {
         border-radius: 0 !important;
     }
