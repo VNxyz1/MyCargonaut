@@ -1,12 +1,15 @@
 import { create } from 'zustand';
-import { Conversation, Message } from '../../../interfaces/Message.ts';
+import { Conversation, Message, UnreadMessageCount, UnreadMessagesCount } from '../../../interfaces/Message.ts';
 
 type Store = {
   chats: Conversation[]
   selectedChat: Conversation
+  unreadMessagesTotal: number
+  unreadConversations: UnreadMessageCount[]
   setChats: (conversations: Conversation[]) => void
   setSelectedChat: (id: number) => void
   sortByDateDesc: () => void
+  setUnreadChats: (messagesCount: UnreadMessagesCount)=> void
 }
 
 export const chatStore = create<Store>()((set) => ({
@@ -17,10 +20,15 @@ export const chatStore = create<Store>()((set) => ({
     conversationPartnerName: '',
     messages: [],
   },
+  unreadMessagesTotal: 0,
+  unreadConversations: [],
   setChats: (conversations) => set(() => ({ chats: conversations })),
   setSelectedChat: (id) => set((state) => ({ selectedChat: findConversation(id, state.chats) })),
   sortByDateDesc: () => set((store) => ({ chats: sortByDateDesc(store.chats) })),
+  setUnreadChats: (messagesCount: UnreadMessagesCount) => set(()=> ({unreadMessagesTotal: puh(messagesCount), unreadConversations: messagesCount.conversations})),
 }));
+
+
 
 function sortByDateDesc(chats: Conversation[]): Conversation[] {
   return chats.sort((a, b) => {
@@ -64,4 +72,10 @@ function findConversation(id: number, chats: Conversation[]) {
   }
 
   return conversation;
+}
+
+function puh(unreadMessagesCount: UnreadMessagesCount): number {
+  console.log(unreadMessagesCount)
+  return unreadMessagesCount.totalUnreadMessages
+
 }

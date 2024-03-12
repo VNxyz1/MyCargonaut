@@ -1,4 +1,4 @@
-import { Conversation } from "../interfaces/Message.ts";
+import { Conversation, UnreadMessagesCount } from '../interfaces/Message.ts';
 
 export const getAllMessages = async () => {
   try {
@@ -18,7 +18,7 @@ export const getUnreadMessages = async () => {
     const res = await fetch('/message/unread');
     if (res.ok) {
       const data = await res.json();
-      return data.conversations as Conversation[]
+      return data as UnreadMessagesCount
     }
   } catch (e) {
     console.error(e)
