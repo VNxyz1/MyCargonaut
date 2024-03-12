@@ -42,7 +42,10 @@ function AllChats() {
       {chats.map((c) => (
           <ListGroup.Item onClick={()=> setSelectedChat(c.conversationId)}>
             <h3>{c.conversationPartnerName}</h3>
-            <span style={badgeStyle}>{unreadMessages(c.conversationId)}</span>
+            {unreadMessages(c.conversationId) > 0 ?
+              <span style={badgeStyle}>{unreadMessages(c.conversationId)}</span> :
+              <></>
+            }
           </ListGroup.Item>
       ))}
     </ListGroup>
