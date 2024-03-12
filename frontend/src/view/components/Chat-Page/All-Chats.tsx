@@ -1,21 +1,7 @@
 import { ListGroup } from 'react-bootstrap';
 import { chatStore } from './chats-zustand.ts';
-import { CSSProperties, useEffect } from 'react';
+import { useEffect } from 'react';
 
-const badgeStyle: CSSProperties = {
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  backgroundColor: 'red',
-  color: 'white',
-  borderRadius: '50%',
-  padding: '0 5px',
-  height: '20px',
-  fontSize: '12px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}
 
 function AllChats() {
 
@@ -43,7 +29,7 @@ function AllChats() {
           <ListGroup.Item onClick={()=> setSelectedChat(c.conversationId)}>
             <h3>{c.conversationPartnerName}</h3>
             {unreadMessages(c.conversationId) > 0 ?
-              <span style={badgeStyle}>{unreadMessages(c.conversationId)}</span> :
+              <span className='unread-message-badge'>{unreadMessages(c.conversationId)}</span> :
               <></>
             }
           </ListGroup.Item>
