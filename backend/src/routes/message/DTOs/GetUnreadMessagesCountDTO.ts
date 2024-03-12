@@ -4,6 +4,6 @@ export class GetUnreadMessagesCountDto {
   @ApiProperty()
   totalUnreadMessages: number;
 
-  @ApiProperty({ type: GetUnreadMessageCountDto })
+  @ApiProperty({ type: [GetUnreadMessageCountDto] })
   conversations: GetUnreadMessageCountDto[];
 }

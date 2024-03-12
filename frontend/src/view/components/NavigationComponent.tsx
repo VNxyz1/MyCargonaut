@@ -3,10 +3,13 @@ import Logo from "../../assets/img/Logo.png";
 import {Link} from "react-router-dom";
 import {useAuth} from '../../services/authService';
 import {useEffect, useState} from "react";
+import { chatStore } from './Chat-Page/chats-zustand.ts';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 function NavigationComponent() {
     const {isAuthenticated} = useAuth();
     const [isSticky, setSticky] = useState(false);
+    const { unreadMessagesTotal } = chatStore();
 
     const spacerHeight = isSticky ? 99 : 131;
     const handleScroll = () => {
@@ -56,7 +59,14 @@ function NavigationComponent() {
                                     <>
                                         <li><Link to="/profil">Fahrt veröffentlichen</Link></li>
                                         <li><Link to="/profil">Cargo veröffentlichen</Link></li>
-                                        <li><Link to="/messages">Nachrichten</Link></li>
+                                        <li className='d-lg-none'><Link to="/messages">Nachrichten</Link></li>
+                                        <ListGroup.Item className='d-none d-lg-block'>
+                                            <Link to="/messages">Nachrichten</Link>
+                                            {unreadMessagesTotal > 0 ?
+                                              <span className="unread-message-badge-slim"></span>
+                                              : <></>
+                                            }
+                                        </ListGroup.Item>
                                         <li><Link to="/profil">Profil</Link></li>
                                     </>
                                 )}

@@ -15,5 +15,19 @@ export interface Message {
 
   message: string;
 
+  timestamp: string;
+
   read: boolean;
+}
+
+export interface UnreadMessageCount {
+  conversationId: number;
+
+  unreadMessages: number;
+}
+
+export interface UnreadMessagesCount {
+  totalUnreadMessages: number;
+
+  conversations: UnreadMessageCount[];
 }

@@ -1,4 +1,4 @@
-import { Conversation } from "../interfaces/Message.ts";
+import { Conversation, UnreadMessagesCount } from '../interfaces/Message.ts';
 
 export const getAllMessages = async () => {
   try {
@@ -18,14 +18,15 @@ export const getUnreadMessages = async () => {
     const res = await fetch('/message/unread');
     if (res.ok) {
       const data = await res.json();
-      return data.conversations as Conversation[]
+      return data as UnreadMessagesCount
     }
   } catch (e) {
     console.error(e)
   }
 }
 
-export const postMessage = async (data: PostMessageData) => {
+export const postMessage = async (receiverId: number, message: string) => {
+  const data: PostMessageData = {receiverId: receiverId, message: message, timestamp: new Date().toISOString()}
   try {
     const res = await fetch('/message', {
       method: "POST",
@@ -40,16 +41,19 @@ export const postMessage = async (data: PostMessageData) => {
   }
 }
 
-class PostMessageData {
-  // @ts-ignore
-  receiverId: number;
-  // @ts-ignore
-  message: string;
-  // @ts-ignore
-  private timestamp: string;
-
-  constructor() {
-    this.timestamp = new Date().toISOString()
+export const markMessagesRead = async (conversationId: number) => {
+  try {
+    const res = await fetch(`/message/read/${conversationId}`, {
+      method: "POST",
+    });
+    return res.ok;
+  } catch (e) {
+    console.error(e)
   }
+}
 
+interface PostMessageData {
+  receiverId: number;
+  message: string;
+  timestamp: string;
 }

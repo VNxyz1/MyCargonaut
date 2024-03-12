@@ -21,18 +21,22 @@ export class MessageService {
       .leftJoinAndSelect('conversation.user1', 'user1')
       .leftJoinAndSelect('conversation.user2', 'user2')
       .leftJoinAndSelect('conversation.messages', 'messages')
-      .where(
-        'user1.id = :user1 AND user2.id = :user2 OR user1.id = :user2 AND user2.id = :user1',
-        {
-          user1: user1,
-          user2: user2,
-        },
-      )
+      .where('user1.id = :user1 AND user2.id = :user2 OR user1.id = :user2 AND user2.id = :user1', {
+        user1: user1,
+        user2: user2,
+      })
       .getOne();
 
     if (conversation == null) {
       return null;
     }
+
+    conversation.messages.sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      return dateA.getTime() - dateB.getTime();
+    });
+
     return conversation;
   }
 
@@ -60,6 +64,7 @@ export class MessageService {
       .leftJoinAndSelect('conversation.user1', 'user1')
       .leftJoinAndSelect('conversation.user2', 'user2')
       .leftJoinAndSelect('conversation.messages', 'messages')
+      .orderBy('messages.timestamp', 'ASC')
       .leftJoinAndSelect('messages.sender', 'sender')
       .where('user1.id = :userId OR user2.id = :userId', {
         userId: userId,

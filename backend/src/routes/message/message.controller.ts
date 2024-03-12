@@ -23,6 +23,9 @@ import { GetMessageDto } from './DTOs/GetMessageResponseDTO';
 import { Message } from '../../database/Message';
 import { Offer } from '../../database/Offer';
 import { Conversation } from '../../database/Conversation';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { GetUnreadMessageCountDto } from './DTOs/GetUnreadMessageCountDTO';
+import { GetUnreadMessagesCountDto } from './DTOs/GetUnreadMessagesCountDTO';
 
 @ApiTags('message')
 @Controller('message')
@@ -31,6 +34,7 @@ export class MessageController {
     private readonly messageService: MessageService,
     private readonly userService: UserService,
     private readonly offerService: OfferService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @UseGuards(IsLoggedInGuard)
@@ -93,7 +97,7 @@ export class MessageController {
     summary: 'Gets all unread messages',
     description: `Returns all unread messages of the logged-in user.`,
   })
-  @ApiResponse({ type: GetAllMessagesDto })
+  @ApiResponse({ type: GetUnreadMessagesCountDto })
   @ApiResponse({
     status: 403,
     type: ForbiddenException,
@@ -157,7 +161,7 @@ export class MessageController {
     message.message = createMessageDto.message;
     message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
     await this.messageService.createMessage(message);
-
+    this.messageGatewayService.reloadMessages(receiver.id);
     return new OKResponseWithMessageDTO(true, 'Message created successfully.');
   }
 
@@ -211,6 +215,7 @@ export class MessageController {
       message.message = createMessageDto.message;
       message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
       await this.messageService.createMessage(message);
+      this.messageGatewayService.reloadMessages(client.id);
     }
     return new OKResponseWithMessageDTO(true, 'Message created successfully.');
   }
