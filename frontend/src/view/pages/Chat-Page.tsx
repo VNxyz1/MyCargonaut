@@ -32,6 +32,7 @@ function ChatPage() {
   }, []);
 
 
+
   return (
     <Container fluid="md" style={{ minHeight: '70vh' }}>
       <Row className="d-flex justify-content-center my-4">

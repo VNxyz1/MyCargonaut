@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane'
 import { CSSProperties, useEffect, useRef, useState } from 'react';
-import { postMessage } from '../../../services/messageService.ts';
+import { getUnreadMessages, markMessagesRead, postMessage } from '../../../services/messageService.ts';
 
 const chatWindowStyle: CSSProperties = {
   maxHeight: '40rem',
@@ -14,7 +14,7 @@ const chatWindowStyle: CSSProperties = {
 }
 
 function SingleChat () {
-  const {selectedChat} = chatStore();
+  const {selectedChat, setUnreadChats} = chatStore();
 
   const [messageToSend, setMessageToSend] = useState<string>("");
   const chatWindowRef = useRef<HTMLDivElement>(null);
@@ -39,8 +39,22 @@ function SingleChat () {
     return;
   }
 
+  const markMessagesAsRead = async () => {
+    if (selectedChatContainsUnreadMessages()) {
+      await markMessagesRead(selectedChat.conversationId);
+      const unreadMessages = await getUnreadMessages();
+      if (unreadMessages) {
+        setUnreadChats(unreadMessages);
+      }
+    }
+  }
+
+  const selectedChatContainsUnreadMessages = (): boolean => {
+    return !!selectedChat.messages.find((m) => !m.read);
+  }
+
   return (
-    <Container>
+    <Container onClick={markMessagesAsRead} onFocus={markMessagesAsRead}>
       <Row className="mb-3" style={chatWindowStyle} ref={chatWindowRef}>
         {selectedChat.messages.map((message) => (
           <Row
@@ -59,7 +73,7 @@ function SingleChat () {
                 className='w-100' type="text" placeholder="Nachricht..."/>
             </Col>
             <Col sm='auto'>
-              <Button className="mainButton w-100">
+              <Button type='submit' className="mainButton w-100">
                 <FontAwesomeIcon icon={faPaperPlane}/>
               </Button>
             </Col>

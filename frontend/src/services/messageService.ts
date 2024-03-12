@@ -41,6 +41,17 @@ export const postMessage = async (receiverId: number, message: string) => {
   }
 }
 
+export const markMessagesRead = async (conversationId: number) => {
+  try {
+    const res = await fetch(`/message/read/${conversationId}`, {
+      method: "POST",
+    });
+    return res.ok;
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 interface PostMessageData {
   receiverId: number;
   message: string;
