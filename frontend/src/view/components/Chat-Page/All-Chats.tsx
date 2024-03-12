@@ -27,7 +27,7 @@ function AllChats() {
     <ListGroup style={{ minWidth: "100%", overflow: 'auto' }}>
       {chats.map((c) => (
           <ListGroup.Item className='d-flex justify-content-between' style={{ minWidth: "100%"}} onClick={()=> setSelectedChat(c.conversationId)}>
-            <span>{c.conversationPartnerName}</span>
+            <span><strong>{c.conversationPartnerName}</strong></span>
             {unreadMessages(c.conversationId) > 0 ?
               <span className='unread-message-badge'>{unreadMessages(c.conversationId)}</span> :
               <></>
