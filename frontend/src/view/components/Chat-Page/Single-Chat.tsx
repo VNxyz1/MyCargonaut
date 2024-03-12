@@ -40,17 +40,11 @@ function SingleChat () {
   }
 
   const markMessagesAsRead = async () => {
-    if (selectedChatContainsUnreadMessages()) {
       await markMessagesRead(selectedChat.conversationId);
       const unreadMessages = await getUnreadMessages();
       if (unreadMessages) {
         setUnreadChats(unreadMessages);
       }
-    }
-  }
-
-  const selectedChatContainsUnreadMessages = (): boolean => {
-    return !!selectedChat.messages.find((m) => !m.read);
   }
 
   return (
