@@ -2,12 +2,19 @@ import { ListGroup } from 'react-bootstrap';
 import { chatStore } from './chats-zustand.ts';
 import { CSSProperties, useEffect } from 'react';
 
-const unreadConversation: CSSProperties = {
-  backgroundColor: 'red'
-}
-
-const conversation: CSSProperties = {
-  backgroundColor: 'white'
+const badgeStyle: CSSProperties = {
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  backgroundColor: 'red',
+  color: 'white',
+  borderRadius: '50%',
+  padding: '0 5px',
+  height: '20px',
+  fontSize: '12px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 }
 
 function AllChats() {
@@ -20,20 +27,23 @@ function AllChats() {
     }
   }, [chats]);
 
-  const unread = (conversationId: number) => {
+  const unreadMessages = (conversationId: number): number => {
     if(unreadConversations) {
       const found = unreadConversations.find((uC) => uC.conversationId == conversationId);
-      console.log("du wurdest als ungelesen erkannt?" + found !== undefined)
-      return found !== undefined;
+      if (found) {
+        return found.unreadMessages;
+      }
     }
+    return 0;
   }
 
   return (
     <ListGroup style={{ overflow: 'auto' }}>
       {chats.map((c) => (
-        <ListGroup.Item onClick={()=> setSelectedChat(c.conversationId)} style={unread(c.conversationId) ? unreadConversation : conversation}>
-          <h3>{c.conversationPartnerName}</h3>
-        </ListGroup.Item>
+          <ListGroup.Item onClick={()=> setSelectedChat(c.conversationId)}>
+            <h3>{c.conversationPartnerName}</h3>
+            <span style={badgeStyle}>{unreadMessages(c.conversationId)}</span>
+          </ListGroup.Item>
       ))}
     </ListGroup>
   );
