@@ -85,13 +85,29 @@ function SingleChat () {
 }
 
 function MessageComp( props: { message: Message }) {
+  const [date, setDate] = useState("")
+  const [time, setTime] = useState("")
+  const timestamp = () => {
+    const date = new Date(props.message.timestamp);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    setDate(`${day}.${month}.${year}`);
+    setTime(`${hours}:${minutes}`);
+  }
+
+  useEffect(() => {
+    timestamp()
+  }, []);
 
   return (
-      <Card className='w-auto mb-3 mx-3' style={{maxWidth: '70%'}}>
-        <Card.Body>
-          {props.message.message}
+      <Card className='w-auto mb-3 mx-3 p-0' style={{maxWidth: '70%'}}>
+        <Card.Body className='pe-5'>
+            {props.message.message}
         </Card.Body>
-        <Card.Footer>{props.message.timestamp}</Card.Footer>
+        <Card.Footer className='text-end py-0' ><em><small>{date} <strong>{time}</strong></small></em></Card.Footer>
       </Card>
   );
 }
