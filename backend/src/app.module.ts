@@ -27,6 +27,7 @@ import { VehicleService } from './routes/vehicle.service/vehicle.service';
 import { VehicleController } from './routes/vehicle/vehicle.controller';
 import { VehicleExistsValidator } from './routes/utils/custom_validators';
 import { MessageGatewayService } from './socket/message.gateway.service';
+import { MessageGateway } from './socket/message.gateway';
 
 let user: Buffer;
 let pass: Buffer;
@@ -95,6 +96,7 @@ if (process.env.RUNNS_ON_DOCKER === 'true') {
     VehicleService,
     MessageService,
     VehicleExistsValidator,
+    MessageGateway,
     MessageGatewayService,
   ],
 })

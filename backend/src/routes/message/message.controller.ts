@@ -23,6 +23,7 @@ import { GetMessageDto } from './DTOs/GetMessageResponseDTO';
 import { Message } from '../../database/Message';
 import { Offer } from '../../database/Offer';
 import { Conversation } from '../../database/Conversation';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
 
 @ApiTags('message')
 @Controller('message')
@@ -31,6 +32,7 @@ export class MessageController {
     private readonly messageService: MessageService,
     private readonly userService: UserService,
     private readonly offerService: OfferService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @UseGuards(IsLoggedInGuard)
@@ -157,7 +159,7 @@ export class MessageController {
     message.message = createMessageDto.message;
     message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
     await this.messageService.createMessage(message);
-
+    this.messageGatewayService.reloadMessages(receiver.id);
     return new OKResponseWithMessageDTO(true, 'Message created successfully.');
   }
 
@@ -211,6 +213,7 @@ export class MessageController {
       message.message = createMessageDto.message;
       message.timestamp = new Date(createMessageDto.timestamp); //ToDo In der Datenbank wird for some reason Zeit - 1 Stunde gespeichert
       await this.messageService.createMessage(message);
+      this.messageGatewayService.reloadMessages(client.id);
     }
     return new OKResponseWithMessageDTO(true, 'Message created successfully.');
   }
