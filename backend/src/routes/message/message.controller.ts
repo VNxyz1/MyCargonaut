@@ -24,6 +24,8 @@ import { Message } from '../../database/Message';
 import { Offer } from '../../database/Offer';
 import { Conversation } from '../../database/Conversation';
 import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { GetUnreadMessageCountDto } from './DTOs/GetUnreadMessageCountDTO';
+import { GetUnreadMessagesCountDto } from './DTOs/GetUnreadMessagesCountDTO';
 
 @ApiTags('message')
 @Controller('message')
@@ -95,7 +97,7 @@ export class MessageController {
     summary: 'Gets all unread messages',
     description: `Returns all unread messages of the logged-in user.`,
   })
-  @ApiResponse({ type: GetAllMessagesDto })
+  @ApiResponse({ type: GetUnreadMessagesCountDto })
   @ApiResponse({
     status: 403,
     type: ForbiddenException,
