@@ -21,9 +21,9 @@ export class RatingService {
     return await this.ratingRepository.save(rating);
   }
 
-  async isAlreadyRated(raterId: number, rateeId: number) {
+  async isAlreadyRated(raterId: number, rateeId: number, tripId: number) {
     const rated = await this.ratingRepository.findOne({
-      where: { rater: Equal(raterId), rated: Equal(rateeId) },
+      where: { rater: Equal(raterId), rated: Equal(rateeId), trip: Equal(tripId)},
     });
     return rated ? true : false;
   }
