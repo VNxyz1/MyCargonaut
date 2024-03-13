@@ -30,7 +30,7 @@ export const convertUserToOtherUser = (user: User) => {
   const otherUserDto: GetOtherUserDto = new GetOtherUserDto();
   otherUserDto.id = user.id;
   otherUserDto.firstName = user.firstName;
-  otherUserDto.lastName = user.lastName;
+  otherUserDto.lastName = user.lastName.slice(0, 1) + '.';
   otherUserDto.profilePicture = user.profilePicture;
   otherUserDto.entryDate = new Date(user.entryDate);
   otherUserDto.age = calcAge(new Date(user.birthday));
