@@ -16,11 +16,7 @@ import { UserController } from '../user/user.controller';
 import { MockCreateUser } from '../user/Mocks/MockCreateUser';
 import { MockPostTransitRequest } from './Mock/MockPostTransitRequest';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
 import { RatingService } from '../rating.service/rating.service';
@@ -67,9 +63,7 @@ describe('TransitRequestController', () => {
     userController = module.get<UserController>(UserController);
     userService = module.get<UserService>(UserService);
     offerController = module.get<OfferController>(OfferController);
-    transitController = module.get<TransitRequestController>(
-      TransitRequestController,
-    );
+    transitController = module.get<TransitRequestController>(TransitRequestController);
     transitService = module.get<TransitRequestService>(TransitRequestService);
     vehicleService = module.get<VehicleService>(VehicleService);
     // create users for testing
@@ -103,16 +97,10 @@ describe('TransitRequestController', () => {
       runTestAsClient();
       const body = new MockPostTransitRequest();
 
-      const result = await transitController.postTransitRequest(
-        session,
-        1,
-        body,
-      );
+      const result = await transitController.postTransitRequest(session, 1, body);
 
       expect(result).toBeDefined();
-      expect(result).toStrictEqual(
-        new OKResponseWithMessageDTO(true, 'Request was sent'),
-      );
+      expect(result).toStrictEqual(new OKResponseWithMessageDTO(true, 'Request was sent'));
     });
 
     it('should throw an exception if the offer does not exist', async () => {
@@ -120,21 +108,15 @@ describe('TransitRequestController', () => {
       const nonExistingOfferId = 999;
       const body = new MockPostTransitRequest();
 
-      await expect(
-        transitController.postTransitRequest(session, nonExistingOfferId, body),
-      ).rejects.toThrow();
+      await expect(transitController.postTransitRequest(session, nonExistingOfferId, body)).rejects.toThrow();
     });
 
     it('should throw an exception if the requesting user is the offer provider', async () => {
       runTestAsProvider();
       const body = new MockPostTransitRequest();
 
-      await expect(
-        transitController.postTransitRequest(session, 1, body),
-      ).rejects.toThrow(
-        new ForbiddenException(
-          'You are not allowed to make a request to your own offer',
-        ),
+      await expect(transitController.postTransitRequest(session, 1, body)).rejects.toThrow(
+        new ForbiddenException('You are not allowed to make a request to your own offer'),
       );
     });
 
@@ -143,9 +125,7 @@ describe('TransitRequestController', () => {
       const body = new MockPostTransitRequest();
       body.requestedSeats = undefined;
 
-      await expect(
-        transitController.postTransitRequest(session, 1, body),
-      ).rejects.toThrow();
+      await expect(transitController.postTransitRequest(session, 1, body)).rejects.toThrow();
     });
 
     it('should throw an exception if the offered coins are not provided', async () => {
@@ -153,17 +133,14 @@ describe('TransitRequestController', () => {
       const body = new MockPostTransitRequest();
       body.offeredCoins = undefined;
 
-      await expect(
-        transitController.postTransitRequest(session, 1, body),
-      ).rejects.toThrow();
+      await expect(transitController.postTransitRequest(session, 1, body)).rejects.toThrow();
     });
   });
 
   describe('getPendingTransitrequestOfUser', () => {
     it('should get all pending transit requests for the logged-in user', async () => {
       runTestAsClient();
-      const result =
-        await transitController.getPendingTransitRequestOfLoggedInUser(session);
+      const result = await transitController.getPendingTransitRequestOfLoggedInUser(session);
 
       expect(result).toBeDefined();
       expect(result.transitRequests).toHaveLength(1);
@@ -175,8 +152,7 @@ describe('TransitRequestController', () => {
 
     it('should return an empty array if the user is not logged in', async () => {
       runTestAsLoggedOutUser();
-      const result =
-        await transitController.getPendingTransitRequestOfLoggedInUser(session);
+      const result = await transitController.getPendingTransitRequestOfLoggedInUser(session);
 
       expect(result.transitRequests).toHaveLength(0);
     });
@@ -229,9 +205,7 @@ describe('TransitRequestController', () => {
       runTestAsClient();
       const body = {};
 
-      await expect(
-        transitController.putTransitRequest(session, 1, body),
-      ).rejects.toThrow(
+      await expect(transitController.putTransitRequest(session, 1, body)).rejects.toThrow(
         new BadRequestException('Please provide at least one of both props'),
       );
     });
@@ -250,30 +224,20 @@ describe('TransitRequestController', () => {
       const coinBalanceOfClient = await userService.getCoinBalanceOfUser(2);
 
       expect(result).toBeDefined();
-      expect(result).toStrictEqual(
-        new OKResponseWithMessageDTO(true, 'Request was accepted'),
-      );
+      expect(result).toStrictEqual(new OKResponseWithMessageDTO(true, 'Request was accepted'));
       expect(coinBalanceOfProvider).toBe(700);
       expect(coinBalanceOfClient).toBe(300);
     });
 
     it('should throw an exception if the request is not made to the logged-in users offer', async () => {
       runTestAsClient();
-      await transitController.postTransitRequest(
-        session,
-        2,
-        new MockPostTransitRequest(),
-      );
+      await transitController.postTransitRequest(session, 2, new MockPostTransitRequest());
 
       runTestAsProvider();
       const nonMatchingRequestId = 2;
 
-      await expect(
-        transitController.acceptRequest(session, nonMatchingRequestId),
-      ).rejects.toThrow(
-        new ForbiddenException(
-          'You are not allowed to mark this request as accepted',
-        ),
+      await expect(transitController.acceptRequest(session, nonMatchingRequestId)).rejects.toThrow(
+        new ForbiddenException('You are not allowed to mark this request as accepted'),
       );
     });
 
@@ -284,9 +248,7 @@ describe('TransitRequestController', () => {
       runTestAsSecondProvider();
 
       await expect(transitController.acceptRequest(session, 2)).rejects.toThrow(
-        new ForbiddenException(
-          'The coin balance of the requesting user is not valid.',
-        ),
+        new ForbiddenException('The coin balance of the requesting user is not valid.'),
       );
     });
   });
@@ -294,17 +256,11 @@ describe('TransitRequestController', () => {
   describe('deleteTransitRequest', () => {
     it('should delete a transit request', async () => {
       runTestAsClient();
-      await transitController.postTransitRequest(
-        session,
-        1,
-        new MockPostTransitRequest(),
-      );
+      await transitController.postTransitRequest(session, 1, new MockPostTransitRequest());
       const result = await transitController.deleteTransitRequest(session, 3);
 
       expect(result).toBeDefined();
-      expect(result).toStrictEqual(
-        new OKResponseWithMessageDTO(true, 'Request was deleted'),
-      );
+      expect(result).toStrictEqual(new OKResponseWithMessageDTO(true, 'Request was deleted'));
       await expect(transitService.getTransitRequestById(1)).rejects.toThrow(
         new NotFoundException('No pending transit requests found'),
       );
@@ -313,9 +269,7 @@ describe('TransitRequestController', () => {
     it('should throw an exception if the logged-in user is not the requester', async () => {
       runTestAsProvider();
 
-      await expect(
-        transitController.deleteTransitRequest(session, 2),
-      ).rejects.toThrow(
+      await expect(transitController.deleteTransitRequest(session, 2)).rejects.toThrow(
         new ForbiddenException('You are not allowed to delete this Request.'),
       );
     });
@@ -329,10 +283,7 @@ describe('TransitRequestController', () => {
     });
   });
 
-  const setCoinBalanceOfUser = async (
-    userId: number,
-    newCoinBalance: number,
-  ) => {
+  const setCoinBalanceOfUser = async (userId: number, newCoinBalance: number) => {
     await userService.setCoinBalanceOfUser(userId, newCoinBalance);
   };
 

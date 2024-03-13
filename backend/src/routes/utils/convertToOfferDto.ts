@@ -12,13 +12,9 @@ export const convertOfferToGetOfferDto = (offer: Offer) => {
   getOfferResponseDto.id = offer.id;
   getOfferResponseDto.provider = convertUserToOtherUser(offer.provider);
   getOfferResponseDto.createdAt = new Date(offer.createdAt);
-  getOfferResponseDto.clients = offer.clients.map((client) =>
-    convertUserToOtherUser(client),
-  );
+  getOfferResponseDto.clients = offer.clients.map((client) => convertUserToOtherUser(client));
   if (offer.vehicle) {
-    getOfferResponseDto.vehicle = convertVehicleToCreateVehicleDto(
-      offer.vehicle,
-    );
+    getOfferResponseDto.vehicle = convertVehicleToCreateVehicleDto(offer.vehicle);
   }
   getOfferResponseDto.bookedSeats = offer.bookedSeats;
   getOfferResponseDto.state = offer.state;
@@ -43,9 +39,7 @@ export const convertUserToOtherUser = (user: User) => {
     otherUserDto.offers = user.offers.map((o) => convertOfferToGetOfferDto(o));
   }
   if (user.requestedTrips) {
-    otherUserDto.tripRequests = user.requestedTrips.map((tR) =>
-      convertTripRequestToGetDto(tR),
-    );
+    otherUserDto.tripRequests = user.requestedTrips.map((tR) => convertTripRequestToGetDto(tR));
   }
 
   return otherUserDto;

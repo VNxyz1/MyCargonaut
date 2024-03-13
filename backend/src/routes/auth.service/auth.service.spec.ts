@@ -15,10 +15,7 @@ describe('AuthService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.auth.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.auth.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       providers: [UserService, AuthService, PlzService],
     }).compile();
 

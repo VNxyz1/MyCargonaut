@@ -8,9 +8,7 @@ export function userIsValidToBeProvider(user: User) {
   }
 
   if (!bothExisting) {
-    throw new ForbiddenException(
-      'Add a profile picture and phone number to your profile to proceed.',
-    );
+    throw new ForbiddenException('Add a profile picture and phone number to your profile to proceed.');
   }
 
   return bothExisting;

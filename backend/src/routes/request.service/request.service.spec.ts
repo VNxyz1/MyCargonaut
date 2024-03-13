@@ -59,9 +59,7 @@ describe('RequestService', () => {
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {
-      await expect(requestService.getById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(requestService.getById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -97,15 +95,11 @@ describe('RequestService', () => {
 
       await requestService.deleteById(1);
 
-      await expect(requestService.getById(1)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {
-      await expect(requestService.deleteById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(requestService.deleteById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -120,9 +114,7 @@ describe('RequestService', () => {
 
       await requestService.delete(savedTripRequest);
 
-      await expect(requestService.getById(1)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {
@@ -135,33 +127,15 @@ describe('RequestService', () => {
         4,
       );
 
-      await expect(
-        requestService.delete(nonExistingTripRequest),
-      ).rejects.toThrow(NotFoundException);
+      await expect(requestService.delete(nonExistingTripRequest)).rejects.toThrow(NotFoundException);
     });
   });
 
-  const postTripRequest = async (
-    user: User,
-    startPlz: CreatePlzDto,
-    endPlz: CreatePlzDto,
-    seats: number,
-  ) => {
-    const createdStartPlz = await plzService.createPlz(
-      startPlz.plz,
-      startPlz.location,
-    );
-    const createdEndPlz = await plzService.createPlz(
-      endPlz.plz,
-      endPlz.location,
-    );
+  const postTripRequest = async (user: User, startPlz: CreatePlzDto, endPlz: CreatePlzDto, seats: number) => {
+    const createdStartPlz = await plzService.createPlz(startPlz.plz, startPlz.location);
+    const createdEndPlz = await plzService.createPlz(endPlz.plz, endPlz.location);
 
-    const tR = new MockCreateTripRequest(
-      user,
-      createdStartPlz,
-      createdEndPlz,
-      seats,
-    );
+    const tR = new MockCreateTripRequest(user, createdStartPlz, createdEndPlz, seats);
 
     const tRdB = await requestService.save(tR);
     tRdB.offerings = [];
@@ -175,19 +149,9 @@ describe('RequestService', () => {
 
   const setUp = async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.request.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.request.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController],
-      providers: [
-        UserService,
-        PlzService,
-        RequestService,
-        PlzService,
-        RatingService,
-        RequestOfferingService,
-      ],
+      providers: [UserService, PlzService, RequestService, PlzService, RatingService, RequestOfferingService],
     }).compile();
 
     userService = module.get<UserService>(UserService);

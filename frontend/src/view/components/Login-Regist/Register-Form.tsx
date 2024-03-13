@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import {InputGroup} from "react-bootstrap";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import {useState} from "react";
+import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth, loginUser} from "../../../services/authService";
 import {postUser } from "../../../services/userService";
@@ -24,7 +24,7 @@ function RegisterForm() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [passwordValidation, setPasswordValidation] = useState<{ p1: string; p2: string }>({p1: "", p2: ""});
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-    const [isEqualPassword, setisEqualPassword] = useState<string | null>(null);
+    const [isEqualPassword, setIsEqualPassword] = useState<string | null>(null);
     const {login} = useAuth();
     const navigate = useNavigate();
     const [registerData, setRegisterData] = useState<RegisterDataProps>({
@@ -36,7 +36,7 @@ function RegisterForm() {
     });
 
 
-    const handleSubmit = async (event: any) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         const form = event.currentTarget;
         event.preventDefault();
 
@@ -50,11 +50,11 @@ function RegisterForm() {
             return
         }
 
-        if (form.checkValidity() === false) {
+        if (!form.checkValidity()) {
             event.stopPropagation();
         }
 
-        if (form.checkValidity() === true) {
+        if (form.checkValidity()) {
             registerData.password = checkPasswords();
             if (registerData.password.trim() === "") {
                 console.error('Passwörter ungleich!');
@@ -92,11 +92,11 @@ function RegisterForm() {
     const checkPasswords = () => {
         if (passwordValidation.p1 === passwordValidation.p2) {
             console.log("gleich");
-            setisEqualPassword(null);
+            setIsEqualPassword(null);
             return passwordValidation.p1
         } else {
             console.log("ungleich");
-            setisEqualPassword("Die Passwörter sind ungleich.");
+            setIsEqualPassword("Die Passwörter sind ungleich.");
             return "";
         }
     }

@@ -8,10 +8,7 @@ import {
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 
-export function IsPhoneNumberOrEmptyString(
-  property: string,
-  validationOptions?: ValidationOptions,
-) {
+export function IsPhoneNumberOrEmptyString(property: string, validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'IsPhoneNumberOrEmptyStringWithMessage',
@@ -28,9 +25,7 @@ export function IsPhoneNumberOrEmptyString(
           const isPhoneNumberValid = isPhoneNumber(value);
 
           if (!isPhoneNumberValid) {
-            throw new BadRequestException(
-              'Please enter a valid phone number or an empty string',
-            );
+            throw new BadRequestException('Please enter a valid phone number or an empty string');
           }
 
           return isPhoneNumber(value);

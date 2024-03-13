@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Offer } from './Offer';
 import { TransitRequest } from './TransitRequest';
 import { TripRequest } from './TripRequest';
@@ -67,10 +59,7 @@ export class User {
   @OneToMany(() => TripRequest, (tripRequest) => tripRequest.requester)
   requestedTrips: TripRequest[];
 
-  @OneToMany(
-    () => TripRequestOffering,
-    (tripRequestOffering) => tripRequestOffering.offeringUser,
-  )
+  @OneToMany(() => TripRequestOffering, (tripRequestOffering) => tripRequestOffering.offeringUser)
   tripRequestOfferings: TripRequestOffering[];
 
   @OneToMany(() => Rating, (rating) => rating.rated)

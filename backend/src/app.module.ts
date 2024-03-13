@@ -33,20 +33,8 @@ let user: Buffer;
 let pass: Buffer;
 
 if (process.env.RUNNS_ON_DOCKER === 'true') {
-  const userPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    process.env.DB_USER_FILE,
-  );
-  const passPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-    process.env.DB_PASSWORD_FILE,
-  );
+  const userPath = path.join(__dirname, '..', '..', '..', process.env.DB_USER_FILE);
+  const passPath = path.join(__dirname, '..', '..', '..', process.env.DB_PASSWORD_FILE);
 
   user = fs.readFileSync(userPath);
   pass = fs.readFileSync(passPath);

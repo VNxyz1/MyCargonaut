@@ -12,11 +12,7 @@ import * as fs from 'fs';
 import { UpdateUserRequestDto } from './DTOs/UpdateUserRequestDTO';
 import { MockCreateUser } from './Mocks/MockCreateUser';
 import { MockGetUser } from './Mocks/MockGetUser';
-import {
-  ForbiddenException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { MockSession } from './Mocks/MockSession';
 import { entityArr, sqlite_setup } from '../../utils/sqlite_setup';
 import { PlzService } from '../plz.service/plz.service';
@@ -30,10 +26,7 @@ describe('UserController', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.user.controller.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.user.controller.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();
@@ -71,17 +64,12 @@ describe('UserController', () => {
     user.birthday = new Date();
 
     await expect(userController.postUser(user)).rejects.toThrow(
-      new ForbiddenException(
-        'You have to be at least 18 years old to create an account.',
-      ),
+      new ForbiddenException('You have to be at least 18 years old to create an account.'),
     );
   });
 
   it('should log in the created user', async () => {
-    const responseMock = new OKResponseWithMessageDTO(
-      true,
-      `Successfully logged in`,
-    );
+    const responseMock = new OKResponseWithMessageDTO(true, `Successfully logged in`);
 
     const loginDTO = new LogInRequestDto();
     loginDTO.eMail = userForThisTest.eMail;
@@ -126,9 +114,7 @@ describe('UserController', () => {
   it('should handle duplicate email error when creating a user', async () => {
     const user = new MockCreateUser();
 
-    const resMock = new InternalServerErrorException(
-      'E-Mail bereits vergeben!',
-    );
+    const resMock = new InternalServerErrorException('E-Mail bereits vergeben!');
 
     expect(await userController.postUser(user)).toEqual(resMock);
   });
@@ -142,9 +128,7 @@ describe('UserController', () => {
     const resMock = new NotFoundException('No User with this Id found.');
     try {
       const res = await userController.updateUser(invalidSession, updateDTO);
-      expect(res).not.toEqual(
-        new OKResponseWithMessageDTO(true, 'User Updated'),
-      );
+      expect(res).not.toEqual(new OKResponseWithMessageDTO(true, 'User Updated'));
     } catch (e) {
       expect(e).toEqual(resMock);
     }

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  NotFoundException,
-  Post,
-  Session,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Post, Session, UseGuards } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../auth.service/auth.service';
 import { ISession } from '../../utils/ISession';
@@ -61,9 +53,7 @@ export class AuthController {
   private async checkUser(password: string, hash: string) {
     const match = await compare(password, hash);
     if (!match) {
-      throw new NotFoundException(
-        `There is no combination of this email and password.`,
-      );
+      throw new NotFoundException(`There is no combination of this email and password.`);
     }
     return match;
   }

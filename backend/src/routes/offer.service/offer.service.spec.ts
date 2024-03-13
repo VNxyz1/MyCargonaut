@@ -23,17 +23,8 @@ describe('OfferService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.offer.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
-      providers: [
-        OfferService,
-        UserService,
-        TransitRequestService,
-        PlzService,
-        VehicleService,
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.offer.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
+      providers: [OfferService, UserService, TransitRequestService, PlzService, VehicleService],
     }).compile();
 
     offerService = module.get<OfferService>(OfferService);
@@ -54,9 +45,7 @@ describe('OfferService', () => {
       const providerId = 1;
       const offerDto: CreateOfferDto = new MockCreateOffer();
 
-      await expect(
-        offerService.postOffer(providerId, offerDto),
-      ).resolves.toBeDefined();
+      await expect(offerService.postOffer(providerId, offerDto)).resolves.toBeDefined();
     });
   });
 
@@ -143,15 +132,11 @@ describe('OfferService', () => {
 
       const offer = await offerService.getOffer(offerId);
 
-      await transitService.postTransitRequest(
-        offer,
-        await userService.getUserById(1),
-        {
-          requestedSeats: 2,
-          offeredCoins: 200,
-          text: 'Ich hab sonst nix dabei.',
-        },
-      );
+      await transitService.postTransitRequest(offer, await userService.getUserById(1), {
+        requestedSeats: 2,
+        offeredCoins: 200,
+        text: 'Ich hab sonst nix dabei.',
+      });
 
       await offerService.deleteOffer(offer);
 

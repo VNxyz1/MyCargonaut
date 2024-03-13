@@ -87,10 +87,7 @@ export class VehicleController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({ summary: 'Delete vehicle of logged in User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async deleteVehicle(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) vehicleId: number,
-  ) {
+  async deleteVehicle(@Session() session: ISession, @Param('id', ParseIntPipe) vehicleId: number) {
     const userId = session.userData.id;
     const vehicle = await this.vehicleService.getVehicle(vehicleId, userId);
     await this.vehicleService.deleteVehicle(vehicle);
@@ -108,8 +105,7 @@ export class VehicleController {
       storage: diskStorage({
         destination: './uploads/vehicle-images',
         filename: (req: any, file, callback) => {
-          const uniquSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniquSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const prefix = req.session.userData.id;
           const ext = extname(file.originalname);
           const filename = `pp-${prefix}-${uniquSuffix}${ext}`;
@@ -125,15 +121,8 @@ export class VehicleController {
   ) {
     try {
       this.vehicleService.removeOldImage(vehicleId, session.userData.id);
-      this.vehicleService.saveProfileImagePath(
-        vehicleId,
-        session.userData.id,
-        file.filename,
-      );
-      return new OKResponseWithMessageDTO(
-        true,
-        'Successfully updated vehicle image',
-      );
+      this.vehicleService.saveProfileImagePath(vehicleId, session.userData.id, file.filename);
+      return new OKResponseWithMessageDTO(true, 'Successfully updated vehicle image');
     } catch (error) {
       console.error('Error uploading vehicle image:', error);
       throw new InternalServerErrorException('Error uploading vehicle image');
@@ -146,17 +135,9 @@ export class VehicleController {
     description: 'Vehicle picture retrieved successfully',
     type: 'image/png',
   })
-  async findVehicleImage(
-    @Param('imagename') imagename: string,
-    @Res() res: Response,
-  ) {
+  async findVehicleImage(@Param('imagename') imagename: string, @Res() res: Response) {
     try {
-      const imagePath = join(
-        process.cwd(),
-        'uploads',
-        'vehicle-images',
-        imagename,
-      );
+      const imagePath = join(process.cwd(), 'uploads', 'vehicle-images', imagename);
       res.sendFile(imagePath);
     } catch (error) {
       return new InternalServerErrorException('Image not found');
@@ -167,21 +148,11 @@ export class VehicleController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({ summary: 'Remove vehicle picture' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async removeProfileImage(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) vehicleId: number,
-  ) {
+  async removeProfileImage(@Session() session: ISession, @Param('id', ParseIntPipe) vehicleId: number) {
     try {
       this.vehicleService.removeOldImage(vehicleId, session.userData.id);
-      this.vehicleService.saveProfileImagePath(
-        vehicleId,
-        session.userData.id,
-        '',
-      );
-      return new OKResponseWithMessageDTO(
-        true,
-        'Successfully removed vehicle image',
-      );
+      this.vehicleService.saveProfileImagePath(vehicleId, session.userData.id, '');
+      return new OKResponseWithMessageDTO(true, 'Successfully removed vehicle image');
     } catch (error) {
       console.error('Error removing vehicle image:', error);
       throw new InternalServerErrorException('Error removing vehicle image');

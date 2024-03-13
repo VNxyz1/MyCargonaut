@@ -17,8 +17,7 @@ export class RoutePart {
 
   @Column()
   @ApiProperty({
-    description:
-      'A higher number means that this location will be traversed later.',
+    description: 'A higher number means that this location will be traversed later.',
   })
   position: number;
 }

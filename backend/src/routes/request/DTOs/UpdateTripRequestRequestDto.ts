@@ -1,10 +1,4 @@
-import {
-  IsISO8601,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreatePlzDto } from '../../offer/DTOs/CreatePlzDto';
 

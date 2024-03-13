@@ -1,7 +1,7 @@
 import {CreateVehicleData, CreateVehicleResponse, EditVehicleData, Vehicle} from "../interfaces/Vehicle.ts";
 
 
-export const getOwnVehicles = async (): Promise<Vehicle | null> => {
+export const getOwnVehicles = async (): Promise<Vehicle[] | null> => {
     try {
         const res = await fetch(`/vehicle/own`, {
             method: "GET",
@@ -10,7 +10,7 @@ export const getOwnVehicles = async (): Promise<Vehicle | null> => {
 
         if (res.ok) {
             const data = await res.json();
-            return data.vehicleList;
+            return data.vehicleList as Vehicle[];
         } else {
             console.error("Error fetching data");
             return null;

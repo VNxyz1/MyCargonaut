@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TripRequest } from '../../database/TripRequest';
 import { Repository } from 'typeorm';
@@ -64,9 +60,7 @@ export class RequestOfferingService {
   async save(offering: TripRequestOffering) {
     const offeringDb = await this.offeringRepository.save(offering);
     if (!offeringDb) {
-      throw new InternalServerErrorException(
-        'The offering could not be saved.',
-      );
+      throw new InternalServerErrorException('The offering could not be saved.');
     }
     return offeringDb;
   }

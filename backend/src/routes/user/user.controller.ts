@@ -62,8 +62,7 @@ export class UserController {
 
     userDto.profilePicture = user.profilePicture;
     userDto.phoneNumber = user.phoneNumber;
-    userDto.averageRatings =
-      await this.ratingService.selectAverageRatingForUser(user.id);
+    userDto.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
 
     return userDto;
   }
@@ -74,8 +73,7 @@ export class UserController {
   async getUser(@Param('id', ParseIntPipe) userId: number) {
     const user = await this.userService.getUserById(userId);
     const response = convertUserToOtherUser(user);
-    response.averageRatings =
-      await this.ratingService.selectAverageRatingForUser(user.id);
+    response.averageRatings = await this.ratingService.selectAverageRatingForUser(user.id);
     return response;
   }
 
@@ -85,9 +83,7 @@ export class UserController {
   async postUser(@Body() body: CreateUserRequestDto) {
     const age = calcAge(new Date(body.birthday));
     if (age < 18) {
-      throw new ForbiddenException(
-        'You have to be at least 18 years old to create an account.',
-      );
+      throw new ForbiddenException('You have to be at least 18 years old to create an account.');
     }
 
     body.password = await hash(body.password);
@@ -107,10 +103,7 @@ export class UserController {
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({ summary: 'Updates the Logged-In User' })
   @ApiResponse({ type: OKResponseWithMessageDTO })
-  async updateUser(
-    @Session() session: ISession,
-    @Body() body: UpdateUserRequestDto,
-  ) {
+  async updateUser(@Session() session: ISession, @Body() body: UpdateUserRequestDto) {
     const id = session.userData.id;
     session.userData = await this.userService.updateLoggedInUser(id, body);
 
@@ -163,8 +156,7 @@ export class UserController {
       storage: diskStorage({
         destination: './uploads/profile-images',
         filename: (req: any, file, callback) => {
-          const uniquSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniquSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const prefix = req.session.userData.id;
           const ext = extname(file.originalname);
           const filename = `pp-${prefix}-${uniquSuffix}${ext}`;
@@ -173,17 +165,11 @@ export class UserController {
       }),
     }),
   )
-  async uploadProfileImage(
-    @Session() session: ISession,
-    @UploadedFile() file: any,
-  ) {
+  async uploadProfileImage(@Session() session: ISession, @UploadedFile() file: any) {
     try {
       this.userService.removeOldImage(session.userData.id);
       this.userService.saveProfileImagePath(session.userData.id, file.filename);
-      return new OKResponseWithMessageDTO(
-        true,
-        'Successfully updated profile image',
-      );
+      return new OKResponseWithMessageDTO(true, 'Successfully updated profile image');
     } catch (error) {
       console.error('Error uploading profile image:', error);
       throw new InternalServerErrorException('Error uploading profile image');
@@ -196,17 +182,9 @@ export class UserController {
     description: 'Profile picture retrieved successfully',
     type: 'image/png',
   })
-  async findProfileImage(
-    @Param('imagename') imagename: string,
-    @Res() res: Response,
-  ) {
+  async findProfileImage(@Param('imagename') imagename: string, @Res() res: Response) {
     try {
-      const imagePath = join(
-        process.cwd(),
-        'uploads',
-        'profile-images',
-        imagename,
-      );
+      const imagePath = join(process.cwd(), 'uploads', 'profile-images', imagename);
       res.sendFile(imagePath);
     } catch (error) {
       return new InternalServerErrorException('Image not found');
@@ -221,10 +199,7 @@ export class UserController {
     try {
       this.userService.removeOldImage(session.userData.id);
       this.userService.saveProfileImagePath(session.userData.id, '');
-      return new OKResponseWithMessageDTO(
-        true,
-        'Successfully removed profile image',
-      );
+      return new OKResponseWithMessageDTO(true, 'Successfully removed profile image');
     } catch (error) {
       console.error('Error removing profile image:', error);
       throw new InternalServerErrorException('Error removing profile image');
