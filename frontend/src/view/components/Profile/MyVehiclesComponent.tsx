@@ -23,7 +23,7 @@ function MyVehiclesComponent() {
         try {
             const data = await getOwnVehicles();
             if (data !== null) {
-                setVehicleData(data as any);
+                setVehicleData(data);
             }
         } catch (error) {
             console.error("Error fetching vehicle data", error);
