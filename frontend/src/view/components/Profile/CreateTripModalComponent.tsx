@@ -58,8 +58,19 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
   const [dateValue, setDateValue] = useState<string>('');
   const [seatNumberValue, setSeatNumberValue] = useState<number>(0);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [feedback, setFeedback] = useState<string | undefined>(undefined);
   const { isAuthenticated } = useAuth();
   const listElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (props.show) {
+      setFeedback(undefined);
+      setRoutes([]);
+      setSeatNumberValue(0);
+      setDescription("");
+    }
+  }, [props.show]);
+
   useEffect(() => {
     if (!props.show) {
       setRoutes([]);
@@ -98,14 +109,13 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
       });
       if (response.ok) {
         console.log('Anfrage erfolgreich gesendet');
+        props.onHide();
       } else {
-        console.error('Fehler bei der Anfrage an das Backend');
+        setFeedback("Überprüfe deine Eingaben!");
       }
     } catch (error) {
-      console.error('Fehler beim Senden der Anfrage:', error);
+      setFeedback("Versuche es später erneut.");
     }
-
-    props.onHide();
   };
 
   const newRoute = (plz: string, location: string) => {
@@ -306,10 +316,19 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
           </Row>
           <Form.Group className="mb-3" controlId="registerEmail">
             <Form.Control onChange={(e) => setDescription(e.target.value)} as="textarea" rows={3}
-                          placeholder="Beschreibung (optional)" />
+                          placeholder="Beschreibung" />
           </Form.Group>
 
           <Row className="justify-content-end">
+            {!feedback ?
+              <></>
+              :
+              <Col>
+                <Form.Text style={{color: 'red'}}>
+                  {feedback}
+                </Form.Text>
+              </Col>
+            }
             <Col xs='auto'>
               <Button type="submit" className="mainButton">Fahrt anlegen</Button>
             </Col>
