@@ -26,18 +26,9 @@ describe('AuthController', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.auth.controller.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.auth.controller.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController, AuthController, RatingController],
-      providers: [
-        UserService,
-        AuthService,
-        PlzService,
-        RatingService,
-        OfferService,
-      ],
+      providers: [UserService, AuthService, PlzService, RatingService, OfferService],
     }).compile();
 
     userController = module.get<UserController>(UserController);
@@ -59,10 +50,7 @@ describe('AuthController', () => {
   });
 
   it('should log in the created user', async () => {
-    const responseMock = new OKResponseWithMessageDTO(
-      true,
-      `Successfully logged in`,
-    );
+    const responseMock = new OKResponseWithMessageDTO(true, `Successfully logged in`);
 
     const loginDTO = new LogInRequestDto();
     loginDTO.eMail = userForThisTest.eMail;
@@ -84,10 +72,7 @@ describe('AuthController', () => {
   });
 
   it('should log out the created user', async () => {
-    const responseMock = new OKResponseWithMessageDTO(
-      true,
-      `Successfully logged out`,
-    );
+    const responseMock = new OKResponseWithMessageDTO(true, `Successfully logged out`);
 
     const result = await authController.logout(session);
 

@@ -62,17 +62,10 @@ export class TransitRequestController {
     const offer: Offer = await this.offerService.getOffer(offerId);
     const requestingUserId = session.userData.id;
     if (requestingUserId === offer.provider.id) {
-      throw new ForbiddenException(
-        'You are not allowed to make a request to your own offer',
-      );
+      throw new ForbiddenException('You are not allowed to make a request to your own offer');
     }
-    const requestingUser: User =
-      await this.userService.getUserById(requestingUserId);
-    await this.transitRequestService.postTransitRequest(
-      offer,
-      requestingUser,
-      body,
-    );
+    const requestingUser: User = await this.userService.getUserById(requestingUserId);
+    await this.transitRequestService.postTransitRequest(offer, requestingUser, body);
     return new OKResponseWithMessageDTO(true, 'Request was sent');
   }
 
@@ -90,8 +83,7 @@ export class TransitRequestController {
   async getPendingTransitRequestOfLoggedInUser(@Session() session: ISession) {
     const userId = session.userData.id;
 
-    const requests =
-      await this.transitRequestService.getAllTransitRequestsOfUser(userId);
+    const requests = await this.transitRequestService.getAllTransitRequestsOfUser(userId);
 
     const response = new GetAllPendingTransitRequestsResponseDTO();
     response.transitRequests = requests.map((tR) => {
@@ -119,15 +111,10 @@ export class TransitRequestController {
     description: 'Returns a list of pending transit requests.',
   })
   @ApiResponse({ type: GetAllPendingTransitRequestsResponseDTO })
-  async getPendingTransitrequestLoggedInUserRecived(
-    @Session() session: ISession,
-  ) {
+  async getPendingTransitrequestLoggedInUserRecived(@Session() session: ISession) {
     const userId = session.userData.id;
 
-    const requests =
-      await this.transitRequestService.getAllRecivedTransitRequestsOfUser(
-        userId,
-      );
+    const requests = await this.transitRequestService.getAllRecivedTransitRequestsOfUser(userId);
 
     const response = new GetAllPendingTransitRequestsResponseDTO();
     response.transitRequests = requests.map((tR) => {
@@ -147,8 +134,7 @@ export class TransitRequestController {
   @Put('update-params/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary:
-      'Updates the offered coins and/or requested seats of a Transit request',
+    summary: 'Updates the offered coins and/or requested seats of a Transit request',
     description: `Allows the requester to update the offered coins and/or requested seats of their transit request.`,
   })
   @ApiResponse({
@@ -167,22 +153,15 @@ export class TransitRequestController {
     @Body() body: PutTransitRequestRequestDto,
   ) {
     if (!body.requestedSeats && !body.offeredCoins) {
-      throw new BadRequestException(
-        'Please provide at least one of both props',
-      );
+      throw new BadRequestException('Please provide at least one of both props');
     }
 
     const offer: Offer = await this.offerService.getOffer(offerId);
     const requestingUserId = session.userData.id;
 
-    const requestingUser: User =
-      await this.userService.getUserById(requestingUserId);
+    const requestingUser: User = await this.userService.getUserById(requestingUserId);
 
-    await this.transitRequestService.putTransitRequest(
-      offer,
-      requestingUser,
-      body,
-    );
+    await this.transitRequestService.putTransitRequest(offer, requestingUser, body);
 
     return new OKResponseWithMessageDTO(true, 'Request was updated');
   }
@@ -203,39 +182,24 @@ export class TransitRequestController {
     type: ForbiddenException,
     description: 'Forbidden: Cannot mark this request as accepted.',
   })
-  async acceptRequest(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) tRId: number,
-  ) {
+  async acceptRequest(@Session() session: ISession, @Param('id', ParseIntPipe) tRId: number) {
     const offerProviderId = session.userData.id;
     const tR = await this.transitRequestService.getTransitRequestById(tRId);
 
     const offer = await this.offerService.getOffer(tR.offer.id);
 
     if (offer.provider.id !== offerProviderId) {
-      throw new ForbiddenException(
-        'You are not allowed to mark this request as accepted',
-      );
+      throw new ForbiddenException('You are not allowed to mark this request as accepted');
     }
 
-    const coinbalanceOfRequester = await this.userService.getCoinBalanceOfUser(
-      tR.requester.id,
-    );
+    const coinbalanceOfRequester = await this.userService.getCoinBalanceOfUser(tR.requester.id);
     if (coinbalanceOfRequester < tR.offeredCoins) {
-      throw new ForbiddenException(
-        'The coin balance of the requesting user is not valid.',
-      );
+      throw new ForbiddenException('The coin balance of the requesting user is not valid.');
     }
     await this.transitRequestService.acceptTransitRequest(tR);
 
-    await this.userService.decreaseCoinBalanceOfUser(
-      tR.requester.id,
-      tR.offeredCoins,
-    );
-    await this.userService.increaseCoinBalanceOfUser(
-      offerProviderId,
-      tR.offeredCoins,
-    );
+    await this.userService.decreaseCoinBalanceOfUser(tR.requester.id, tR.offeredCoins);
+    await this.userService.increaseCoinBalanceOfUser(offerProviderId, tR.offeredCoins);
 
     return new OKResponseWithMessageDTO(true, 'Request was accepted');
   }
@@ -256,18 +220,13 @@ export class TransitRequestController {
     type: ForbiddenException,
     description: 'Forbidden: Cannot delete this request.',
   })
-  async deleteTransitRequest(
-    @Session() session: ISession,
-    @Param('id', ParseIntPipe) tRId: number,
-  ) {
+  async deleteTransitRequest(@Session() session: ISession, @Param('id', ParseIntPipe) tRId: number) {
     const tR = await this.transitRequestService.getTransitRequestById(tRId);
 
     const requestingUserId = session.userData.id;
 
     if (!this.loggedInUserIsRequestingUser(requestingUserId, tR)) {
-      throw new ForbiddenException(
-        'You are not allowed to delete this Request.',
-      );
+      throw new ForbiddenException('You are not allowed to delete this Request.');
     }
 
     await this.transitRequestService.delete(tR);

@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Session,
-  UseGuards,
-  Param,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Session, UseGuards, Param, ForbiddenException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RatingService } from '../rating.service/rating.service';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
@@ -55,14 +46,10 @@ export class RatingController {
     }
 
     if (ratings.length == 0) {
-      throw new ForbiddenException(
-        false,
-        'Not all users have rated this trip yet.',
-      );
+      throw new ForbiddenException(false, 'Not all users have rated this trip yet.');
     }
 
-    const response: GetRatingsForTripResponseDTO =
-      new GetRatingsForTripResponseDTO();
+    const response: GetRatingsForTripResponseDTO = new GetRatingsForTripResponseDTO();
     response.passengerRatings = [];
     response.driverRatings = [];
     ratings.forEach((rating) => {
@@ -102,10 +89,7 @@ export class RatingController {
     type: ForbiddenException,
     description: 'The trip is not finished yet.',
   })
-  async getRatingStatusForTrip(
-    @Session() session: ISession,
-    @Param('tripId') tripId: number,
-  ) {
+  async getRatingStatusForTrip(@Session() session: ISession, @Param('tripId') tripId: number) {
     const trip: Offer = await this.offerService.getOffer(tripId);
     const rater = await this.userService.getUserById(session.userData.id);
     let isRaterDriver: boolean;
@@ -129,20 +113,14 @@ export class RatingController {
       const clientIds: number[] = [];
       trip.clients.forEach((client) => clientIds.push(client.id));
       for (const clientId of clientIds) {
-        const rated: boolean = await this.ratingService.isAlreadyRated(
-          rater.id,
-          clientId,
-        );
+        const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, clientId);
         const status: GetRatingStatusDto = new GetRatingStatusDto();
         status.rateeId = clientId;
         status.rated = rated;
         response.ratees.push(status);
       }
     } else {
-      const rated: boolean = await this.ratingService.isAlreadyRated(
-        rater.id,
-        trip.provider.id,
-      );
+      const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, trip.provider.id);
       const status: GetRatingStatusDto = new GetRatingStatusDto();
       status.rateeId = trip.provider.id;
       status.rated = rated;
@@ -166,12 +144,8 @@ export class RatingController {
   })
   async getUserRatings(@Param('userId') userId: number) {
     const user = await this.userService.getUserById(userId);
-    const ratingsAsDriver = await this.ratingService.selectAllRatingsByUserId(
-      user.id,
-      true,
-    );
-    const ratingsAsPassenger =
-      await this.ratingService.selectAllRatingsByUserId(user.id, false);
+    const ratingsAsDriver = await this.ratingService.selectAllRatingsByUserId(user.id, true);
+    const ratingsAsPassenger = await this.ratingService.selectAllRatingsByUserId(user.id, false);
 
     const ratings: GetUserRatingsDto = new GetUserRatingsDto();
     ratings.ratingsAsDriver = [];
@@ -186,12 +160,8 @@ export class RatingController {
       driverRating.totalRating = rating.totalRating ? rating.totalRating : 0;
       driverRating.punctuality = rating.punctuality ? rating.punctuality : 0;
       driverRating.reliability = rating.reliability ? rating.reliability : 0;
-      driverRating.cargoArrivedUndamaged = rating.cargoArrivedUndamaged
-        ? rating.cargoArrivedUndamaged
-        : 0;
-      driverRating.passengerPleasantness = rating.passengerPleasantness
-        ? rating.passengerPleasantness
-        : 0;
+      driverRating.cargoArrivedUndamaged = rating.cargoArrivedUndamaged ? rating.cargoArrivedUndamaged : 0;
+      driverRating.passengerPleasantness = rating.passengerPleasantness ? rating.passengerPleasantness : 0;
       if (rating.comment) {
         driverRating.comment = rating.comment;
       }
@@ -208,9 +178,7 @@ export class RatingController {
       passengerRating.totalRating = rating.totalRating ? rating.totalRating : 0;
       passengerRating.punctuality = rating.punctuality ? rating.punctuality : 0;
       passengerRating.reliability = rating.reliability ? rating.reliability : 0;
-      passengerRating.comfortDuringTrip = rating.comfortDuringTrip
-        ? rating.comfortDuringTrip
-        : 0;
+      passengerRating.comfortDuringTrip = rating.comfortDuringTrip ? rating.comfortDuringTrip : 0;
       if (rating.comment) {
         passengerRating.comment = rating.comment;
       }
@@ -257,10 +225,7 @@ export class RatingController {
       throw new ForbiddenException(false, 'You cannot rate this trip.');
     }
 
-    if (
-      !trip.clients.some((client) => client.id == ratee.id) &&
-      trip.provider.id != ratee.id
-    ) {
+    if (!trip.clients.some((client) => client.id == ratee.id) && trip.provider.id != ratee.id) {
       throw new ForbiddenException(false, 'You cannot rate this user.');
     }
 
@@ -269,10 +234,7 @@ export class RatingController {
     }
 
     if (trip.state != TripState.finished) {
-      throw new ForbiddenException(
-        false,
-        'You cannot rate a trip that is not finished.',
-      );
+      throw new ForbiddenException(false, 'You cannot rate a trip that is not finished.');
     }
 
     if (!isRaterDriver && ratee.id != trip.provider.id) {
@@ -280,10 +242,7 @@ export class RatingController {
     }
 
     if (await this.ratingService.isAlreadyRated(rater.id, ratee.id)) {
-      throw new ForbiddenException(
-        false,
-        'You already rated the user for this trip.',
-      );
+      throw new ForbiddenException(false, 'You already rated the user for this trip.');
     }
 
     rating.rater = rater;
@@ -297,32 +256,21 @@ export class RatingController {
 
     if (isRaterDriver) {
       if (!createRatingDto.comfortDuringTrip) {
-        throw new ForbiddenException(
-          false,
-          'You have to rate if you would pick this user again.',
-        );
+        throw new ForbiddenException(false, 'You have to rate if you would pick this user again.');
       }
       rating.comfortDuringTrip = createRatingDto.comfortDuringTrip;
       rating.cargoArrivedUndamaged = 0;
       rating.passengerPleasantness = 0;
-      rating.totalRating =
-        (rating.punctuality + rating.reliability + rating.comfortDuringTrip) /
-        3;
+      rating.totalRating = (rating.punctuality + rating.reliability + rating.comfortDuringTrip) / 3;
     } else {
-      if (
-        !createRatingDto.cargoArrivedUndamaged &&
-        !createRatingDto.passengerPleasantness
-      ) {
+      if (!createRatingDto.cargoArrivedUndamaged && !createRatingDto.passengerPleasantness) {
         throw new ForbiddenException(
           false,
           'You have to rate if the cargo was delivered undamaged or if you enjoyed the trip.',
         );
       }
 
-      if (
-        createRatingDto.cargoArrivedUndamaged &&
-        createRatingDto.passengerPleasantness
-      ) {
+      if (createRatingDto.cargoArrivedUndamaged && createRatingDto.passengerPleasantness) {
         rating.comfortDuringTrip = 0;
         rating.cargoArrivedUndamaged = createRatingDto.cargoArrivedUndamaged;
         rating.passengerPleasantness = createRatingDto.passengerPleasantness;
@@ -336,29 +284,19 @@ export class RatingController {
         rating.comfortDuringTrip = 0;
         rating.cargoArrivedUndamaged = createRatingDto.cargoArrivedUndamaged;
         rating.passengerPleasantness = 0;
-        rating.totalRating =
-          (rating.punctuality +
-            rating.reliability +
-            rating.cargoArrivedUndamaged) /
-          3;
+        rating.totalRating = (rating.punctuality + rating.reliability + rating.cargoArrivedUndamaged) / 3;
       } else {
         rating.comfortDuringTrip = 0;
         rating.cargoArrivedUndamaged = 0;
         rating.passengerPleasantness = createRatingDto.passengerPleasantness;
-        rating.totalRating =
-          (rating.punctuality +
-            rating.reliability +
-            rating.passengerPleasantness) /
-          3;
+        rating.totalRating = (rating.punctuality + rating.reliability + rating.passengerPleasantness) / 3;
       }
     }
 
     await this.ratingService.createRating(rating);
 
     //Check if every user rated the trip
-    const ratingsForThisTrip = await this.ratingService.selectRatingsForOffer(
-      trip.id,
-    );
+    const ratingsForThisTrip = await this.ratingService.selectRatingsForOffer(trip.id);
     if (ratingsForThisTrip.length == 2 * trip.clients.length) {
       await this.ratingService.setRatingsComplete(trip.id);
     }

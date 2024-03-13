@@ -42,9 +42,7 @@ export class RatingService {
     await this.ratingRepository.save(ratings);
   }
 
-  async selectAverageRatingForUser(
-    userId: number,
-  ): Promise<GetAverageRatingsDto> {
+  async selectAverageRatingForUser(userId: number): Promise<GetAverageRatingsDto> {
     const ratings = await this.ratingRepository.find({
       where: { rated: Equal(userId), complete: true },
     });
@@ -83,12 +81,9 @@ export class RatingService {
     averageRatings.total = total / ratings.length;
     averageRatings.punctuality = punctuality / ratings.length;
     averageRatings.reliability = reliability / ratings.length;
-    averageRatings.passengerPleasantness =
-      passengerPleasantness / passengerPleasantnessAmount;
-    averageRatings.comfortDuringTrip =
-      comfortDuringTrip / comfortDuringTripAmount;
-    averageRatings.cargoArrivedUndamaged =
-      cargoArrivedUndamaged / cargoArrivedUndamagedAmount;
+    averageRatings.passengerPleasantness = passengerPleasantness / passengerPleasantnessAmount;
+    averageRatings.comfortDuringTrip = comfortDuringTrip / comfortDuringTripAmount;
+    averageRatings.cargoArrivedUndamaged = cargoArrivedUndamaged / cargoArrivedUndamagedAmount;
 
     if (!averageRatings.total) {
       averageRatings.total = 0;

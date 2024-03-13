@@ -16,10 +16,7 @@ describe('PlzService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.plz.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.plz.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController, AuthController],
       providers: [UserService, AuthService, PlzService, RatingService],
     }).compile();

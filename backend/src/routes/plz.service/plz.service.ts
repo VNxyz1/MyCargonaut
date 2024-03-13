@@ -22,10 +22,7 @@ export class PlzService {
     return checkPlz;
   }
 
-  async checkIfPlzIsDuplicate(
-    plz: string,
-    location: string,
-  ): Promise<Plz | null> {
+  async checkIfPlzIsDuplicate(plz: string, location: string): Promise<Plz | null> {
     return await this.plzRepo.findOne({
       where: { plz, location },
       relations: ['routeParts'],

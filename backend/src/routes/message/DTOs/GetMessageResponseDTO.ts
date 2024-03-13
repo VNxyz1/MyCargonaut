@@ -1,10 +1,4 @@
-import {
-  IsInt,
-  IsString,
-  IsISO8601,
-  IsBoolean,
-  IsOptional,
-} from 'class-validator';
+import { IsInt, IsString, IsISO8601, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class GetMessageDto {
   @IsInt()

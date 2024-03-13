@@ -16,14 +16,7 @@ export class MockPostTripRequest {
   cargoImg: File;
 }
 
-const filePath = join(
-  process.cwd(),
-  'src',
-  'routes',
-  'request',
-  'Mock',
-  'user-default-placeholder.png',
-);
+const filePath = join(process.cwd(), 'src', 'routes', 'request', 'Mock', 'user-default-placeholder.png');
 
 export const cargoImg: Express.Multer.File = {
   buffer: fs.readFileSync(filePath),

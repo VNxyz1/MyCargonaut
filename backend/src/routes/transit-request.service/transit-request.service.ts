@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
 import { Repository } from 'typeorm';
@@ -25,13 +21,8 @@ export class TransitRequestService {
     private readonly transitRequestRepository: Repository<TransitRequest>,
   ) {}
 
-  async postTransitRequest(
-    offer: Offer,
-    requestingUser: User,
-    request: PostTransitRequestRequestDto,
-  ) {
-    const transitRequestCheck =
-      await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
+  async postTransitRequest(offer: Offer, requestingUser: User, request: PostTransitRequestRequestDto) {
+    const transitRequestCheck = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
 
     if (transitRequestCheck) {
       throw new BadRequestException('There already is a pending request!');
@@ -48,15 +39,8 @@ export class TransitRequestService {
     await this.offerRepository.save(offer);
   }
 
-  async putTransitRequest(
-    offer: Offer,
-    requestingUser: User,
-    updatedRequest: PutTransitRequestRequestDto,
-  ) {
-    let transitRequest = await this.findTransitRequestWithOfferAndRequester(
-      requestingUser,
-      offer,
-    );
+  async putTransitRequest(offer: Offer, requestingUser: User, updatedRequest: PutTransitRequestRequestDto) {
+    let transitRequest = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
 
     if (!transitRequest) {
       throw new NotFoundException('No matching request found');
@@ -133,16 +117,12 @@ export class TransitRequestService {
     });
 
     offer.clients.push(client);
-    offer.transitRequests = offer.transitRequests.filter(
-      (tranReq) => tranReq.id !== tR.id,
-    );
+    offer.transitRequests = offer.transitRequests.filter((tranReq) => tranReq.id !== tR.id);
     offer.bookedSeats += tR.requestedSeats;
 
     await this.offerRepository.save(offer);
 
-    client.requestedTransits = client.requestedTransits.filter(
-      (rT) => rT.id !== tR.id,
-    );
+    client.requestedTransits = client.requestedTransits.filter((rT) => rT.id !== tR.id);
 
     await this.userRepository.save(client);
 
@@ -159,34 +139,24 @@ export class TransitRequestService {
       relations: ['requestedTransits'],
     });
 
-    offer.transitRequests = offer.transitRequests.filter(
-      (tranReq) => tranReq.id !== tR.id,
-    );
+    offer.transitRequests = offer.transitRequests.filter((tranReq) => tranReq.id !== tR.id);
     await this.offerRepository.save(offer);
 
-    client.requestedTransits = client.requestedTransits.filter(
-      (rT) => rT.id !== tR.id,
-    );
+    client.requestedTransits = client.requestedTransits.filter((rT) => rT.id !== tR.id);
     await this.userRepository.save(client);
 
     await this.transitRequestRepository.delete(tR.id);
   }
 
-  private async findTransitRequestWithOfferAndRequester(
-    requestingUser: User,
-    offer: Offer,
-  ) {
+  private async findTransitRequestWithOfferAndRequester(requestingUser: User, offer: Offer) {
     return await this.transitRequestRepository
       .createQueryBuilder('transitRequest')
       .leftJoinAndSelect('transitRequest.requester', 'requester')
       .leftJoinAndSelect('transitRequest.offer', 'offer')
-      .where(
-        'transitRequest.requester.id = :userId AND transitRequest.offer.id = :offerId',
-        {
-          userId: requestingUser.id,
-          offerId: offer.id,
-        },
-      )
+      .where('transitRequest.requester.id = :userId AND transitRequest.offer.id = :offerId', {
+        userId: requestingUser.id,
+        offerId: offer.id,
+      })
       .getOne();
   }
 }

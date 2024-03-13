@@ -33,13 +33,7 @@ describe('RequestOfferingService', () => {
 
   describe('save function', () => {
     it('should post a trip request offering to the db', async () => {
-      const createdOffering = await postTripRequestOffering(
-        userForThisTest,
-        10,
-        'Offering text',
-        false,
-        1,
-      );
+      const createdOffering = await postTripRequestOffering(userForThisTest, 10, 'Offering text', false, 1);
 
       const getOffering = await offeringService.getById(createdOffering.id);
       getOffering.offeringUser = null;
@@ -59,9 +53,7 @@ describe('RequestOfferingService', () => {
         1,
       );
 
-      const retrievedOffering = await offeringService.getById(
-        createdOffering.id,
-      );
+      const retrievedOffering = await offeringService.getById(createdOffering.id);
       retrievedOffering.offeringUser = null;
       retrievedOffering.tripRequest = null;
 
@@ -69,9 +61,7 @@ describe('RequestOfferingService', () => {
     });
 
     it('should throw NotFoundException for non-existing trip request offering', async () => {
-      await expect(offeringService.getById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(offeringService.getById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -84,24 +74,10 @@ describe('RequestOfferingService', () => {
         2,
       );
 
-      await postTripRequestOffering(
-        userForThisTest,
-        5,
-        'Offering 1',
-        true,
-        tripRequest.id,
-      );
-      await postTripRequestOffering(
-        userForThisTest,
-        8,
-        'Offering 2',
-        false,
-        tripRequest.id,
-      );
+      await postTripRequestOffering(userForThisTest, 5, 'Offering 1', true, tripRequest.id);
+      await postTripRequestOffering(userForThisTest, 8, 'Offering 2', false, tripRequest.id);
 
-      const allOfferings = await offeringService.getAllOfTripRequest(
-        tripRequest.id,
-      );
+      const allOfferings = await offeringService.getAllOfTripRequest(tripRequest.id);
 
       expect(allOfferings.length).toEqual(2);
     });
@@ -117,49 +93,31 @@ describe('RequestOfferingService', () => {
         3,
       );
 
-      await expect(
-        offeringService.getAllOfTripRequest(tripRequest.id),
-      ).resolves.toEqual([]);
+      await expect(offeringService.getAllOfTripRequest(tripRequest.id)).resolves.toEqual([]);
     });
   });
 
   describe('deleteById function', () => {
     it('should delete a specific trip request offering by ID', async () => {
-      const createdOffering = await postTripRequestOffering(
-        userForThisTest,
-        7,
-        'Offering to delete',
-        false,
-      );
+      const createdOffering = await postTripRequestOffering(userForThisTest, 7, 'Offering to delete', false);
 
       await offeringService.deleteById(createdOffering.id);
 
-      await expect(offeringService.getById(createdOffering.id)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(offeringService.getById(createdOffering.id)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existing trip request offering', async () => {
-      await expect(offeringService.deleteById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(offeringService.deleteById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('delete function', () => {
     it('should delete a specific trip request offering', async () => {
-      const createdOffering = await postTripRequestOffering(
-        userForThisTest,
-        12,
-        'Offering to delete',
-        true,
-      );
+      const createdOffering = await postTripRequestOffering(userForThisTest, 12, 'Offering to delete', true);
 
       await offeringService.delete(createdOffering);
 
-      await expect(offeringService.getById(createdOffering.id)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(offeringService.getById(createdOffering.id)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -187,27 +145,11 @@ describe('RequestOfferingService', () => {
     return tROdb;
   };
 
-  const postTripRequest = async (
-    user: User,
-    startPlz: CreatePlzDto,
-    endPlz: CreatePlzDto,
-    seats: number,
-  ) => {
-    const createdStartPlz = await plzService.createPlz(
-      startPlz.plz,
-      startPlz.location,
-    );
-    const createdEndPlz = await plzService.createPlz(
-      endPlz.plz,
-      endPlz.location,
-    );
+  const postTripRequest = async (user: User, startPlz: CreatePlzDto, endPlz: CreatePlzDto, seats: number) => {
+    const createdStartPlz = await plzService.createPlz(startPlz.plz, startPlz.location);
+    const createdEndPlz = await plzService.createPlz(endPlz.plz, endPlz.location);
 
-    const tR = new MockCreateTripRequest(
-      user,
-      createdStartPlz,
-      createdEndPlz,
-      seats,
-    );
+    const tR = new MockCreateTripRequest(user, createdStartPlz, createdEndPlz, seats);
 
     const tRdB = await requestService.save(tR);
     tRdB.offerings = [];
@@ -220,23 +162,12 @@ describe('RequestOfferingService', () => {
 
   const setUp = async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.offering.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.offering.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [UserController],
-      providers: [
-        RequestOfferingService,
-        PlzService,
-        RatingService,
-        UserService,
-        RequestService,
-      ],
+      providers: [RequestOfferingService, PlzService, RatingService, UserService, RequestService],
     }).compile();
 
-    offeringService = module.get<RequestOfferingService>(
-      RequestOfferingService,
-    );
+    offeringService = module.get<RequestOfferingService>(RequestOfferingService);
     plzService = module.get<PlzService>(PlzService);
 
     userController = module.get<UserController>(UserController);

@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Plz } from './Plz';
 import { User } from './User';
 import { TripRequestOffering } from './TripRequestOffering';
@@ -37,9 +31,6 @@ export class TripRequest {
   @Column()
   seats: number;
 
-  @OneToMany(
-    () => TripRequestOffering,
-    (tripRequestOffering) => tripRequestOffering.tripRequest,
-  )
+  @OneToMany(() => TripRequestOffering, (tripRequestOffering) => tripRequestOffering.tripRequest)
   offerings: TripRequestOffering[];
 }

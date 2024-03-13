@@ -107,12 +107,7 @@ export class UserService {
     }
 
     if (user.profilePicture.length > 0) {
-      const oldImagePath = join(
-        process.cwd(),
-        'uploads',
-        'profile-images',
-        user.profilePicture,
-      );
+      const oldImagePath = join(process.cwd(), 'uploads', 'profile-images', user.profilePicture);
       if (existsSync(oldImagePath)) {
         unlinkSync(oldImagePath);
       }

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { TripRequest } from '../../database/TripRequest';
@@ -19,9 +15,7 @@ export class RequestService {
   async save(tripRequest: TripRequest) {
     const tR = await this.tripRequestRepository.save(tripRequest);
     if (!tR) {
-      throw new InternalServerErrorException(
-        'The trip request could not be saved.',
-      );
+      throw new InternalServerErrorException('The trip request could not be saved.');
     }
     return tR;
   }
@@ -71,9 +65,7 @@ export class RequestService {
     if (!tripRequest.id) {
       throw new NotFoundException('This trip request does not exist.');
     }
-    tripRequest.offerings.forEach((offering) =>
-      this.offeringService.delete(offering),
-    );
+    tripRequest.offerings.forEach((offering) => this.offeringService.delete(offering));
     tripRequest.startPlz = null;
     tripRequest.endPlz = null;
     await this.save(tripRequest);
@@ -94,10 +86,7 @@ export class RequestService {
     return tR;
   }
 
-  async userAlreadyPostedAOfferingToThisTripRequest(
-    userId: number,
-    requestId: number,
-  ) {
+  async userAlreadyPostedAOfferingToThisTripRequest(userId: number, requestId: number) {
     const tR = await this.tripRequestRepository.findOne({
       where: {
         offerings: { offeringUser: { id: userId } },

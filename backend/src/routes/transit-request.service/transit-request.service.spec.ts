@@ -14,18 +14,9 @@ describe('TransitRequestService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.transit.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.transit.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       controllers: [RatingController],
-      providers: [
-        TransitRequestService,
-        PlzService,
-        RatingService,
-        UserService,
-        OfferService,
-      ],
+      providers: [TransitRequestService, PlzService, RatingService, UserService, OfferService],
     }).compile();
 
     transitService = module.get<TransitRequestService>(TransitRequestService);

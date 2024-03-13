@@ -61,10 +61,7 @@ export class OfferService {
     const offerDb = await this.offerRepository.save(offer);
 
     for (const routePartDto of offerDto.route) {
-      const plz = await this.plzService.createPlz(
-        routePartDto.plz,
-        routePartDto.location,
-      );
+      const plz = await this.plzService.createPlz(routePartDto.plz, routePartDto.location);
       const rP = await createRoutePart(offerDb, plz, routePartDto.position);
       await this.saveRoutePart(rP);
     }
@@ -80,63 +77,33 @@ export class OfferService {
           { route: { plz: { location: Like(`%${searchFor}%`) } } },
           { route: { plz: { plz: Like(`%${searchFor}%`) } } },
         ],
-        relations: [
-          'provider',
-          'route.plz',
-          'clients',
-          'transitRequests',
-          'vehicle',
-        ],
+        relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
       });
     }
 
     return await this.offerRepository.find({
-      relations: [
-        'provider',
-        'route.plz',
-        'clients',
-        'transitRequests',
-        'vehicle',
-      ],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
     });
   }
 
   async getOffersOfUser(userId: number) {
     return await this.offerRepository.find({
       where: { provider: { id: userId } },
-      relations: [
-        'provider',
-        'route.plz',
-        'clients',
-        'transitRequests',
-        'vehicle',
-      ],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
     });
   }
 
   async getOffersOfUserAsPassenger(userId: number) {
     return await this.offerRepository.find({
       where: { clients: { id: userId } },
-      relations: [
-        'provider',
-        'route.plz',
-        'clients',
-        'transitRequests',
-        'vehicle',
-      ],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
     });
   }
 
   async getOffer(id: number) {
     const offer = await this.offerRepository.findOne({
       where: { id: id },
-      relations: [
-        'provider',
-        'route.plz',
-        'clients',
-        'transitRequests',
-        'vehicle',
-      ],
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
     });
     if (!offer) {
       throw new InternalServerErrorException('Offer was not found!');
@@ -165,15 +132,8 @@ export class OfferService {
       }
 
       for (const createRoutePartDto of updateData.route) {
-        const plz = await this.plzService.createPlz(
-          createRoutePartDto.plz,
-          createRoutePartDto.location,
-        );
-        const rP = await createRoutePart(
-          offer,
-          plz,
-          createRoutePartDto.position,
-        );
+        const plz = await this.plzService.createPlz(createRoutePartDto.plz, createRoutePartDto.location);
+        const rP = await createRoutePart(offer, plz, createRoutePartDto.position);
         await this.routePartRepository.save(rP);
       }
     }

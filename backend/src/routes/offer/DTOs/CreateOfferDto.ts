@@ -1,12 +1,4 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsISO8601,
-  IsArray,
-  ArrayMinSize,
-  IsNumber,
-  Validate,
-} from 'class-validator';
+import { IsNotEmpty, IsString, IsISO8601, IsArray, ArrayMinSize, IsNumber, Validate } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateRoutePartDto } from './CreateRoutePartDto';
 import { VehicleExistsValidator } from '../../utils/custom_validators';
@@ -38,8 +30,7 @@ export class CreateOfferDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description:
-      'The seats already used by the provider. Should be at least one.',
+    description: 'The seats already used by the provider. Should be at least one.',
   })
   bookedSeats: number;
 }

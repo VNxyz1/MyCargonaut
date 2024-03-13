@@ -13,10 +13,7 @@ describe('UserService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        sqlite_setup('./db/tmp.tester.user.service.sqlite'),
-        TypeOrmModule.forFeature(entityArr),
-      ],
+      imports: [sqlite_setup('./db/tmp.tester.user.service.sqlite'), TypeOrmModule.forFeature(entityArr)],
       providers: [UserService],
     }).compile();
 
@@ -52,9 +49,7 @@ describe('UserService', () => {
   });
 
   it('should throw NotFoundException when user is not found', async () => {
-    await expect(userService.getUserById(9999)).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(userService.getUserById(9999)).rejects.toThrow(NotFoundException);
   });
 
   it('should retrieve a list of all users', async () => {
