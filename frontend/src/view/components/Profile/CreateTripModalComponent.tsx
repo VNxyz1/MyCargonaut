@@ -16,8 +16,10 @@ import {
   NotDraggingStyle,
   DraggingStyle,
 } from 'react-beautiful-dnd';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons/faX';
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 
 interface Route {
   plz: string;
@@ -36,17 +38,24 @@ interface CreateTripModalComponent extends ModalProps {
   onHide: () => void;
   userData: User | null;
 }
-const getItemStyle = (isDragging: boolean, draggableStyle:  DraggingStyle | NotDraggingStyle | undefined): CSSProperties => ({
-  userSelect: "none",
+
+const getItemStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle | undefined): CSSProperties => ({
+  userSelect: 'none',
 
   // change background colour if dragging
-  background: isDragging ? "" : "",
+  background: isDragging ? '' : '',
 
   // styles we need to apply on draggables
-  ...draggableStyle
+  ...draggableStyle,
 });
 
-const alignCenter: CSSProperties = {display: 'flex', textAlign: 'start', alignItems: 'center', paddingTop: "2px", paddingBottom: "2px"};
+const alignCenter: CSSProperties = {
+  display: 'flex',
+  textAlign: 'start',
+  alignItems: 'center',
+  paddingTop: '2px',
+  paddingBottom: '2px',
+};
 
 
 const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: CreateTripModalComponent) => {
@@ -61,13 +70,14 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
   const [feedback, setFeedback] = useState<string | undefined>(undefined);
   const { isAuthenticated } = useAuth();
   const listElement = useRef<HTMLElement | null>(null);
+  const plzInputEl = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (props.show) {
       setFeedback(undefined);
       setRoutes([]);
       setSeatNumberValue(0);
-      setDescription("");
+      setDescription('');
     }
   }, [props.show]);
 
@@ -111,20 +121,20 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
         console.log('Anfrage erfolgreich gesendet');
         props.onHide();
       } else {
-        setFeedback("Überprüfe deine Eingaben!");
+        setFeedback('Überprüfe deine Eingaben!');
       }
     } catch (error) {
-      setFeedback("Versuche es später erneut.");
+      setFeedback('Versuche es später erneut.');
     }
   };
 
   const newRoute = (plz: string, location: string) => {
     if (plz.trim() !== '' && location.trim() !== '') {
       const newRoute: RouteInList = {
-        id: "id_" + routes.length,
+        id: 'id_' + routes.length,
         plz: plz,
         location: location,
-        position: routes.length+1,
+        position: routes.length + 1,
       };
 
       setRoutes([...routes, newRoute]);
@@ -140,7 +150,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
 
     const reorderedRoutes = updatedRoutes.map((route, index) => ({
       ...route,
-      position: index+1,
+      position: index + 1,
     }));
 
     setRoutes(reorderedRoutes);
@@ -150,7 +160,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
     let result: RouteInList[] = list;
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
-    result = result.map((r , index): RouteInList => ({
+    result = result.map((r, index): RouteInList => ({
       id: r.id,
       position: index + 1,
       location: r.location,
@@ -177,22 +187,22 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
 
   const calcListHeigth = (ref: HTMLElement | null) => {
     if (ref?.clientHeight) {
-      return (routes.length * ref.clientHeight) + "px"
+      return (routes.length * ref.clientHeight) + 'px';
     }
-    return (routes.length * 40) + "px"
-  }
-  const getListStyle = (isDraggingOver: boolean, ref: HTMLElement | null ): CSSProperties => ({
+    return (routes.length * 40) + 'px';
+  };
+  const getListStyle = (isDraggingOver: boolean, ref: HTMLElement | null): CSSProperties => ({
 
-    minHeight: isDraggingOver ? calcListHeigth(ref) : "auto",
+    minHeight: isDraggingOver ? calcListHeigth(ref) : 'auto',
   });
 
   const convertToRoute = (routes: RouteInList[]): Route[] => {
-    return routes.map((r): Route=> ({
+    return routes.map((r): Route => ({
       position: r.position,
       plz: r.plz,
-      location: r.location
-    }))
-  }
+      location: r.location,
+    }));
+  };
 
   return (
     <Modal
@@ -206,88 +216,106 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={(e) => {
+          e.preventDefault();
+          newRoute(plzValue, locationValue);
+          setPlzValue('');
+          setLocationValue('');
+          plzInputEl.current?.focus();
+        }}>
           <Row className="mb-3">
-            <Form.Group as={Col} xs='5' controlId="plz">
+            <Form.Group as={Col} xs="5" controlId="plz">
               <Form.Control
+                ref={(el: HTMLElement | null) => {
+                  plzInputEl.current = el;
+                }}
+                required
                 type="text"
                 onChange={(e) => setPlzValue(e.target.value)}
                 value={plzValue}
                 placeholder="Postleitzahl" />
             </Form.Group>
-            <Form.Group as={Col} xs='5' controlId="location">
+            <Form.Group as={Col} xs="5" controlId="location">
               <Form.Control
+                required
                 type="text"
                 onChange={(e) => setLocationValue(e.target.value)}
                 value={locationValue}
                 placeholder="Standort" />
             </Form.Group>
-            <Form.Group as={Col} xs='2' controlId="addRoute">
-              <Button onClick={() => {
-                newRoute(plzValue, locationValue);
-                setPlzValue('');
-                setLocationValue('');
-              }} className="mainButton w-100">+</Button>
+            <Form.Group as={Col} xs="2" controlId="addRoute">
+              <Button type="submit" className="mainButton w-100">
+                <FontAwesomeIcon icon={faPlus} />
+              </Button>
             </Form.Group>
           </Row>
-          <div className="mb-3">
-            <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="droppable">
-                {(provided, snapshot) => (
-                  <div {...provided.droppableProps}
-                       ref={provided.innerRef}
-                       style={getListStyle(snapshot.isDraggingOver, listElement.current)}
-                  >
-                    {routes.map((route, index) => (
-                      <Draggable key={route.id} draggableId={route.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={(el)=> {
-                              provided.innerRef(el)
-                              listElement.current = el;
-                            }}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style
-                            )}
-                          >
-                            <Row className='px-3'>
-                              <Col style={alignCenter}>
-                                <span>{route.position}</span>
-                              </Col>
-                              <Col style={alignCenter}>
-                                <span><strong>PLZ:</strong> {route.plz}</span>
-                              </Col>
-                              <Col style={alignCenter}>
-                                <span><strong>Location:</strong> {route.location}</span>
-                              </Col>
-                              <Col style={alignCenter}>
-                                <Button onClick={() => removeRoute(route.position)} variant="danger">X</Button>
-                              </Col>
-                              <Col style={{ ...alignCenter, color: 'gray', fontSize: "25px"}}>
-                                <FontAwesomeIcon icon={faBars} />
-                              </Col>
-                            </Row>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-          <Row>
-            <Form.Group as={Col} className="mb-3" controlId="date">
+        </Form>
+
+        <div className="mb-4">
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided, snapshot) => (
+                <div {...provided.droppableProps}
+                     ref={provided.innerRef}
+                     style={getListStyle(snapshot.isDraggingOver, listElement.current)}
+                >
+                  {routes.map((route, index) => (
+                    <Draggable key={route.id} draggableId={route.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={(el) => {
+                            provided.innerRef(el);
+                            listElement.current = el;
+                          }}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style,
+                          )}
+                        >
+                          <Row className="px-3">
+                            <Col xs={1} style={alignCenter}>
+                              <span>{route.position}</span>
+                            </Col>
+                            <Col style={alignCenter}>
+                              <span>PLZ: <strong>{route.plz}</strong></span>
+                            </Col>
+                            <Col style={alignCenter}>
+                              <span>Location: <strong>{route.location}</strong></span>
+                            </Col>
+                            <Col xs={'auto'} style={alignCenter}>
+                              <Button onClick={() => removeRoute(route.position)} variant="danger">
+                                <FontAwesomeIcon icon={faX} />
+                              </Button>
+                            </Col>
+                            <Col xs={'auto'} style={{ ...alignCenter, color: 'gray', fontSize: '25px' }}>
+                              <FontAwesomeIcon icon={faBars} />
+                            </Col>
+                          </Row>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
+        <Form onSubmit={handleSubmit}>
+
+          <Row className="align-items-end">
+            <Form.Group as={Col} xs={12} sm={true} className="mb-3" controlId="date">
+              <Form.Label>
+                Wann geht es los?
+              </Form.Label>
               <Form.Control
                 required
                 type="date"
                 onChange={(e) => setDateValue(e.target.value)}
                 placeholder="Datum" />
             </Form.Group>
-            <Form.Group as={Col} className="mb-3" controlId="vehicle">
+            <Form.Group as={Col} xs={12} sm={true} className="mb-3" controlId="vehicle">
               <Form.Select
                 required
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedVehicle(vehicles.filter((vehicle: {
@@ -301,7 +329,8 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                 ))}
               </Form.Select>
             </Form.Group>
-            <Form.Group as={Col} xs={3} className="mb-3" controlId="vehicleSeatNumber">
+            <Form.Group as={Col} xs={12} lg={3} className="mb-3" controlId="vehicleSeatNumber">
+              Wie viel Plätze beanspruchst du?
               <Form.Control
                 required
                 type="number"
@@ -310,7 +339,6 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                 max={20}
                 placeholder="Sitzplätze"
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSeatNumberValue(parseInt(e.target.value))}
-                value={seatNumberValue}
               />
             </Form.Group>
           </Row>
@@ -324,14 +352,15 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
               <></>
               :
               <Col>
-                <Form.Text style={{color: 'red'}}>
+                <Form.Text style={{ color: 'red' }}>
                   {feedback}
                 </Form.Text>
               </Col>
             }
-            <Col xs='auto'>
+            <Col xs="auto">
               <Button type="submit" className="mainButton">Fahrt anlegen</Button>
             </Col>
+
           </Row>
         </Form>
       </Modal.Body>
