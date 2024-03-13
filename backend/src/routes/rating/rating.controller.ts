@@ -113,14 +113,14 @@ export class RatingController {
       const clientIds: number[] = [];
       trip.clients.forEach((client) => clientIds.push(client.id));
       for (const clientId of clientIds) {
-        const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, clientId);
+        const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, clientId, tripId);
         const status: GetRatingStatusDto = new GetRatingStatusDto();
         status.rateeId = clientId;
         status.rated = rated;
         response.ratees.push(status);
       }
     } else {
-      const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, trip.provider.id);
+      const rated: boolean = await this.ratingService.isAlreadyRated(rater.id, trip.provider.id, tripId);
       const status: GetRatingStatusDto = new GetRatingStatusDto();
       status.rateeId = trip.provider.id;
       status.rated = rated;
@@ -241,7 +241,7 @@ export class RatingController {
       throw new ForbiddenException(false, 'You cannot rate other passengers.');
     }
 
-    if (await this.ratingService.isAlreadyRated(rater.id, ratee.id)) {
+    if (await this.ratingService.isAlreadyRated(rater.id, ratee.id, trip.id)) {
       throw new ForbiddenException(false, 'You already rated the user for this trip.');
     }
 
