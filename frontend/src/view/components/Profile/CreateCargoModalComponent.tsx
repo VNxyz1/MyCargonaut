@@ -28,6 +28,9 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
     },
   });
 
+  useEffect(() => {
+    console.log(postData)
+  }, [postData]);
 
   useEffect(() => {
     if (props.show) {
@@ -111,6 +114,18 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
     }
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files !== null) {
+      const file : File = event.target.files[0];
+      setPostData((oldData) => {
+        return {
+          ...oldData,
+          cargoImg: file,
+        };
+      });
+    }
+  };
+
   return (
     <Modal
       {...props}
@@ -119,7 +134,7 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          CARGO ANLEGEN
+          GESUCH EINSTELLEN
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -166,13 +181,11 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
                 placeholder="Standort" />
             </Form.Group>
           </Row>
-          <Row>
-            <h6>
-              Benötigst du selbst eine Mitfahrtgelegenheit, oder willst du nur etwas transportieren?
-              <br/>
-              Wann soll es los gehen?
-            </h6>
-            <Form.Group as={Col} className="mb-3" controlId="date">
+          <Row className="align-items-end" >
+            <Form.Group as={Col} xs={12} sm={4} className='mb-3' controlId="date">
+              <Form.Label>
+                Wann soll es los gehen?
+              </Form.Label>
               <Form.Control
                 required
                 aria-label='startDate'
@@ -180,7 +193,16 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
                 type="date"
                 placeholder="Datum" />
             </Form.Group>
-            <Form.Group as={Col} xs={3} className="mb-3" controlId="vehicleSeatNumber">
+            <Form.Group as={Col} xs={12} sm={5} className='mb-3' controlId="formFile">
+              <Form.Label>
+                Bild (optional)
+              </Form.Label>
+              <Form.Control  type="file" onChange={handleFileChange} placeholder='Füge ein Bild des zu transportierenden Guts hinzu (optional)' />
+            </Form.Group>
+            <Form.Group as={Col} xs={12} sm={3} className='mb-3' controlId="vehicleSeatNumber">
+              <Form.Label>
+                (optional)
+              </Form.Label>
               <Form.Control
                 type="number"
                 aria-label='seats'

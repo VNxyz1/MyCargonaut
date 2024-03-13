@@ -27,15 +27,23 @@ export const deleteOffering = async (id: number) => {
 
 export const postRequest = async (body: PostRequestBody) => {
   try {
-    const response = await fetch(`/request`,{
-      method: "POST",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify(body),
-    });
-    return response.ok;
+    const formData = new FormData();
+    formData.append('startPlz', JSON.stringify(body.startPlz));
+    formData.append('endPlz', JSON.stringify(body.endPlz));
+    formData.append('description', body.description);
+    formData.append('startDate', body.startDate);
+    formData.append('seats', body.seats.toString());
 
+    if (body.cargoImg) {
+      formData.append('cargoImg', body.cargoImg);
+    }
+
+    const response = await fetch(`/request`, {
+      method: "POST",
+      body: formData,
+    });
+
+    return response.ok;
   } catch (e) {
     console.error(e)
   }

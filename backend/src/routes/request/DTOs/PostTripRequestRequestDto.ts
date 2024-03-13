@@ -1,5 +1,5 @@
 import { CreatePlzDto } from '../../offer/DTOs/CreatePlzDto';
-import { IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsISO8601, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PostTripRequestRequestDto {
@@ -24,8 +24,8 @@ export class PostTripRequestRequestDto {
   @ApiProperty()
   startDate: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  seats: number;
+  seats: string;
 }
