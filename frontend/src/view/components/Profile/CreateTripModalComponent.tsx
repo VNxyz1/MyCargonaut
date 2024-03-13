@@ -274,7 +274,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                             provided.draggableProps.style,
                           )}
                         >
-                          <Row className="px-3">
+                          <Row className="p-3 add-shadow" style={{borderRadius: '10px'}}>
                             <Col xs={1} style={alignCenter}>
                               <span>{route.position}</span>
                             </Col>
@@ -285,7 +285,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                               <span>Location: <strong>{route.location}</strong></span>
                             </Col>
                             <Col xs={'auto'} style={alignCenter}>
-                              <Button onClick={() => removeRoute(route.position)} variant="danger">
+                              <Button className='add-shadow' onClick={() => removeRoute(route.position)} variant="danger">
                                 <FontAwesomeIcon icon={faX} />
                               </Button>
                             </Col>

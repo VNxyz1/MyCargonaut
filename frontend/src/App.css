@@ -17,6 +17,10 @@
     --text-font-size: 18px;
 }
 
+.add-shadow {
+    box-shadow: var(--shadow_default) !important;
+}
+
 /*_____________________________*/
 .back_btn {
     cursor: pointer;
