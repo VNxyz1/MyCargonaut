@@ -25,6 +25,37 @@ export const deleteOffering = async (id: number) => {
   }
 }
 
+export const postRequest = async (body: PostRequestBody) => {
+  try {
+    const response = await fetch(`/request`,{
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(body),
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export interface PostRequestBody {
+  "startPlz": PostRequestPlz;
+  "endPlz": PostRequestPlz;
+  "cargoImg"?: File;
+  "description": string;
+  "startDate": string;
+  "seats": number;
+}
+
+export interface PostRequestPlz {
+  "plz": string;
+  "location": string;
+}
+
+
 export const acceptOffering = async (id: number) => {
   try {
     const response = await fetch(`/request/offering/accept/${id}`, {
