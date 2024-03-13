@@ -273,7 +273,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
             <Form.Group as={Col} className="mb-3" controlId="date">
               <Form.Control
                 required
-                type="text"
+                type="date"
                 onChange={(e) => setDateValue(e.target.value)}
                 placeholder="Datum" />
             </Form.Group>
