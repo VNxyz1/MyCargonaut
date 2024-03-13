@@ -58,9 +58,9 @@ export const getAllOffers = async () => {
 }
 
 
-export const updateTransitRequest = async (id: number, data: any) => {
+export const updateTransitRequest = async (id: number, data: UpdateTransitRequestData) => {
     try {
-        const response = await fetch(`//transit-request/update-params/${id}`, {
+        const response = await fetch(`/transit-request/update-params/${id}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"
@@ -72,6 +72,12 @@ export const updateTransitRequest = async (id: number, data: any) => {
     } catch (e) {
         console.error(e)
     }
+}
+
+interface UpdateTransitRequestData {
+    offeredCoins: number;
+    requestedSeats: number;
+    text: string;
 }
 
 export const deleteTransitRequest = async (id: number) => {

@@ -315,7 +315,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
             </Form.Group>
           </Row>
           <Form.Group className="mb-3" controlId="registerEmail">
-            <Form.Control onChange={(e) => setDescription(e.target.value)} as="textarea" rows={3}
+            <Form.Control required onChange={(e) => setDescription(e.target.value)} as="textarea" rows={3}
                           placeholder="Beschreibung" />
           </Form.Group>
 

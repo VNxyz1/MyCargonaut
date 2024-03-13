@@ -428,7 +428,7 @@ export class RequestController {
     tR.startDate = new Date(dto.startDate);
 
     tR.description = dto.description;
-    tR.seats = dto.seats;
+    tR.seats = Number(dto.seats);
 
     return tR;
   }
