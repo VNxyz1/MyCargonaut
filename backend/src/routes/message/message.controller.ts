@@ -54,8 +54,8 @@ export class MessageController {
       getConversationDto.conversationId = conversation.id;
       getConversationDto.conversationPartnerId = isUser1 ? conversation.user2.id : conversation.user1.id;
       getConversationDto.conversationPartnerName = isUser1
-        ? `${conversation.user2.firstName} ${conversation.user2.lastName}`
-        : `${conversation.user1.firstName} ${conversation.user1.lastName}`;
+        ? `${conversation.user2.firstName} ${conversation.user2.lastName.slice(0, 1) + '.'}`
+        : `${conversation.user1.firstName} ${conversation.user1.lastName.slice(0, 1) + '.'}`;
       getConversationDto.messages = [];
 
       for (const message of conversation.messages) {
