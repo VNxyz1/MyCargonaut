@@ -18,6 +18,8 @@ function App() {
   const { setIncomingOfferings, setSentOfferings, setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
 
   const handleUnreadMessages = async () => {
+    await getReqsAndOffs();
+
     const chats = await getAllMessages();
     const unreadMessagesCount = await getUnreadMessages();
     if (chats && unreadMessagesCount) {
@@ -43,7 +45,7 @@ function App() {
     }
 
     (async ()=> {
-      await getReqsAndOffs()
+      await getReqsAndOffs();
 
       const userData = await getLoggedInUser();
       if (userData == null || userData.id == undefined) {

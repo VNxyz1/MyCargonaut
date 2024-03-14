@@ -13,7 +13,7 @@ function OfferingsAndRequests() {
         <h3>Versandte Anfragen:</h3>
         {sentOfferings.length == 0 && sentTransitRequests.length == 0 ?
           <Container className='text-center justify-content-center' style={{minHeight: '10rem'}}>
-            <h3>Keine erhaltenen Anfragen</h3>
+            <h3>Keine versandten Anfragen</h3>
           </Container>
           : <></>
         }

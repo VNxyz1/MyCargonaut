@@ -28,7 +28,7 @@ function IOR_Sidebar() {
   return (
     <>
       {incomingOfferings.length !== 0 ?
-        <h3>Möchte mit Fahren:</h3>
+        <h3>Möchte dich mit nehmen:</h3>
         : <></>
       }
       <ListGroup className="mb3" style={{ minWidth: '100%', overflow: 'auto' }}>
@@ -42,7 +42,7 @@ function IOR_Sidebar() {
         </ListGroup>
 
       {incomingTransitRequests.length !== 0 ?
-        <h3>Möchte dich mit nehmen:</h3>
+        <h3>Möchte mit Fahren:</h3>
         : <></>
       }
       <ListGroup className="mb3" style={{ minWidth: '100%', overflow: 'auto' }}>

@@ -23,7 +23,7 @@ export class RatingService {
 
   async isAlreadyRated(raterId: number, rateeId: number, tripId: number) {
     const rated = await this.ratingRepository.findOne({
-      where: { rater: Equal(raterId), rated: Equal(rateeId), trip: Equal(tripId)},
+      where: { rater: Equal(raterId), rated: Equal(rateeId), trip: Equal(tripId) },
     });
     return rated ? true : false;
   }

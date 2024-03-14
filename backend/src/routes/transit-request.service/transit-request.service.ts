@@ -70,6 +70,7 @@ export class TransitRequestService {
       .leftJoinAndSelect('transitRequest.offer', 'offer')
       .leftJoinAndSelect('offer.provider', 'provider')
       .leftJoinAndSelect('offer.route', 'route')
+      .leftJoinAndSelect('route.plz', 'plz')
       .leftJoinAndSelect('offer.clients', 'clients')
       .leftJoinAndSelect('offer.vehicle', 'vehicles')
       .where('transitRequest.requester.id = :userId', { userId })
@@ -85,7 +86,7 @@ export class TransitRequestService {
       where: {
         offer: { provider: { id: userId } },
       },
-      relations: ['requester', 'offer', 'offer.provider'],
+      relations: ['requester', 'offer', 'offer.provider', 'offer.route', 'offer.route.plz'],
     });
     if (!transitRequests) {
       throw new NotFoundException('No pending transit requests found');

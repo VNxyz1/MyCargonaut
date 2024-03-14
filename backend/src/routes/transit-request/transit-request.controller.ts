@@ -71,6 +71,7 @@ export class TransitRequestController {
     }
     const requestingUser: User = await this.userService.getUserById(requestingUserId);
     await this.transitRequestService.postTransitRequest(offer, requestingUser, body);
+    this.messageGatewayService.reloadMessages(offer.provider.id);
     return new OKResponseWithMessageDTO(true, 'Request was sent');
   }
 
@@ -209,7 +210,7 @@ export class TransitRequestController {
     );
 
     const message = new Message();
-    message.sender = tR.requester;
+    message.sender = offer.provider;
     message.conversation = conversation;
     message.timestamp = new Date();
     message.message = this.writeAcceptMessage(tR, offer);
@@ -261,6 +262,6 @@ export class TransitRequestController {
     const end = offer.route[offer.route.length - 1].plz.location;
     const coins = tr.offeredCoins.toString();
 
-    return `Ich habe dein Angebot, dich auf meiner Fahrt von ${start} nach ${end} für ${coins} Coins mit zu nehmen, angenommen. (automatisierte Nachricht)`;
+    return `Ich nehme dich mit auf meiner Fahrt von ${start} nach ${end}. Für ${coins} Coins. (automatisierte Nachricht)`;
   }
 }

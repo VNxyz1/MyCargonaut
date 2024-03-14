@@ -3,6 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import { acceptTransitRequest, deleteTransitRequest, getTransitRequests } from '../../../services/offerService.tsx';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
+import { Offer } from '../../../interfaces/Offer.ts';
 
 
 function TransitRequestListItem (
@@ -46,6 +47,18 @@ function TransitRequestListItem (
     }
   }
 
+  const displayRouteText = (offer: Offer|undefined) => {
+    if (offer) {
+      const rp1 = offer.route.find((rp)=> rp.position == 1);
+      const rp2 = offer.route.find((rp)=> rp.position == offer.route.length);
+      if (rp1 && rp2) {
+        console.log(rp1, rp2)
+        return `Auf der Fahrt von ${rp1.plz.location} nach ${rp2.plz.location}`;
+      }
+    }
+    return'';
+  }
+
   return (
     <>
       <Row className='align-items-center justify-content-between mb-2'>
@@ -75,6 +88,9 @@ function TransitRequestListItem (
             </>
           }
         </Col>
+      </Row>
+      <Row className='mb-2'>
+        <span>{displayRouteText(props.transitRequest.offer)}</span>
       </Row>
       <Row>
         <h5>Nachricht:</h5>
