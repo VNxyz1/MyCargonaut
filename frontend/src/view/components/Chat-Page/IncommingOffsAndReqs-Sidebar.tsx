@@ -27,19 +27,25 @@ function IOR_Sidebar() {
 
   return (
     <>
-      <h3>Möchte mit Fahren:</h3>
-      <ListGroup className="mb4" style={{ minWidth: '100%', overflow: 'auto' }}>
-        {incomingOfferings.map((tro) => (
-          <ListGroup.Item className="d-flex justify-content-between" style={{ minWidth: '100%', cursor: 'pointer' }}
-                          onClick={() => selectTRO(tro)}>
-            <span><strong>{tro.offeringUser.firstName} {tro.offeringUser.lastName}</strong></span>
-            <span>{tro.requestedCoins} Coins</span>
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
+      {incomingOfferings.length !== 0 ?
+        <h3>Möchte mit Fahren:</h3>
+        : <></>
+      }
+      <ListGroup className="mb3" style={{ minWidth: '100%', overflow: 'auto' }}>
+          {incomingOfferings.map((tro) => (
+            <ListGroup.Item className="d-flex justify-content-between" style={{ minWidth: '100%', cursor: 'pointer' }}
+                            onClick={() => selectTRO(tro)}>
+              <span><strong>{tro.offeringUser.firstName} {tro.offeringUser.lastName}</strong></span>
+              <span>{tro.requestedCoins} Coins</span>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
 
-      <h3>Möchte dich mit nehmen:</h3>
-      <ListGroup className="mb4" style={{ minWidth: '100%', overflow: 'auto' }}>
+      {incomingTransitRequests.length !== 0 ?
+        <h3>Möchte dich mit nehmen:</h3>
+        : <></>
+      }
+      <ListGroup className="mb3" style={{ minWidth: '100%', overflow: 'auto' }}>
         {incomingTransitRequests.map((tr) => (
           <ListGroup.Item className="d-flex justify-content-between" style={{ minWidth: '100%', cursor: 'pointer' }}
                           onClick={() => selectTR(tr)}>

@@ -23,7 +23,7 @@ import { User } from '../../database/User';
 import { PutTransitRequestRequestDto } from './DTOs/PutTransitRequestRequestDto';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { GetAllPendingTransitRequestsResponseDTO } from './DTOs/GetAllPendingTransitRequestsResponseDTO';
-import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
+import { convertOfferToGetOfferDto, convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetTransitRequestDto } from './DTOs/getTransitRequestDto';
 import { PostTransitRequestRequestDto } from './DTOs/PostTransitRequestRequestDto';
 import { TransitRequest } from '../../database/TransitRequest';
@@ -120,7 +120,7 @@ export class TransitRequestController {
     response.transitRequests = requests.map((tR) => {
       const tRDto = new GetTransitRequestDto();
       tRDto.offer = convertOfferToGetOfferDto(tR.offer);
-      tRDto.requester = tR.requester;
+      tRDto.requester = convertUserToOtherUser(tR.requester);
       tRDto.id = tR.id;
       tRDto.offeredCoins = tR.offeredCoins;
       tRDto.requestedSeats = tR.requestedSeats;

@@ -6,15 +6,15 @@ import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faPaperPlane} from '@fortawesome/free-solid-svg-icons/faPaperPlane'
 import { CSSProperties, useEffect, useRef, useState } from 'react';
-import { getUnreadMessages, markMessagesRead, postMessage } from '../../../services/messageService.ts';
+import { getAllMessages, getUnreadMessages, markMessagesRead, postMessage } from '../../../services/messageService.ts';
 
 const chatWindowStyle: CSSProperties = {
-  maxHeight: '40rem',
+  maxHeight: '30rem',
   overflowY: 'scroll'
 }
 
 function SingleChat () {
-  const {selectedChat, setUnreadChats} = chatStore();
+  const {selectedChat, setUnreadChats, setChats, sortByDateDesc } = chatStore();
 
   const [messageToSend, setMessageToSend] = useState<string>("");
   const chatWindowRef = useRef<HTMLDivElement>(null);
@@ -33,11 +33,26 @@ function SingleChat () {
     event.preventDefault();
     const sent = await postMessage(selectedChat.conversationPartnerId, messageToSend);
     if (sent) {
+      getChats();
       setMessageToSend("");
       scrollToBottom();
     }
     return;
   }
+
+  const getChats = async () => {
+    const chats = await getAllMessages();
+    const unreadMessagesCount = await getUnreadMessages();
+    if (chats && unreadMessagesCount) {
+      setUnreadChats(unreadMessagesCount);
+      setChats(chats);
+      sortByDateDesc();
+      return;
+    }
+    setChats([]);
+    setUnreadChats({ conversations: [], totalUnreadMessages: 0 });
+
+  };
 
   const markMessagesAsRead = async () => {
       await markMessagesRead(selectedChat.conversationId);

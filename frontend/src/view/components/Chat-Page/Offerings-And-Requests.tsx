@@ -9,10 +9,10 @@ function OfferingsAndRequests() {
 
   return (
     <>
-      <Row style={{columnGap: '20px', justifyContent: 'space-between'}}>
+      <Row style={{columnGap: '20px', rowGap: '20px', justifyContent: 'space-between'}}>
         <h3>Versandte Anfragen:</h3>
         {sentOfferings.length == 0 && sentTransitRequests.length == 0 ?
-          <Container className='text-center justify-content-center' style={{minHeight: '20rem'}}>
+          <Container className='text-center justify-content-center' style={{minHeight: '10rem'}}>
             <h3>Keine erhaltenen Anfragen</h3>
           </Container>
           : <></>

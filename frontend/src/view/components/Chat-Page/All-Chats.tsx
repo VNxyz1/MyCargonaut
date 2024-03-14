@@ -24,8 +24,13 @@ function AllChats() {
   }
 
   return (
-    <ListGroup style={{ minWidth: "100%", overflow: 'auto' }}>
-      {chats.map((c) => (
+    <>
+      {chats.length !== 0 ?
+        <h3>Chats</h3>
+        : <></>
+      }
+      <ListGroup className='mb-3' style={{ minWidth: "100%", overflow: 'auto' }}>
+        {chats.map((c) => (
           <ListGroup.Item className='d-flex justify-content-between' style={{ minWidth: "100%"}} onClick={()=> setSelectedChat(c.conversationId)}>
             <span><strong>{c.conversationPartnerName}</strong></span>
             {unreadMessages(c.conversationId) > 0 ?
@@ -33,8 +38,9 @@ function AllChats() {
               <></>
             }
           </ListGroup.Item>
-      ))}
-    </ListGroup>
+        ))}
+      </ListGroup>
+    </>
   );
 }
 

@@ -41,12 +41,12 @@ function TransitRequestListItem (
 
   return (
     <>
-      <Row className='align-items-center mb-2'>
+      <Row className='align-items-center justify-content-between mb-2'>
         <Col xs={'auto'}>
           {!props.receiver ?
-            <h4>Von: {props.transitRequest.offer?.provider?.firstName} {props.transitRequest.offer?.provider?.lastName}</h4>
+            <h4>An: {props.transitRequest.offer?.provider?.firstName} {props.transitRequest.offer?.provider?.lastName}</h4>
             :
-            <h4>An: {props.transitRequest.requester?.firstName} {props.transitRequest.requester?.lastName}</h4>
+            <h4>Von: {props.transitRequest.requester?.firstName} {props.transitRequest.requester?.lastName}</h4>
           }
           <h5>Preisvorschlag: {props.transitRequest.offeredCoins} Coins</h5>
           {props.receiver ?

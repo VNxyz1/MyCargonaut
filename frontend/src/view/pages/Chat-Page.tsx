@@ -37,15 +37,9 @@ function ChatPage() {
   return (
     <Container fluid="md" style={{ minHeight: '70vh' }}>
       <Row className="d-flex justify-content-center my-4">
-        <Col xs={3} className="d-flex justify-content-end">
-          <Row className='mb-4'>
-            <h3>Chats</h3>
+        <Col xs={3} className="justify-content-end">
             <AllChats />
-          </Row>
-          <Row>
             <IOR_Sidebar/>
-          </Row>
-
         </Col>
         <Col xs={8} className={'d-flex justify-content-start justify-content-md-start'}>
           <SingleChat/>

@@ -39,12 +39,12 @@ function OfferingListItem(
 
   return (
     <>
-      <Row className='align-items-center mb-2' style={{maxWidth: 'min-content'}}>
+      <Row className='align-items-center justify-content-between mb-2' style={{maxWidth: 'min-content'}}>
         <Col xs={'auto'}>
           {!props.receiver ?
-            <h4>Von: {props.offering.tripRequest?.requester?.firstName} {props.offering.tripRequest?.requester?.lastName}</h4>
+            <h4>An: {props.offering.tripRequest?.requester?.firstName} {props.offering.tripRequest?.requester?.lastName}</h4>
             :
-            <h4>An: {props.offering.offeringUser?.firstName} {props.offering.offeringUser?.lastName}</h4>
+            <h4>Von: {props.offering.offeringUser?.firstName} {props.offering.offeringUser?.lastName}</h4>
           }
           <h5>Preisvorschlag: {props.offering.requestedCoins} Coins</h5>
           {props.receiver ?
