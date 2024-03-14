@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { chatStore } from '../components/Chat-Page/chats-zustand.ts';
 import AllChats from '../components/Chat-Page/All-Chats.tsx';
 import SingleChat from '../components/Chat-Page/Single-Chat.tsx';
+import IOR_Sidebar from '../components/Chat-Page/IncommingOffsAndReqs-Sidebar.tsx';
 
 
 function ChatPage() {
@@ -37,17 +38,22 @@ function ChatPage() {
     <Container fluid="md" style={{ minHeight: '70vh' }}>
       <Row className="d-flex justify-content-center my-4">
         <Col xs={3} className="d-flex justify-content-end">
-          <AllChats />
+          <Row className='mb-4'>
+            <h3>Chats</h3>
+            <AllChats />
+          </Row>
+          <Row>
+            <IOR_Sidebar/>
+          </Row>
+
         </Col>
-        <Col xs={8} className={"d-flex justify-content-start justify-content-md-start"}>
-          <SingleChat />
+        <Col xs={8} className={'d-flex justify-content-start justify-content-md-start'}>
+          <SingleChat/>
         </Col>
       </Row>
-      <Row className="mb-4">
-        <Col>
+      <div className="mb-4">
           <OfferingsAndRequests />
-        </Col>
-      </Row>
+      </div>
     </Container>
   );
 }

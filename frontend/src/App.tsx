@@ -6,6 +6,9 @@ import { useAuth } from './services/authService.tsx';
 import { getLoggedInUser } from './services/userService.tsx';
 import { chatStore } from './view/components/Chat-Page/chats-zustand.ts';
 import { getAllMessages, getUnreadMessages } from './services/messageService.ts';
+import { reqAndOffStore } from './view/components/Chat-Page/offeringsAndRequests-zustand.ts';
+import { getOfferings } from './services/tripRequestService.ts';
+import { getTransitRequests } from './services/offerService.tsx';
 
 function App() {
 
@@ -58,6 +61,28 @@ function App() {
     }
 
   }, [isAuthenticated]);
+
+
+  const { setIncomingOfferings, setSentOfferings, setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
+
+  useEffect(() => {
+    (async () => {
+      await getReqsAndOffs()
+    })()
+
+  }, []);
+
+  const getReqsAndOffs = async () => {
+    const {incomingOfferings, sentOfferings} = await getOfferings();
+    setIncomingOfferings(incomingOfferings);
+    setSentOfferings(sentOfferings);
+
+    const {incomingTransitRequests, sentTransitRequests} = await getTransitRequests();
+    setIncomingTransitRequests(incomingTransitRequests);
+    setSentTransitRequests(sentTransitRequests);
+  }
+
+
 
   return (
     <>
