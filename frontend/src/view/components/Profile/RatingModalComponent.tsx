@@ -34,28 +34,6 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
     const [cargoArrivedUndamagedRating, setCargoArrivedUndamagedRating] = useState<number>(3);
     const [passengerPleasantnessRating, setPassengerPleasantnessRating] = useState<number>(3);
 
-    useEffect(() => {
-        if (!props.show) {
-            setValidated(false);
-            setSelectedOffer(null);
-            setSelectedClient(null);
-        }
-    }, [props.show]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-
-            const userData = await getLoggedInUser();
-
-            if (userData && userData.id) {
-                setUserId(userData.id);
-
-            }
-            
-        };
-        fetchData();
-    }, []);
-
     const checkingRated = async (id: number): Promise<boolean> => {
         try {
             const ratingData = await getRated(id);
@@ -88,50 +66,6 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             return null;
         }
     };
-
-    
-    useEffect(() => {
-        const fetchData = async () => {
-
-            const offersData = await getOwnOffers();
-            const offersList: Offer[] = [];
-            if (offersData) {
-                for (const offer of offersData.offerList) {
-                    if (new Date(offer.startDate) < new Date()) {
-                        const needRating = await checkingRated(offer.id);
-                        if (needRating) {
-                            offersList.push(offer);
-                        }
-                    }
-                }
-                setOffers({offerList: offersList});
-            }
-        };
-        fetchData();
-    }, [validated]);
-
-
-    
-
-    useEffect(() => {
-        const fetchData = async () => {
-
-            const offersData = await getPassengerOffers();
-            const offersList: Offer[] = [];
-            if (offersData) {
-                for (const offer of offersData.offerList) {
-                    if (new Date(offer.startDate) < new Date()) {
-                        const needRating = await checkingRated(offer.id);
-                        if (needRating) {
-                            offersList.push(offer);
-                        }
-                    }
-                }
-                setPassengerOffers({offerList: offersList});
-            }
-        };
-        fetchData();
-    }, [validated]);
 
     const handleSubmit = (event: any) => {
         const form = event.currentTarget;
@@ -236,7 +170,67 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         }
     };
 
+    useEffect(() => {
+        if (!props.show) {
+            setValidated(false);
+            setSelectedOffer(null);
+            setSelectedClient(null);
+        }
+    }, [props.show]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const userData = await getLoggedInUser();
+
+            if (userData && userData.id) {
+                setUserId(userData.id);
+
+            }
+            
+        };
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const offersData = await getOwnOffers();
+            const offersList: Offer[] = [];
+            if (offersData) {
+                for (const offer of offersData.offerList) {
+                    if (new Date(offer.startDate) < new Date()) {
+                        const needRating = await checkingRated(offer.id);
+                        if (needRating) {
+                            offersList.push(offer);
+                        }
+                    }
+                }
+                setOffers({offerList: offersList});
+            }
+        };
+        fetchData();
+    }, [validated]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+
+            const offersData = await getPassengerOffers();
+            const offersList: Offer[] = [];
+            if (offersData) {
+                for (const offer of offersData.offerList) {
+                    if (new Date(offer.startDate) < new Date()) {
+                        const needRating = await checkingRated(offer.id);
+                        if (needRating) {
+                            offersList.push(offer);
+                        }
+                    }
+                }
+                setPassengerOffers({offerList: offersList});
+            }
+        };
+        fetchData();
+    }, [validated]);
 
     return (
         <Modal
