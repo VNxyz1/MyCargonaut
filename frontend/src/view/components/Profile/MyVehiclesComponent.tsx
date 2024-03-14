@@ -47,17 +47,17 @@ function MyVehiclesComponent() {
         setShowEditVehicleModal(true);
     };
 
-    const handleCloseEditVehicleModal = () => {
+    const handleCloseEditVehicleModal = async () => {
         setSelectedVehicleId(null);
         setShowEditVehicleModal(false);
-        fetchVehicle();
+        await fetchVehicle();
     };
 
     const handleConfirmDeleteVehicle = async () => {
         if (selectedVehicleId !== null) {
             const isDeleted = await deleteVehicle(selectedVehicleId);
             if (isDeleted) {
-                fetchVehicle();
+                await fetchVehicle();
                 handleCloseDeleteVehicleModal();
             } else {
                 console.log("Fehler beim Löschen des Fahrzeugs");
