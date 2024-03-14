@@ -11,7 +11,7 @@ export class MockPostTripRequest {
 
   startDate: string = '2024-02-02';
 
-  seats: number = 2;
+  seats: string = '2';
 
   cargoImg: File;
 }
