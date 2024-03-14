@@ -27,6 +27,9 @@ import { convertOfferToGetOfferDto, convertUserToOtherUser } from '../utils/conv
 import { GetTransitRequestDto } from './DTOs/getTransitRequestDto';
 import { PostTransitRequestRequestDto } from './DTOs/PostTransitRequestRequestDto';
 import { TransitRequest } from '../../database/TransitRequest';
+import { MessageService } from '../message.service/message.service';
+import { Message } from '../../database/Message';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
 
 @ApiTags('transit-request')
 @Controller('transit-request')
@@ -35,6 +38,8 @@ export class TransitRequestController {
     private readonly transitRequestService: TransitRequestService,
     private readonly offerService: OfferService,
     private readonly userService: UserService,
+    private readonly messageService: MessageService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @Post(':id')
@@ -198,8 +203,23 @@ export class TransitRequestController {
     }
     await this.transitRequestService.acceptTransitRequest(tR);
 
+    const conversation = await this.messageService.getOrCreateConversation(
+      offer.provider.id,
+      tR.requester.id,
+    );
+
+    const message = new Message();
+    message.sender = tR.requester;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeAcceptMessage(tR, offer);
+    await this.messageService.createMessage(message);
+
     await this.userService.decreaseCoinBalanceOfUser(tR.requester.id, tR.offeredCoins);
     await this.userService.increaseCoinBalanceOfUser(offerProviderId, tR.offeredCoins);
+
+    this.messageGatewayService.reloadMessages(offer.provider.id);
+    this.messageGatewayService.reloadMessages(tR.requester.id);
 
     return new OKResponseWithMessageDTO(true, 'Request was accepted');
   }
@@ -235,5 +255,12 @@ export class TransitRequestController {
 
   loggedInUserIsRequestingUser(userId: number, tR: TransitRequest): boolean {
     return tR.requester.id === userId;
+  }
+  private writeAcceptMessage(tr: TransitRequest, offer: Offer): string {
+    const start = offer.route[0].plz.location;
+    const end = offer.route[offer.route.length - 1].plz.location;
+    const coins = tr.offeredCoins.toString();
+
+    return `Ich habe dein Angebot, dich auf meiner Fahrt von ${start} nach ${end} für ${coins} Coins mit zu nehmen, angenommen. (automatisierte Nachricht)`;
   }
 }

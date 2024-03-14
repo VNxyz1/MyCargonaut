@@ -10,6 +10,7 @@ import { getAllMessages, getUnreadMessages, markMessagesRead, postMessage } from
 
 const chatWindowStyle: CSSProperties = {
   maxHeight: '30rem',
+  minHeight: '30rem',
   overflowY: 'scroll'
 }
 

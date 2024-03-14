@@ -15,7 +15,7 @@ export class RequestOfferingService {
 
   async getAllPendingOfRequestingUser(id: number) {
     const offerings = await this.offeringRepository.find({
-      where: { tripRequest: { requester: { id } } },
+      where: { tripRequest: { requester: { id } }, accepted: false },
       relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {
@@ -26,7 +26,7 @@ export class RequestOfferingService {
 
   async getAllPendingOfOfferingUser(id: number) {
     const offerings = await this.offeringRepository.find({
-      where: { offeringUser: { id } },
+      where: { offeringUser: { id }, accepted: false },
       relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {

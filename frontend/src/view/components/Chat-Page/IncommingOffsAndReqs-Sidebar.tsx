@@ -60,7 +60,7 @@ function IOR_Sidebar() {
         </Modal.Header>
         <Modal.Body>
           {selectedTRO ?
-            <OfferingListItem receiver offering={selectedTRO} />
+            <OfferingListItem receiver offering={selectedTRO} closeModal={handleCloseModal} />
             : <></>
           }
         </Modal.Body>
@@ -71,7 +71,7 @@ function IOR_Sidebar() {
         </Modal.Header>
         <Modal.Body>
           {selectedTR ?
-            <TransitRequestListItem receiver transitRequest={selectedTR} />
+            <TransitRequestListItem receiver transitRequest={selectedTR} closeModal={handleCloseModal} />
             : <></>
           }
         </Modal.Body>

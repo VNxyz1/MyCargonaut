@@ -48,6 +48,9 @@ import { createRoutePart } from '../utils/createRoutePart';
 import { OfferService } from '../offer.service/offer.service';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { RatingService } from '../rating.service/rating.service';
+import { MessageService } from '../message.service/message.service';
+import { Message } from '../../database/Message';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
 
 @ApiTags('request')
 @Controller('request')
@@ -60,6 +63,8 @@ export class RequestController {
     private readonly offerService: OfferService,
     private readonly vehicleService: VehicleService,
     private readonly ratingService: RatingService,
+    private readonly messageService: MessageService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @Post()
@@ -298,11 +303,58 @@ export class RequestController {
       throw new ForbiddenException('The coin balance of the requesting user is not valid.');
     }
 
+    const conversation = await this.messageService.getOrCreateConversation(
+      offering.tripRequest.requester.id,
+      offering.offeringUser.id,
+    );
+
+    const message = new Message();
+    message.sender = offering.tripRequest.requester;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeAcceptMessage(offering);
+    await this.messageService.createMessage(message);
+
     offering.accepted = true;
     await this.offeringService.save(offering);
 
     await this.userService.decreaseCoinBalanceOfUser(userId, offering.requestedCoins);
     await this.userService.increaseCoinBalanceOfUser(offering.offeringUser.id, offering.requestedCoins);
+
+    this.messageGatewayService.reloadMessages(offering.tripRequest.requester.id);
+    this.messageGatewayService.reloadMessages(offering.offeringUser.id);
+
+    return new OKResponseWithMessageDTO(true, 'Offering was accepted.');
+  }
+
+  @Post('offering/decline/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Declines a offering with the given id.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async decline(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
+    const userId: number = session.userData.id;
+    const offering = await this.offeringService.getById(offeringId);
+    if (offering.tripRequest.requester.id !== userId) {
+      throw new ForbiddenException('You are not allowed to decline this offering!');
+    }
+
+    const conversation = await this.messageService.getOrCreateConversation(
+      offering.tripRequest.requester.id,
+      offering.offeringUser.id,
+    );
+
+    const message = new Message();
+    message.sender = offering.tripRequest.requester;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeDeclineMessage(offering);
+    await this.messageService.createMessage(message);
+    await this.offeringService.delete(offering);
+
+    this.messageGatewayService.reloadMessages(offering.tripRequest.requester.id);
+    this.messageGatewayService.reloadMessages(offering.offeringUser.id);
 
     return new OKResponseWithMessageDTO(true, 'Offering was accepted.');
   }
@@ -521,5 +573,21 @@ export class RequestController {
     }
 
     return filteredTripeRequests;
+  }
+
+  private writeDeclineMessage(offering: TripRequestOffering): string {
+    const start = offering.tripRequest.startPlz.location;
+    const end = offering.tripRequest.endPlz.location;
+    const coins = offering.requestedCoins.toString();
+
+    return `Ich habe dein Angebot, mich von ${start} nach ${end} für ${coins} Coins mit zu nehmen, abgelehnt. (automatisierte Nachricht)`;
+  }
+
+  private writeAcceptMessage(offering: TripRequestOffering): string {
+    const start = offering.tripRequest.startPlz.location;
+    const end = offering.tripRequest.endPlz.location;
+    const coins = offering.requestedCoins.toString();
+
+    return `Ich habe dein Angebot, mich von ${start} nach ${end} für ${coins} Coins mit zu nehmen, angenommen. (automatisierte Nachricht)`;
   }
 }

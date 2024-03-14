@@ -29,7 +29,7 @@ function AllChats() {
         <h3>Chats</h3>
         : <></>
       }
-      <ListGroup className='mb-3' style={{ minWidth: "100%", overflow: 'auto' }}>
+      <ListGroup className='mb-3' style={{ minWidth: "100%" }}>
         {chats.map((c) => (
           <ListGroup.Item className='d-flex justify-content-between' style={{ minWidth: "100%"}} onClick={()=> setSelectedChat(c.conversationId)}>
             <span><strong>{c.conversationPartnerName}</strong></span>

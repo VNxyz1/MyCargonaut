@@ -7,6 +7,7 @@ import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
 function OfferingListItem(
   props: {
     offering: TripRequestOffering,
+    closeModal?: () => void
     receiver?: boolean
   }
 ) {
@@ -22,7 +23,10 @@ function OfferingListItem(
   const sendAcceptOffering = async () => {
     const successful = await acceptOffering(props.offering.id);
     if (successful) {
-      await getOffs()
+      await getOffs();
+      if(props.closeModal) {
+        props.closeModal()
+      }
       //Todo: hier kann man mal was machen
     }
   }
@@ -31,6 +35,9 @@ function OfferingListItem(
     const successful = await deleteOffering(props.offering.id);
     if (successful) {
       await getOffs()
+      if(props.closeModal) {
+        props.closeModal()
+      }
       //Todo: hier kann man mal was machen
     }
   }

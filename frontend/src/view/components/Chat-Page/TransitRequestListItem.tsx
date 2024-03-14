@@ -8,6 +8,7 @@ import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
 function TransitRequestListItem (
   props: {
     transitRequest: TransitRequest,
+    closeModal?: () => void,
     receiver?: boolean
   }
 ) {
@@ -25,7 +26,10 @@ function TransitRequestListItem (
   const handleDelete = async () => {
     const successful = await deleteTransitRequest(Number(props.transitRequest.id));
     if (successful) {
-      await getTRs()
+      await getTRs();
+      if(props.closeModal) {
+        props.closeModal()
+      }
       //Todo: hier kann man mal was machen
     }
   }
@@ -35,6 +39,9 @@ function TransitRequestListItem (
     const successful = await acceptTransitRequest(Number(props.transitRequest.id));
     if (successful) {
       await getTRs()
+      if(props.closeModal) {
+        props.closeModal()
+      }
       //Todo: hier kann man mal was machen
     }
   }
