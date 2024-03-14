@@ -1,4 +1,4 @@
-import { GetUserRatings } from "../interfaces/Rating.ts";
+import { GetRatedUser, GetUserRatings } from "../interfaces/Rating.ts";
 import { JustDriverRating, JustPassengerRating } from "../interfaces/Rating.ts";
 
 
@@ -12,6 +12,25 @@ export const getRatingsById = async (id: number) => {
         });
         if(res.ok){
             const data: GetUserRatings = await res.json();
+            return data;
+        }
+        const data = await res.json();
+        console.error(data);
+    } catch (e) {
+        console.error(e)
+    }
+};
+
+export const getRated = async (id: number) => {
+    try {
+        const res = await fetch(`/rating/${id}/own`, {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json"
+            },
+        });
+        if(res.ok){
+            const data: GetRatedUser = await res.json();
             return data;
         }
         const data = await res.json();

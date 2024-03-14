@@ -41,6 +41,15 @@ export interface GetUserRatings {
     "ratingsAsPassenger": PassengerRating[]
 }
 
+export interface Ratees{
+    "rateeId": number,
+    "rated": boolean
+}
+
+export interface GetRatedUser {
+    "ratees": Ratees[]
+}
+
 export enum RatingTypes {
     "totalRating" = "Gesamt",
     "punctuality" = "Pünktlich",
