@@ -67,7 +67,6 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
                     const filteredRating = ratingData.ratees.filter(forList => forList.rated === false);
                     filteredRating.forEach(driverOrPassenger => {
                         userList.push(driverOrPassenger.rateeId);
-                        console.log("Das ist die PersonenID: " + driverOrPassenger.rateeId);
                     });
                     setClientIds(userList);
                 }
@@ -85,7 +84,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             const userData = await getAUser(id);
             return userData;
         } catch (error) {
-            console.error("Error while checking rating:", error);
+            console.error("Error while getting user:", error);
             return null;
         }
     };
@@ -195,12 +194,14 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         }
         return userList;
             } catch (error) {
-                console.error("Error while checking rating:", error);
+                console.error("Error while creating list of user:", error);
                 return null;
             }
         };
 
     const handleOfferChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedOffer(null);
+        setSelectedClient(null);
         const selectedOfferId = parseInt(event.target.value);
         const selectedOffers = offers?.offerList.find(offer => offer.id === selectedOfferId) || null;
         const selectedPassengerOffers = passengerOffers?.offerList.find(offer => offer.id === selectedOfferId) || null;
@@ -214,23 +215,25 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             setSwitched(true);
         }
         userPackage();
-        setSelectedClient(null);
-
+        const driverElement = document.getElementById('driver') as HTMLSelectElement | null;
+        const passengerElement = document.getElementById('passenger') as HTMLSelectElement | null; 
+        if (driverElement) driverElement.selectedIndex = 0;
+        if (passengerElement) passengerElement.selectedIndex = 0;
     };
 
     const handleClientChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedClientId = parseInt(event.target.value);
         const selectedClient = selectedOffer?.clients.find(client => client.id === selectedClientId) || null;
         setSelectedClient(selectedClient);
-
-
     };
 
-    const handleDriverChange = () => {
+    const handleDriverChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedDriverId = parseInt(event.target.value);
+        if(selectedDriverId == 0) setSelectedClient(null);
+        else{
         const selectedProvider = selectedOffer?.provider || null;
         setSelectedClient(selectedProvider);
-
-
+        }
     };
 
 
