@@ -1,7 +1,7 @@
 import { TripRequestOffering } from '../../../interfaces/TripRequestOffering.ts';
 import { Col, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import { acceptOffering, deleteOffering, getOfferings } from '../../../services/tripRequestService.ts';
+import { acceptOffering, declineOffering, deleteOffering, getOfferings } from '../../../services/tripRequestService.ts';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
 import { TripRequest } from '../../../interfaces/TripRequest.ts';
 
@@ -28,7 +28,6 @@ function OfferingListItem(
       if (props.closeModal) {
         props.closeModal();
       }
-      //Todo: hier kann man mal was machen
     }
   };
 
@@ -39,7 +38,16 @@ function OfferingListItem(
       if (props.closeModal) {
         props.closeModal();
       }
-      //Todo: hier kann man mal was machen
+    }
+  };
+
+  const handleDecline = async () => {
+    const successful = await declineOffering(props.offering.id);
+    if (successful) {
+      await getOffs();
+      if (props.closeModal) {
+        props.closeModal();
+      }
     }
   };
 
@@ -71,7 +79,7 @@ function OfferingListItem(
           {props.receiver ?
             <>
               <Button onClick={sendAcceptOffering} className="mainButton w-100 mb-2">Annehmen</Button>
-              <Button className="mainButton w-100 mb-2">Ablehnen</Button>
+              <Button onClick={handleDecline} className="mainButton w-100 mb-2">Ablehnen</Button>
             </>
             :
             <>
@@ -88,7 +96,6 @@ function OfferingListItem(
         <h5>Nachricht:</h5>
         <p>{props.offering.text} </p>
       </Row>
-
     </>
   );
 }

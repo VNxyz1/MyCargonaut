@@ -347,6 +347,8 @@ export class RequestController {
       offering.offeringUser.id,
     );
 
+    const offeringUserId = offering.offeringUser.id;
+
     const message = new Message();
     message.sender = offering.tripRequest.requester;
     message.conversation = conversation;
@@ -356,9 +358,32 @@ export class RequestController {
     await this.offeringService.delete(offering);
 
     this.messageGatewayService.reloadMessages(offering.tripRequest.requester.id);
-    this.messageGatewayService.reloadMessages(offering.offeringUser.id);
+    this.messageGatewayService.reloadMessages(offeringUserId);
 
-    return new OKResponseWithMessageDTO(true, 'Offering was accepted.');
+    return new OKResponseWithMessageDTO(true, 'Offering was declined.');
+  }
+
+  @Delete('offering/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Deletes a offering with the given id.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async deleteOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
+    const userId: number = session.userData.id;
+    const offering = await this.offeringService.getById(offeringId);
+    const tR = await this.requestService.getById(offering.tripRequest.id);
+    if (offering.offeringUser.id !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this offering!');
+    }
+
+    const offeringUserId = offering.offeringUser.id;
+    await this.offeringService.delete(offering);
+
+    this.messageGatewayService.reloadMessages(tR.requester.id);
+    this.messageGatewayService.reloadMessages(offeringUserId);
+
+    return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
   }
 
   @Post('transform-to-offer/:id')

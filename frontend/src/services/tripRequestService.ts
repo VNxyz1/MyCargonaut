@@ -16,10 +16,16 @@ export const getTripRequestById = async (id: number) => {
 }
 
 export const deleteOffering = async (id: number) => {
-  console.log(id)
   try {
-    //Todo: muss im backend implementiert werden
-    return false
+    const res = await fetch(`/request/offering/${id}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      return true;
+    }
+    const data = await res.json();
+    console.error(data);
+    return false;
   } catch (e) {
     console.error(e)
   }
@@ -67,6 +73,18 @@ export interface PostRequestPlz {
 export const acceptOffering = async (id: number) => {
   try {
     const response = await fetch(`/request/offering/accept/${id}`, {
+      method: "POST"
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const declineOffering = async (id: number) => {
+  try {
+    const response = await fetch(`/request/offering/decline/${id}`, {
       method: "POST"
     });
     return response.ok;

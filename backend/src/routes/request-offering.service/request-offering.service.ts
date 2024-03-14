@@ -35,7 +35,7 @@ export class RequestOfferingService {
     return offerings;
   }
 
-  async getById(id: number) {
+  async getById(id: number): Promise<TripRequestOffering> {
     const offering = await this.offeringRepository.findOne({
       where: { id },
       relations: ['offeringUser', 'tripRequest'],
