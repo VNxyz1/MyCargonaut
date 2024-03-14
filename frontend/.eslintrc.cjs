@@ -22,5 +22,12 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'off',
       },
     },
+    {
+      files: ['__tests__/**/*'],
+      plugins: ['jest'],
+      env: {
+        'jest/globals': true
+      }
+    },
   ],
 }
