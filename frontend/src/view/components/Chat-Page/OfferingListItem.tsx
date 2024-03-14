@@ -94,7 +94,7 @@ function OfferingListItem(
       </Row>
       <Row>
         <h5>Nachricht:</h5>
-        <p>{props.offering.text} </p>
+        <p style={{wordWrap: 'break-word'}}>{props.offering.text} </p>
       </Row>
     </>
   );

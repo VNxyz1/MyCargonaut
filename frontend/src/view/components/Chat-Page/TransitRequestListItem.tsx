@@ -31,7 +31,6 @@ function TransitRequestListItem (
       if(props.closeModal) {
         props.closeModal()
       }
-      //Todo: hier kann man mal was machen
     }
   }
 
@@ -94,7 +93,7 @@ function TransitRequestListItem (
       </Row>
       <Row>
         <h5>Nachricht:</h5>
-        <p>{props.transitRequest.text} </p>
+        <p style={{wordWrap: 'break-word'}}>{props.transitRequest.text} </p>
       </Row>
     </>
   );

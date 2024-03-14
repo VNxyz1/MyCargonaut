@@ -72,6 +72,7 @@ export class TransitRequestController {
     const requestingUser: User = await this.userService.getUserById(requestingUserId);
     await this.transitRequestService.postTransitRequest(offer, requestingUser, body);
     this.messageGatewayService.reloadMessages(offer.provider.id);
+    this.messageGatewayService.reloadMessages(requestingUserId);
     return new OKResponseWithMessageDTO(true, 'Request was sent');
   }
 
@@ -245,12 +246,17 @@ export class TransitRequestController {
     const tR = await this.transitRequestService.getTransitRequestById(tRId);
 
     const requestingUserId = session.userData.id;
+    const offeringUserId = tR.offer.provider.id;
 
     if (!this.loggedInUserIsRequestingUser(requestingUserId, tR)) {
       throw new ForbiddenException('You are not allowed to delete this Request.');
     }
 
     await this.transitRequestService.delete(tR);
+
+    this.messageGatewayService.reloadMessages(offeringUserId);
+    this.messageGatewayService.reloadMessages(requestingUserId);
+
     return new OKResponseWithMessageDTO(true, 'Request was deleted');
   }
 
