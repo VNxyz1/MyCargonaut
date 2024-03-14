@@ -48,9 +48,9 @@ function MyVehiclesComponent() {
     };
 
     const handleCloseEditVehicleModal = async () => {
+        await fetchVehicle();
         setSelectedVehicleId(null);
         setShowEditVehicleModal(false);
-        await fetchVehicle();
     };
 
     const handleConfirmDeleteVehicle = async () => {
