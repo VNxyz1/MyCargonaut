@@ -5,6 +5,7 @@ import { TripRequest } from "../../interfaces/TripRequest.ts";
 import Button from "react-bootstrap/Button";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar } from '@fortawesome/free-solid-svg-icons';
 import TripListItem from "../components/Search-Transport-Page/Trip-List-Item.tsx";
 
 function SearchTransportPage(
@@ -20,7 +21,8 @@ function SearchTransportPage(
     const [nachInput, setNachInput] = useState<string>('');
     const [anzahlSitzeInput, setAnzahlSitzeInput] = useState<number>();
     const [datumInput, setDatumInput] = useState<string>('');
-    const [bewertungInput, setBewertungInput] = useState<number>();
+    const [rating, setRating] = useState<number>(0);
+    const [hover, setHover] = useState<number>(0);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -58,10 +60,6 @@ function SearchTransportPage(
         setDatumInput(event.target.value);
     };
 
-    const handleBewertungInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setBewertungInput(Number(event.target.value));
-    };
-
     const search = async () => {
         try {
             let searchParams = [];
@@ -80,8 +78,8 @@ function SearchTransportPage(
             }
     
             // Bewertung hinzufügen
-            if (bewertungInput !== 0) {
-                searchParams.push(`rating=${bewertungInput}`);
+            if (rating !== 0) {
+                searchParams.push(`rating=${rating}`);
             }
     
             // Datum hinzufügen
@@ -123,6 +121,14 @@ function SearchTransportPage(
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const radioValue = event.target.value;
         setSelectedType(radioValue);
+    };
+
+    const handleClick = (ratingValue: number) => {
+        setRating(ratingValue);
+    };
+
+    const handleMouseEnter = (ratingValue: number) => {
+        setHover(ratingValue);
     };
 
     return (
@@ -185,8 +191,31 @@ function SearchTransportPage(
                                     <span>
                                         Bewertung des Benutzers:
                                     </span>
-                                    <input className='w-100' type="number" id="bewertungInput" onChange={handleBewertungInputChange}/>
-                                </div>
+                                    <div className='d-flex justify-content-center'>
+                                        {[...Array(5)].map((_star, index) => {
+                                            const ratingValue = index + 1;
+                                            const starClass = ratingValue <= (hover || rating) ? `star-active` : 'star';
+
+                                            return (
+                                                <label key={index}>
+                                                    <input
+                                                        type="radio"
+                                                        name="rating"
+                                                        value={ratingValue}
+                                                        onClick={() => handleClick(ratingValue)}
+                                                        style={{ display: 'none' }}
+                                                    />
+                                                    <FontAwesomeIcon
+                                                        icon={faStar}
+                                                        className={starClass}
+                                                        size="1x"
+                                                        onMouseEnter={() => handleMouseEnter(ratingValue)}
+                                                        onMouseLeave={() => setHover(0)}
+                                                    />
+                                                </label>
+                                            );
+                                        })}   
+                                    </div>                             </div>
                             </Card.Body>
                             <Button className="mainButton w-100 mb-2" onClick={search}>
                                 Filter anwenden
