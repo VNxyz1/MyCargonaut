@@ -104,6 +104,18 @@ export const acceptTransitRequest = async (id: number) => {
     }
 }
 
+export const declineTransitRequest = async (id: number) => {
+    try {
+        const response = await fetch(`/transit-request/decline/${id}`, {
+            method: "PUT"
+        });
+        return response.ok;
+
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 export const getTransitRequests = async () => {
 
     let sentTransitRequests = await getSentTransitRequests();

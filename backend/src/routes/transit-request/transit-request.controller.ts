@@ -226,6 +226,44 @@ export class TransitRequestController {
     return new OKResponseWithMessageDTO(true, 'Request was accepted');
   }
 
+  @Put('decline/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Declines a Transit Request',
+    description: `Allows the provider to decline a transit request.`,
+  })
+  async declineRequest(@Session() session: ISession, @Param('id', ParseIntPipe) tRId: number) {
+    const offerProviderId = session.userData.id;
+    const tR = await this.transitRequestService.getTransitRequestById(tRId);
+
+    const offer = await this.offerService.getOffer(tR.offer.id);
+
+    if (offer.provider.id !== offerProviderId) {
+      throw new ForbiddenException('You are not allowed to mark this request as accepted');
+    }
+
+    const conversation = await this.messageService.getOrCreateConversation(
+      offer.provider.id,
+      tR.requester.id,
+    );
+
+    const requesterId = tR.requester.id;
+
+    const message = new Message();
+    message.sender = offer.provider;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeDeclineMessage(tR, offer);
+    await this.messageService.createMessage(message);
+
+    await this.transitRequestService.delete(tR);
+
+    this.messageGatewayService.reloadMessages(offerProviderId);
+    this.messageGatewayService.reloadMessages(requesterId);
+
+    return new OKResponseWithMessageDTO(true, 'Request was declined');
+  }
+
   @Delete(':id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
@@ -269,5 +307,13 @@ export class TransitRequestController {
     const coins = tr.offeredCoins.toString();
 
     return `Ich nehme dich mit auf meiner Fahrt von ${start} nach ${end}. Für ${coins} Coins. (automatisierte Nachricht)`;
+  }
+
+  private writeDeclineMessage(tr: TransitRequest, offer: Offer): string {
+    const start = offer.route[0].plz.location;
+    const end = offer.route[offer.route.length - 1].plz.location;
+    const coins = tr.offeredCoins.toString();
+
+    return `Danke für deine Anfrage, aber ich kann dich auf meiner Fahrt von ${start} nach ${end} nicht mit nehmen. Dein Angebot waren ${coins} Coins. (automatisierte Nachricht)`;
   }
 }

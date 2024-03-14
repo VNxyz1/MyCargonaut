@@ -348,6 +348,7 @@ export class RequestController {
     );
 
     const offeringUserId = offering.offeringUser.id;
+    const requestingUser = offering.tripRequest.requester.id;
 
     const message = new Message();
     message.sender = offering.tripRequest.requester;
@@ -357,7 +358,7 @@ export class RequestController {
     await this.messageService.createMessage(message);
     await this.offeringService.delete(offering);
 
-    this.messageGatewayService.reloadMessages(offering.tripRequest.requester.id);
+    this.messageGatewayService.reloadMessages(requestingUser);
     this.messageGatewayService.reloadMessages(offeringUserId);
 
     return new OKResponseWithMessageDTO(true, 'Offering was declined.');

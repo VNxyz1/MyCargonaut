@@ -1,7 +1,12 @@
 import { TransitRequest } from "../../../interfaces/TransitRequest.ts";
 import { Col, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import { acceptTransitRequest, deleteTransitRequest, getTransitRequests } from '../../../services/offerService.tsx';
+import {
+  acceptTransitRequest,
+  declineTransitRequest,
+  deleteTransitRequest,
+  getTransitRequests,
+} from '../../../services/offerService.tsx';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
 import { Offer } from '../../../interfaces/Offer.ts';
 
@@ -42,9 +47,18 @@ function TransitRequestListItem (
       if(props.closeModal) {
         props.closeModal()
       }
-      //Todo: hier kann man mal was machen
     }
   }
+
+  const handleDecline = async () => {
+    const successful = await declineTransitRequest(Number(props.transitRequest.id));
+    if (successful) {
+      await getTRs();
+      if (props.closeModal) {
+        props.closeModal();
+      }
+    }
+  };
 
   const displayRouteText = (offer: Offer|undefined) => {
     if (offer) {
@@ -78,7 +92,7 @@ function TransitRequestListItem (
           {props.receiver ?
             <>
               <Button onClick={handleAccept} className='mainButton w-100 mb-2'>Annehmen</Button>
-              <Button className='mainButton w-100 mb-2'>Ablehnen</Button>
+              <Button onClick={handleDecline} className='mainButton w-100 mb-2'>Ablehnen</Button>
             </>
             :
             <>
