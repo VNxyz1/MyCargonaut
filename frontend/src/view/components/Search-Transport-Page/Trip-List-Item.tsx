@@ -1,75 +1,86 @@
 import { Link } from "react-router-dom";
 import { Card, Image } from "react-bootstrap";
-import img from "../../../assets/img/home_transport.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { Offer } from "../../../interfaces/Offer.ts";
+import { TripRequest } from "../../../interfaces/TripRequest.ts";
 import { useEffect, useState } from "react";
+import platzhalter from "../../../assets/img/platzhalter_auto.jpg";
 
-function TripListItem (
-  props: {
-    trip: Offer
-  }
-) {
+function TripListItem(props: { trip: Offer | TripRequest }) {
+  const [plzDisplay, setPlzDisplay] = useState({ plz1: "Start", plz2: "End" });
+  const [imgSrc, setImgSrc] = useState<string>(platzhalter);
 
-  const [plzDisplay, setPlzDisplay] = useState({plz1: "Start", plz2: "End"});
-
-
-  const setPlzForOffer = () => {
-    if("route" in props.trip) {
+  const setPlz = () => {
+    if ("route" in props.trip) {
       const route = props.trip.route;
       if (route.length !== 0) {
         const plz1 = route[0].plz.plz + " " + route[0].plz.location;
-        const plz2 = route[props.trip.route.length - 1].plz.plz + " " + route[props.trip.route.length - 1].plz.location;
+        const plz2 =
+          route[props.trip.route.length - 1].plz.plz +
+          " " +
+          route[props.trip.route.length - 1].plz.location;
         setPlzDisplay({
           plz1,
-          plz2
+          plz2,
         });
       }
+    } else {
+      const plz1 = props.trip.startPlz.plz + " " + props.trip.startPlz.location;
+      const plz2 = props.trip.endPlz.plz + " " + props.trip.endPlz.location;
+      setPlzDisplay({
+        plz1,
+        plz2,
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    setPlzForOffer()
-  }, []);
+    setPlz();
+    // Check if there's a vehicle picture available
+    if ("vehicle" in props.trip && props.trip.vehicle.picture) {
+      setImgSrc(props.trip.vehicle.picture);
+    } else if("cargoImg" in props.trip && props.trip.cargoImg != null) {
+      setImgSrc(props.trip.cargoImg);
+    }
+  }, [props.trip]);
 
   const convertDateTimeForDisplay = () => {
     const date = new Date(props.trip.createdAt);
-
     return date.toLocaleString("de-DE", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: false
-    })
-  }
-
+    });
+  };
 
   return (
-    <div className="mb-2" style={{height: "200px"}}>
-      <Link to={`/trip/offer/${props.trip.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+    <div className="mb-4">
+      <Link
+        to={"route" in props.trip ? `/offer/${props.trip.id}` : `/request/${props.trip.id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <Card key={props.trip.id}>
           <div className="d-flex">
             <Image
               style={{
-                width: "300px",
-                height: "200px",
                 objectFit: "cover",
                 overflow: "hidden",
                 borderRadius: "0.2rem 0 0 0.2rem"
               }}
-              src={props.trip.vehicle.picture ? `${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}` :img}
-              alt=""
+              src={imgSrc}
             />
             <div className="col">
-              <Card.Header className="d-flex justify-content-between">
+              <Card.Header>
                 <div className="d-flex">
-                  <h5><strong>{plzDisplay.plz1}</strong></h5>
-                  <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight}/>
-                  <h5><strong>{plzDisplay.plz2}</strong></h5>
+                  <h5>
+                    <strong>{plzDisplay.plz1}</strong>
+                  </h5>
+                  <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight} />
+                  <h5>
+                    <strong>{plzDisplay.plz2}</strong>
+                  </h5>
                 </div>
                 <p>{convertDateTimeForDisplay()}</p>
               </Card.Header>
@@ -86,4 +97,4 @@ function TripListItem (
   );
 }
 
-export default TripListItem
+export default TripListItem;
