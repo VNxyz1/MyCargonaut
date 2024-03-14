@@ -45,8 +45,8 @@ function NavigationComponent() {
                             </label>
 
                             <ul>
-                              <li><Link to="/search-transport?t=trip">Fahrt suche</Link></li>
-                              <li><Link to="/search-cargo?t=cargo">Cargo suchen</Link></li>
+                              <li><Link to="/search-transport?t=offer">Fahrt suche</Link></li>
+                              <li><Link to="/search-transport?t=request">Cargo suchen</Link></li>
                                 {!isAuthenticated && (
                                     <>
                                         <li><Link to="/login">Fahrt veröffentlichen</Link></li>
