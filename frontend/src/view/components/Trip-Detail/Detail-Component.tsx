@@ -1,5 +1,6 @@
 import {Offer} from "../../../interfaces/Offer.ts";
 import {Image} from "react-bootstrap";
+import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
 //import transporter from "../../../assets/img/home_transport.png";
 import Card from "react-bootstrap/Card";
 import {faArrowRight} from "@fortawesome/free-solid-svg-icons/faArrowRight";
@@ -95,12 +96,10 @@ function DetailComponent(
             }
         }
         if("route" in props.trip) {
-            if(props.trip.vehicle.picture === " ") {
-                setImageUrl(undefined);
-
-            } else {
-
+            if(props.trip.vehicle.picture) {
                 setImageUrl(`${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}`);
+            } else {
+                setImageUrl(undefined);
             }
         }
     }
@@ -135,7 +134,7 @@ function DetailComponent(
     return (
         <div className="mt-4" style={{ width: "100%" }} >
             <div className="mb-3" style={{overflow: "hidden", height: "26rem", borderRadius: "0.5rem"}}>
-                <Image src={imageUrl} alt={imageAltText}
+                <Image src={imageUrl ? imageUrl : placeholderImg} alt={imageAltText}
                        style={{width: "100%", height: "100%", objectFit: "cover"}}/>
             </div>
             <Card className="mb-3">

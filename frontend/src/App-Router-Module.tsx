@@ -15,7 +15,6 @@ import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
 import ChatPage from "./view/pages/Chat-Page.tsx";
 
 function RoutesComponent() {
-    // @ts-ignore wird vielleicht noch gebraucht
     const [offers, setOffers] = useState<Offer[]>([]);
 
 
@@ -51,7 +50,7 @@ function RoutesComponent() {
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/profil" element={<ProfilPage  reRender={getAllPublicOffers}/>} />
                 <Route path="/user/:userId" element={<UserPage />} />
-                <Route path="/search-transport" element={<SearchTransportPage offers={offers}  />} />
+                <Route path="/search-transport" element={<SearchTransportPage offers={offers} reRender={getAllPublicOffers}/>} />
                 <Route path="/messages" element={<ChatPage />} />
                 <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
                 <Route path="/404" element={<BadRequestPage/>} />

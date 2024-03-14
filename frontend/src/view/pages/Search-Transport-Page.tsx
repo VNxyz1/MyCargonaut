@@ -8,6 +8,7 @@ import TripListItem from "../components/Search-Transport-Page/Trip-List-Item.tsx
 function SearchTransportPage(
     props: {
         offers: Offer[]
+        reRender: ()=> void
     }
 ) {
     const [offers, setOffers] = useState<Offer[]>(props.offers);
@@ -39,6 +40,10 @@ function SearchTransportPage(
     useEffect(() => {
         setOffers(props.offers)
     }, [props.offers]);
+
+    useEffect(() => {
+        props.reRender()
+    }, []);
 
     return (
         <>

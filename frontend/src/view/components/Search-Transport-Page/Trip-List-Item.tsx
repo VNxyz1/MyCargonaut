@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card, Image } from "react-bootstrap";
-import img from "../../../assets/img/home_transport.png";
+import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { Offer } from "../../../interfaces/Offer.ts";
@@ -61,7 +61,7 @@ function TripListItem (
                 overflow: "hidden",
                 borderRadius: "0.2rem 0 0 0.2rem"
               }}
-              src={props.trip.vehicle.picture ? `${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}` :img}
+              src={props.trip.vehicle.picture ? `${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}` : placeholderImg}
               alt=""
             />
             <div className="col">
