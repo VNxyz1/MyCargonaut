@@ -39,8 +39,8 @@ function OfferingListItem(
 
   return (
     <>
-      <Row className='align-items-center mb-2'>
-        <Col>
+      <Row className='align-items-center mb-2' style={{maxWidth: 'min-content'}}>
+        <Col xs={'auto'}>
           {!props.receiver ?
             <h4>Von: {props.offering.tripRequest?.requester?.firstName} {props.offering.tripRequest?.requester?.lastName}</h4>
             :
@@ -53,16 +53,16 @@ function OfferingListItem(
             <h5>Beanspruchte Sitze: {props.offering.tripRequest.seats}</h5>
           }
         </Col>
-        <Col>
+        <Col  style={{maxWidth: 'min-content'}}>
           {props.receiver ?
             <>
-              <Button onClick={sendAcceptOffering} className='mainButton w-75 mb-2'>Annehmen</Button>
-              <Button className='mainButton w-75 mb-2'>Ablehnen</Button>
+              <Button onClick={sendAcceptOffering} className='mainButton w-100 mb-2'>Annehmen</Button>
+              <Button className='mainButton w-100 mb-2'>Ablehnen</Button>
             </>
             :
             <>
-              <Button className='mainButton w-75 mb-2'>Bearbeiten</Button>
-              <Button onClick={handleDelete} className='mainButton w-75 mb-2'>Löschen</Button>
+              <Button className='mainButton w-100 mb-2'>Bearbeiten</Button>
+              <Button onClick={handleDelete} className='mainButton w-100 mb-2'>Löschen</Button>
             </>
           }
         </Col>

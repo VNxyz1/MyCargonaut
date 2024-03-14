@@ -51,7 +51,7 @@ function ChatPage() {
           <SingleChat/>
         </Col>
       </Row>
-      <div className="mb-4">
+      <div className="mb-4 container">
           <OfferingsAndRequests />
       </div>
     </Container>

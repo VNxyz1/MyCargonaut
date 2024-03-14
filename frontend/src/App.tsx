@@ -15,6 +15,7 @@ function App() {
   const {setIsConnected } = socketStore();
   const {setChats, sortByDateDesc, setUnreadChats } = chatStore();
   const { isAuthenticated} = useAuth();
+  const { setIncomingOfferings, setSentOfferings, setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
 
   const handleUnreadMessages = async () => {
     const chats = await getAllMessages();
@@ -42,6 +43,8 @@ function App() {
     }
 
     (async ()=> {
+      await getReqsAndOffs()
+
       const userData = await getLoggedInUser();
       if (userData == null || userData.id == undefined) {
         return;
@@ -62,15 +65,6 @@ function App() {
 
   }, [isAuthenticated]);
 
-
-  const { setIncomingOfferings, setSentOfferings, setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
-
-  useEffect(() => {
-    (async () => {
-      await getReqsAndOffs()
-    })()
-
-  }, []);
 
   const getReqsAndOffs = async () => {
     const {incomingOfferings, sentOfferings} = await getOfferings();
