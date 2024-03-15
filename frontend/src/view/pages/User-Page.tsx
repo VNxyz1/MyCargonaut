@@ -14,32 +14,43 @@ import {User} from "../../interfaces/User";
 import {getAUser} from "../../services/userService";
 import {useNavigate, useParams} from "react-router-dom";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
+import {useAuth} from '../../services/authService';
 
 function ProfilPage() {
     const { userId } = useParams();
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Fahrten");
     const [userData, setUserData] = useState<User | null>(null);
-
+    const {isAuthenticated} = useAuth();
     const entryDate = new Date((userData as any)?.entryDate);
     const formattedEntryDate = entryDate.toLocaleDateString();
     const navigate = useNavigate();
 
     useEffect(() => {
+        //TODO: Prüfen ob es der eigene Nutzer ist, wenn ja, dann umleiten auf Profil
+        if (isAuthenticated) {
 
-        const fetchData = async () => {
-            const data = await getAUser(userId);
-            if (data !== null) {
-                setUserData(data as any);
-                setProfileImageUrl((data as any)?.profilePicture);
+            const fetchData = async () => {
+                const data = await getAUser(userId);
+                if (data !== null) {
+                    setUserData(data as any);
+                    setProfileImageUrl((data as any)?.profilePicture);
 
-            } else {
-                navigate('/404');
-            }
-        };
+                } else {
+                    navigate('/404');
+                }
+            };
+            fetchData();
 
-        fetchData();
-    }, [userId]);
+
+        } else {
+            //TODO: Alter einbauen
+            console.log("Du musst eingeloggt sein, um die seite zu sehen.")
+            navigate('/login');
+        }
+
+
+    }, [isAuthenticated, userId]);
 
     const renderSectionContent = () => {
         switch (currentSection) {
