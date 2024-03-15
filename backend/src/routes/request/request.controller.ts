@@ -146,7 +146,7 @@ export class RequestController {
     }
 
     if (query.rating) {
-      tRArr = await this.filterByRating(query.rating, tRArr);
+      tRArr = await this.filterByRating(Number(query.rating), tRArr);
     }
 
     const dto = new GetAllTripRequestResponseDto();

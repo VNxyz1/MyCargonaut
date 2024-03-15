@@ -244,21 +244,21 @@ describe('RequestController', () => {
 
     it('should get filtered trip requests by rating', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 4;
+      query.rating = '4';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(1);
     });
 
     it('should get filtered trip requests by rating. No 5 Star Ratings exist.', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 5;
+      query.rating = '5';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(0);
     });
 
     it('should get filtered trip requests by rating. No 3 Star Ratings exist.', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 3;
+      query.rating = '3';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(0);
     });
