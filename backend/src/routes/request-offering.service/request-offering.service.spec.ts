@@ -128,7 +128,7 @@ describe('RequestOfferingService', () => {
     accepted: boolean,
     tripRequestId?: number,
   ) => {
-    const tR = await requestService.getById(tripRequestId);
+    const tR = await requestService.getOpenById(tripRequestId);
 
     const tRO = new MockCreateTripRequestOffering();
 

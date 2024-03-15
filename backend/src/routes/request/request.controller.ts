@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -79,6 +80,11 @@ export class RequestController {
     @UploadedFile() cargoImg?: Express.Multer.File,
   ) {
     const user = await this.userService.getUserById(session.userData.id);
+    if (typeof body.endPlz == 'string') {
+      body.endPlz = JSON.parse(String(body.endPlz));
+      body.startPlz = JSON.parse(String(body.startPlz));
+    }
+
     const tR = await this.createTripRequest(body, user, cargoImg);
 
     await this.requestService.save(tR);
@@ -90,7 +96,7 @@ export class RequestController {
   @ApiOperation({ summary: 'gets all trip request' })
   @ApiResponse({ type: GetAllTripRequestResponseDto })
   async getAll() {
-    const tRArr = await this.requestService.getAll();
+    const tRArr = await this.requestService.getOpen();
     const dto = new GetAllTripRequestResponseDto();
     dto.tripRequests = tRArr.map((tR) => {
       return convertTripRequestToGetDto(tR);
@@ -102,7 +108,7 @@ export class RequestController {
   @ApiOperation({ summary: 'gets trip request by id' })
   @ApiResponse({ type: GetTripRequestResponseDto })
   async getOne(@Param('id', ParseIntPipe) tripRequestId: number) {
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     return convertTripRequestToGetDto(tR);
   }
@@ -121,7 +127,7 @@ export class RequestController {
     if (query.searchString) {
       tRArr = await this.requestService.getFilteredBySearchstring(query.searchString);
     } else {
-      tRArr = await this.requestService.getAll();
+      tRArr = await this.requestService.getOpen();
     }
 
     if (query.seats) {
@@ -165,7 +171,7 @@ export class RequestController {
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async delete(@Param('id', ParseIntPipe) tripRequestId: number, @Session() session: ISession) {
     const userId: number = session.userData.id;
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     this.loggedInUserIsRequester(userId, tR);
 
@@ -188,7 +194,7 @@ export class RequestController {
     @UploadedFile() cargoImg?: Express.Multer.File,
   ) {
     const userId: number = session.userData.id;
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     this.loggedInUserIsRequester(userId, tR);
 
@@ -234,7 +240,7 @@ export class RequestController {
     const offeringUser = await this.userService.getUserById(offeringUserId);
     userIsValidToBeProvider(offeringUser);
 
-    const tR = await this.requestService.getById(requestId);
+    const tR = await this.requestService.getOpenById(requestId);
 
     if (tR.requester.id === offeringUserId) {
       throw new ForbiddenException('You are not allowed to make a offering to your own trip request!');
@@ -328,6 +334,7 @@ export class RequestController {
   async acceptOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
     const userId: number = session.userData.id;
     const offering = await this.offeringService.getById(offeringId);
+    const request = await this.requestService.getOpenById(offering.tripRequest.id);
     if (offering.tripRequest.requester.id !== userId) {
       throw new ForbiddenException('You are not allowed to accept this offering!');
     }
@@ -351,6 +358,9 @@ export class RequestController {
 
     offering.accepted = true;
     await this.offeringService.save(offering);
+
+    request.open = false;
+    await this.requestService.save(request);
 
     await this.userService.decreaseCoinBalanceOfUser(userId, offering.requestedCoins);
     await this.userService.increaseCoinBalanceOfUser(offering.offeringUser.id, offering.requestedCoins);
@@ -405,7 +415,7 @@ export class RequestController {
   async deleteOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
     const userId: number = session.userData.id;
     const offering = await this.offeringService.getById(offeringId);
-    const tR = await this.requestService.getById(offering.tripRequest.id);
+    const tR = await this.requestService.getOpenById(offering.tripRequest.id);
     if (offering.offeringUser.id !== userId) {
       throw new ForbiddenException('You are not allowed to delete this offering!');
     }
@@ -457,7 +467,7 @@ export class RequestController {
 
     await this.requestService.delete(tR);
 
-    return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
+    return new OKResponseWithMessageDTO(true, 'Request was deleted.');
   }
 
   private async convertToOffer(
@@ -474,9 +484,15 @@ export class RequestController {
     offer.state = TripState.offer;
 
     offer.bookedSeats = tripRequest.seats + data.additionalSeats;
-    offer.vehicle = await this.vehicleService.getVehicle(data.vehicleId, provider.id);
+    offer.vehicle = await this.vehicleService.getVehicle(Number(data.vehicleId), provider.id);
     offer.startDate = new Date(data.startDate);
     offer.description = data.description;
+
+    if (offer.vehicle.seats <= offer.bookedSeats) {
+      throw new BadRequestException(
+        'There are not enough seats in the selected vehicle to create a legitimate offer!',
+      );
+    }
 
     const offerDb = await this.offerService.saveOffer(offer);
 

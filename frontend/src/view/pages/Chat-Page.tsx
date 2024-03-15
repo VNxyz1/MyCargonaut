@@ -1,11 +1,11 @@
 import { Col, Container, Row } from 'react-bootstrap';
-import OfferingsAndRequests from '../components/Chat-Page/Offerings-And-Requests.tsx';
+import OfferingsAndRequests from '../components/Chat-Page/offeringsAndRequests/Offerings-And-Requests.tsx';
 import { getAllMessages, getUnreadMessages } from '../../services/messageService.ts';
 import { useEffect } from 'react';
 import { chatStore } from '../components/Chat-Page/chats-zustand.ts';
 import AllChats from '../components/Chat-Page/All-Chats.tsx';
 import SingleChat from '../components/Chat-Page/Single-Chat.tsx';
-import IOR_Sidebar from '../components/Chat-Page/IncommingOffsAndReqs-Sidebar.tsx';
+import IOR_Sidebar from '../components/Chat-Page/offeringsAndRequests/IncommingOffsAndReqs-Sidebar.tsx';
 
 
 function ChatPage() {

@@ -18,9 +18,15 @@ function OfferingsAndRequests() {
           : <></>
         }
         {sentOfferings.map((o) => (
-          <Card as={Col} xs="auto" style={{ maxWidth: '40rem', padding: '1rem' }}>
-            <OfferingListItem offering={o} />
-          </Card>
+          <>
+            {o.accepted?
+              <></>
+              :
+              <Card as={Col} xs="auto" style={{ maxWidth: '40rem', padding: '1rem' }}>
+                <OfferingListItem offering={o} />
+              </Card>
+            }
+          </>
         ))}
         {sentTransitRequests.map((tR) => (
           <Card as={Col} xs="auto" style={{ maxWidth: '40rem', padding: '1rem' }}>

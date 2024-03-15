@@ -127,7 +127,7 @@ const getOfferingsAsOfferingUser = async () => {
   }
 }
 
-const getOfferingsAsRequestingUser = async () => {
+export const getOfferingsAsRequestingUser = async () => {
   try {
     const res = await fetch(`/request/offerings/requesting-user`);
     if (res.ok) {
@@ -160,4 +160,51 @@ export const updateTripRequest = async (id: number, data: UpdateTripRequestData)
 export interface UpdateTripRequestData {
   requestedCoins: number;
   text: string;
+}
+
+
+export const notTransformRequest = async (id: number) => {
+  try {
+    const response = await fetch(`/request/not-transform/${id}`, {
+      method: "POST"
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export const transformRequest = async (id: number, data: PostTransformToOfferDto) => {
+  try {
+    const response = await fetch(`/request/transform-to-offer/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(data),
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export interface PostTransformToOfferDto {
+  additionalSeats: number;
+
+  vehicleId: string|number;
+
+  startDate: string;
+
+  description: string;
+
+  route: CreateRoutePart[] | undefined;
+}
+
+export class CreateRoutePart {
+  plz: string | undefined;
+  location: string | undefined;
+  position: number | undefined;
 }

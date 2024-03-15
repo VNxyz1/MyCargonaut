@@ -1,4 +1,4 @@
-import { TripRequestOffering } from '../../../interfaces/TripRequestOffering.ts';
+import { TripRequestOffering } from '../../../../interfaces/TripRequestOffering.ts';
 import { Col, Modal, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import {
@@ -7,9 +7,9 @@ import {
   deleteOffering,
   getOfferings, updateTripRequest,
   UpdateTripRequestData,
-} from '../../../services/tripRequestService.ts';
+} from '../../../../services/tripRequestService.ts';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
-import { TripRequest } from '../../../interfaces/TripRequest.ts';
+import { TripRequest } from '../../../../interfaces/TripRequest.ts';
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 

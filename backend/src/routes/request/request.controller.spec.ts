@@ -378,7 +378,7 @@ describe('RequestController', () => {
       expect(offer.description).toBe(description);
       expect(offer.startDate).toStrictEqual(new Date(startDate));
 
-      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
+      await expect(requestService.getOpenById(1)).rejects.toThrow(NotFoundException);
     });
   });
 
