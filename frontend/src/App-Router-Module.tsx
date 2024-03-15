@@ -17,7 +17,6 @@ import ChatPage from "./view/pages/Chat-Page.tsx";
   
 
 function RoutesComponent() {
-    // @ts-ignore wird vielleicht noch gebraucht
     const [offers, setOffers] = useState<Offer[]>([]);
     const [requests, setRequests] = useState<TripRequest[]>([]);
 
@@ -27,8 +26,6 @@ function RoutesComponent() {
             await getAllPublicOffers();
             await getAllPublicRequests();
         })()
-
-        console.log(requests)
     }, []);
 
     const getAllPublicOffers = async ()  => {
@@ -61,6 +58,10 @@ function RoutesComponent() {
         }
     }
 
+    const reRender = async () => {
+        await getAllPublicOffers();
+        await getAllPublicRequests();
+    }
 
     return (
         <BrowserRouter>
@@ -70,9 +71,9 @@ function RoutesComponent() {
                 <Route path="/login" element={<LoginAndRegisterPage/>}/>
                 <Route path="/imprint" element={<ImprintPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
-                <Route path="/profil" element={<ProfilPage  reRender={getAllPublicOffers}/>} />
+                <Route path="/profil" element={<ProfilPage  reRender={reRender}/>} />
                 <Route path="/user/:userId" element={<UserPage />} />
-                <Route path="/search-transport" element={<SearchTransportPage offers={offers} requests={requests} />} />
+                <Route path="/search-transport" element={<SearchTransportPage reRender={reRender} offers={offers} requests={requests} />} />
                 <Route path="/messages" element={<ChatPage />} />
                 <Route path="/trip/:type/:id" element={<TripDetailPage/>} />
                 <Route path="/404" element={<BadRequestPage/>} />

@@ -14,6 +14,7 @@ function SearchTransportPage(
     props: {
         offers: Offer[]
         requests: TripRequest[]
+        reRender: () => void
     }
 ) {
     const location = useLocation();
@@ -36,6 +37,10 @@ function SearchTransportPage(
     useEffect(() => {
         setInitialDataBasedOnUrlParams();
     }, [urlParams]);
+
+    useEffect(() => {
+        setInitialDataBasedOnUrlParams();
+    }, [props.offers, props.requests]);
 
     const setInitialDataBasedOnUrlParams = () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -75,14 +80,14 @@ function SearchTransportPage(
 
     const search = async () => {
         try {
-            let searchParams = [];
+            const searchParams: string[] = [];
     
             // Suchbegriff hinzufügen
             if (searchInput.trim() !== '') {
                 searchParams.push(`search=${encodeURIComponent(searchInput.trim())}`);
             }
     
-            // Von und Nach PLZ hinzufügen
+            // Von und nach PLZ hinzufügen
             if (vonInput.trim() !== '') {
                 searchParams.push(`fromPLZ=${encodeURIComponent(vonInput.trim())}`);
             }
@@ -107,7 +112,7 @@ function SearchTransportPage(
     
             let url;
             if (selectedType === 'offer') {
-                url = `/offers/search?${searchParams.join('&')}`;
+                url = `/offer/search?${searchParams.join('&')}`;
             } else if (selectedType === 'request') {
                 url = `/request/search?${searchParams.join('&')}`;
             } else {

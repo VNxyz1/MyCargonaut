@@ -38,21 +38,9 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
 
   useEffect(() => {
     setPlz();
-
-    if ("vehicle" in props.trip) {
-      if (props.trip.vehicle.picture) {
-        setImgSrc(props.trip.vehicle.picture);
-      } else {
-        setImgSrc(placeholderCar);
-      }
-    } else if("cargoImg" in props.trip) {
-      if (props.trip.cargoImg) {
-        setImgSrc(props.trip.cargoImg);
-          } else {
-        setImgSrc(placeholderBox);
-      }
-    }
+    setImage();
   }, [props.trip]);
+
 
   const convertDateTimeForDisplay = () => {
     const date = new Date(props.trip.createdAt);
@@ -63,6 +51,24 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
       day: "numeric",
     });
   };
+
+  const setImage = () => {
+    if ("route" in props.trip) {
+      if (props.trip.vehicle.picture !== undefined) {
+        if (props.trip.vehicle.picture.trim().length !== 0) {
+          setImgSrc(`${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}`)
+          return;
+        }
+      }
+      setImgSrc(placeholderCar)
+    } else if("cargoImg" in props.trip) {
+      if (props.trip.cargoImg !== null) {
+        setImgSrc(`${window.location.protocol}//${window.location.host}/request/cargo-image/${props.trip.cargoImg}`);
+        return;
+      }
+      setImgSrc(placeholderBox)
+    }
+  }
 
   return (
     <div className="mb-4">
