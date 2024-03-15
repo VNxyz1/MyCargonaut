@@ -20,7 +20,7 @@ function ProfilPage() {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Fahrten");
     const [userData, setUserData] = useState<User | null>(null);
-    const [userAge, setUserAge] = useState<number | null>(null);
+
     const entryDate = new Date((userData as any)?.entryDate);
     const formattedEntryDate = entryDate.toLocaleDateString();
     const navigate = useNavigate();
@@ -32,8 +32,7 @@ function ProfilPage() {
             if (data !== null) {
                 setUserData(data as any);
                 setProfileImageUrl((data as any)?.profilePicture);
-                const bDate = calculateAge(new Date((data as any)?.birthday));
-                setUserAge(bDate);
+
             } else {
                 navigate('/404');
             }
@@ -41,21 +40,6 @@ function ProfilPage() {
 
         fetchData();
     }, [userId]);
-
-
-    const calculateAge = (birthDate: Date): number | null => {
-        const currentDate = new Date();
-
-        if (isNaN(birthDate.getTime())) {
-            return null;
-        }
-        let age = currentDate.getFullYear() - birthDate.getFullYear();
-        if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    };
-
 
     const renderSectionContent = () => {
         switch (currentSection) {
@@ -91,17 +75,8 @@ function ProfilPage() {
                                     <p className="prof-lable">Name</p>
                                     <p>{userData.firstName} {userData.lastName}</p>
 
-                                    <p className="prof-lable">Handynummer</p>
-                                    <p>
-                                        {userData.phoneNumber && userData.phoneNumber.length > 0 ? (
-                                            <span className="verification-icon"><i className="icon-badge-check"></i> Handynummer verifiziert</span>
-                                        ) : (
-                                            <span className="verification-icon"><i className="icon-xmark"></i> Handynummer nicht verifiziert (nicht im response)</span>
-                                        )}
-                                    </p>
-
                                     <p className="prof-lable">Alter</p>
-                                    <p>{userAge} Jahre alt (nicht im response)</p>
+                                    <p>{userData.age}</p>
 
                                     <p className="prof-lable">Beschreibung</p>
                                     <p>{userData.description && userData.description.length > 0 ? userData.description : 'Keine Beschreibung vorhanden'}</p>
