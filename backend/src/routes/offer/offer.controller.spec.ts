@@ -217,7 +217,11 @@ describe('OfferController', () => {
 
       runTestAsLoggedOutUser();
       const searchString = 'test';
-      const result = await offerController.getFilteredOffers(searchString, '63679', '64002');
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        searchString: searchString,
+        fromPLZ: '63679',
+        toPLZ: '64002',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(3);
       expect(result.offerList[0].description.toLowerCase().includes(searchString)).toBe(true);
@@ -225,21 +229,30 @@ describe('OfferController', () => {
 
     it('should return an empty list, because there is no connection between the two plz', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(undefined, '35390', '64002');
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        fromPLZ: '35390',
+        toPLZ: '64002',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
 
     it('should get filtered offers by route v2', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(undefined, '64002', '63679');
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        fromPLZ: '64002',
+        toPLZ: '63679',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
     });
 
     it('should return an empty list, because there is no connection between the two plz', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(undefined, '64002', '64002');
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        fromPLZ: '64002',
+        toPLZ: '64002',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
@@ -247,13 +260,9 @@ describe('OfferController', () => {
     it('should get two offers, filtered by date', async () => {
       runTestAsLoggedOutUser();
       const date = '2024-02-01';
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        date,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        date: date,
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(4);
       //is the list sorted:
@@ -265,13 +274,9 @@ describe('OfferController', () => {
     it('should get one offer, filtered by date', async () => {
       runTestAsLoggedOutUser();
       const date = '2024-02-18';
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        date,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        date: date,
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(3);
     });
@@ -280,23 +285,23 @@ describe('OfferController', () => {
       runTestAsLoggedOutUser();
       const searchString = 'test';
       const date = '2024-01-01';
-      const result = await offerController.getFilteredOffers(searchString, '64002', '63679', undefined, date);
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        searchString: searchString,
+        toPLZ: '63679',
+        fromPLZ: '64002',
+        date: date
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
       expect(result.offerList[0].description.toLowerCase().includes(searchString));
       expect(result.offerList[0].startDate.getTime()).toBeGreaterThanOrEqual(new Date(date).getTime());
     });
 
-    it('should get filtered offers with 5 star ratings', async () => {
+    it('should get filtered offers with 4 star ratings', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        4,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        rating: '4',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(4);
       const userRating = await ratingService.selectAverageRatingForUser(result.offerList[0].provider.id);
@@ -304,74 +309,52 @@ describe('OfferController', () => {
     });
     it('should return nothing, since there are no 3 star ratings.', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        3,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        rating: '3',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
     it('should return nothing, since there are no 5 star ratings.', async () => {
       runTestAsLoggedOutUser();
-      const result = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        5,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        rating: '5',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });
     it('should return offers, with 1 or more available seats.', async () => {
       runTestAsLoggedOutUser();
-      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        1,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        seats: '1',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(4);
     });
 
     it('should return offers, with 2 or more available seats.', async () => {
       runTestAsLoggedOutUser();
-      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        2,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        seats: '2',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(3);
     });
 
     it('should return offers, with 3 or more available seats', async () => {
       runTestAsLoggedOutUser();
-      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        3,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        seats: '3',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(3);
     });
 
     it('should return offers, with 4 or more available seats (none existing)', async () => {
       runTestAsLoggedOutUser();
-      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers(
-        undefined,
-        undefined,
-        undefined,
-        4,
-      );
+      const result: GetAllOffersResponseDto = await offerController.getFilteredOffers({
+        seats: '4',
+      });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(0);
     });

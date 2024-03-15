@@ -24,3 +24,9 @@ Content-Type: application/json
   "requestedCoins": 1100,
   "text": "Wann soll ich da sein?"
 }
+
+### Test Search
+GET localhost:3000/request/search?search=&fromPLZ=63679&toPLZ=63675&seats=2&date=2020-12-12&rating=4
+
+### Test Search
+GET localhost:3000/request/search?search=gießen&fromPLZ=63679&toPLZ=63675
