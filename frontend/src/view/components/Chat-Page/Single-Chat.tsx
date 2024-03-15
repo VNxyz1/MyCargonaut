@@ -27,7 +27,9 @@ function SingleChat () {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    setTimeout(()=> {
+      scrollToBottom();
+    }, 50)
   }, [selectedChat.messages, chatWindowRef]);
 
   const submitMessage = async (event: React.FormEvent<HTMLFormElement>) => {
