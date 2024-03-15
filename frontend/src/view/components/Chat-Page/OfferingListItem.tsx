@@ -1,9 +1,17 @@
 import { TripRequestOffering } from '../../../interfaces/TripRequestOffering.ts';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Modal, Row } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import { acceptOffering, declineOffering, deleteOffering, getOfferings } from '../../../services/tripRequestService.ts';
+import {
+  acceptOffering,
+  declineOffering,
+  deleteOffering,
+  getOfferings, updateTripRequest,
+  UpdateTripRequestData,
+} from '../../../services/tripRequestService.ts';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
 import { TripRequest } from '../../../interfaces/TripRequest.ts';
+import React, { useEffect, useState } from 'react';
+import Form from 'react-bootstrap/Form';
 
 function OfferingListItem(
   props: {
@@ -14,6 +22,16 @@ function OfferingListItem(
 ) {
 
   const { setIncomingOfferings, setSentOfferings } = reqAndOffStore();
+  const [ showModal, setShowModal ] = useState<boolean>(false);
+  const [ updateParams, setUpdateParams ] = useState<UpdateTripRequestData>({
+    requestedCoins: 0,
+    text: ''
+  });
+
+  useEffect(() => {
+    resetUpdateParams();
+  }, [props.offering]);
+
 
   const getOffs = async () => {
     const { incomingOfferings, sentOfferings } = await getOfferings();
@@ -51,6 +69,31 @@ function OfferingListItem(
     }
   };
 
+  const handleOpenModal = () => {
+    setShowModal(true);
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    resetUpdateParams();
+  }
+
+  const handleUpdateData = async (event : React.FormEvent<HTMLFormElement>)=> {
+    event.preventDefault();
+    const data = updateParams;
+    if (data.requestedCoins == undefined || data.requestedCoins.toString() == '') {
+      data.requestedCoins = 0;
+    }
+    data.requestedCoins = Number(data.requestedCoins)
+    console.log(data)
+
+    const success = await updateTripRequest(props.offering.id, updateParams);
+    if (success) {
+      handleCloseModal();
+      await getOffs();
+    }
+  }
+
   const displayRouteText = (tR: TripRequest) => {
     if (tR) {
       return `Auf der Fahrt von ${tR.startPlz.location} nach ${tR.endPlz.location}`;
@@ -58,6 +101,25 @@ function OfferingListItem(
     return '';
   };
 
+  const handleChangeUpdateParams = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.ariaLabel !== null) {
+      const prop: string = event.target.ariaLabel;
+      const value: string | number = event.target.value;
+      setUpdateParams((oldData) => {
+        return {
+          ...oldData,
+          [prop]: value,
+        };
+      });
+    }
+  };
+
+  const resetUpdateParams = () => {
+    setUpdateParams({
+      requestedCoins: props.offering.requestedCoins,
+      text: props.offering.text
+    })
+  }
 
   return (
     <>
@@ -83,7 +145,7 @@ function OfferingListItem(
             </>
             :
             <>
-              <Button className="mainButton w-100 mb-2">Bearbeiten</Button>
+              <Button onClick={handleOpenModal} className="mainButton w-100 mb-2">Bearbeiten</Button>
               <Button onClick={handleDelete} className="mainButton w-100 mb-2">Löschen</Button>
             </>
           }
@@ -96,6 +158,34 @@ function OfferingListItem(
         <h5>Nachricht:</h5>
         <p style={{wordWrap: 'break-word'}}>{props.offering.text} </p>
       </Row>
+
+
+      <Modal centered show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton />
+        <Modal.Body>
+          <Form onSubmit={handleUpdateData}>
+            <Form.Group className="mb-3">
+              <Form.Label>Coins</Form.Label>
+              <Form.Control required min={0} type="number" aria-label='requestedCoins' onChange={handleChangeUpdateParams} value={updateParams.requestedCoins}/>
+              <Form.Text className="text-muted">
+                Passe an wie viele Coins du für deine Anfrage verlangst
+              </Form.Text>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Nachricht</Form.Label>
+              <Form.Control required as="textarea" type="text" aria-label='text' onChange={handleChangeUpdateParams} value={updateParams.text}/>
+              <Form.Text className="text-muted">
+                Was willst du noch los werden?
+              </Form.Text>
+            </Form.Group>
+            <Row className='justify-content-end'>
+              <Col xs='auto'>
+                <Button type='submit' className='mainButton w-100'>Speichern</Button>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

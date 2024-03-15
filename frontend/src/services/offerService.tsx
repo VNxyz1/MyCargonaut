@@ -74,7 +74,7 @@ export const updateTransitRequest = async (id: number, data: UpdateTransitReques
     }
 }
 
-interface UpdateTransitRequestData {
+export interface UpdateTransitRequestData {
     offeredCoins: number;
     requestedSeats: number;
     text: string;

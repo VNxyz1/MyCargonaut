@@ -140,3 +140,24 @@ const getOfferingsAsRequestingUser = async () => {
     console.error(e)
   }
 }
+
+export const updateTripRequest = async (id: number, data: UpdateTripRequestData) => {
+  try {
+    const response = await fetch(`/request/offerings/update-params/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(data),
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export interface UpdateTripRequestData {
+  requestedCoins: number;
+  text: string;
+}
