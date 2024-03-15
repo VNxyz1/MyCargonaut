@@ -85,7 +85,6 @@ function OfferingListItem(
       data.requestedCoins = 0;
     }
     data.requestedCoins = Number(data.requestedCoins)
-    console.log(data)
 
     const success = await updateTripRequest(props.offering.id, updateParams);
     if (success) {
