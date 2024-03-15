@@ -38,7 +38,7 @@ export class RequestOfferingService {
   async getById(id: number): Promise<TripRequestOffering> {
     const offering = await this.offeringRepository.findOne({
       where: { id },
-      relations: ['offeringUser', 'tripRequest'],
+      relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offering) {
       throw new NotFoundException('The offering could not be found.');

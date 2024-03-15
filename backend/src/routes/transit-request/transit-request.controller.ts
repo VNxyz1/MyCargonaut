@@ -138,11 +138,11 @@ export class TransitRequestController {
     return response;
   }
 
-  @Put('update-params/:id')
+  @Put('update-params/:offerId')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary: 'Updates the offered coins and/or requested seats of a Transit request',
-    description: `Allows the requester to update the offered coins and/or requested seats of their transit request.`,
+    description: `The provided ID must be the ID of the offer the transit-request is referencing. Allows the requester to update the offered coins and/or requested seats of their transit request.`,
   })
   @ApiResponse({
     status: 200,
@@ -156,7 +156,7 @@ export class TransitRequestController {
   })
   async putTransitRequest(
     @Session() session: ISession,
-    @Param('id', ParseIntPipe) offerId: number,
+    @Param('offerId', ParseIntPipe) offerId: number,
     @Body() body: PutTransitRequestRequestDto,
   ) {
     if (!body.requestedSeats && !body.offeredCoins) {
@@ -169,6 +169,8 @@ export class TransitRequestController {
     const requestingUser: User = await this.userService.getUserById(requestingUserId);
 
     await this.transitRequestService.putTransitRequest(offer, requestingUser, body);
+
+    this.messageGatewayService.reloadMessages(offer.provider.id);
 
     return new OKResponseWithMessageDTO(true, 'Request was updated');
   }

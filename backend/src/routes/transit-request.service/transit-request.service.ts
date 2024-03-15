@@ -46,15 +46,15 @@ export class TransitRequestService {
       throw new NotFoundException('No matching request found');
     }
 
-    if (updatedRequest.offeredCoins) {
+    if (updatedRequest.offeredCoins !== undefined) {
       transitRequest.offeredCoins = updatedRequest.offeredCoins;
     }
 
-    if (updatedRequest.requestedSeats) {
+    if (updatedRequest.requestedSeats !== undefined) {
       transitRequest.requestedSeats = updatedRequest.requestedSeats;
     }
 
-    if (updatedRequest.text) {
+    if (updatedRequest.text !== undefined) {
       transitRequest.text = updatedRequest.text;
     }
 

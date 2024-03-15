@@ -51,6 +51,7 @@ import { RatingService } from '../rating.service/rating.service';
 import { MessageService } from '../message.service/message.service';
 import { Message } from '../../database/Message';
 import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { UpdateTripRequestOffering } from './DTOs/UpdateTripRequestOffering';
 
 @ApiTags('request')
 @Controller('request')
@@ -258,6 +259,37 @@ export class RequestController {
     this.messageGatewayService.reloadMessages(tR.requester.id);
 
     return new OKResponseWithMessageDTO(true, 'Offer was send.');
+  }
+
+  @Put('/offerings/update-params/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Send an offer to the requester of the request with the given ID.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async putOfferTransit(
+    @Session() session: ISession,
+    @Param('id', ParseIntPipe) requestOfferingId: number,
+    @Body() body: UpdateTripRequestOffering,
+  ) {
+    const offeringUserId = session.userData.id;
+    const offeringUser = await this.userService.getUserById(offeringUserId);
+    userIsValidToBeProvider(offeringUser);
+
+    const tROffering = await this.offeringService.getById(requestOfferingId);
+
+    if (tROffering.offeringUser.id !== offeringUserId) {
+      throw new ForbiddenException('You are not allowed to edit this offering!');
+    }
+
+    tROffering.text = body.text;
+    tROffering.requestedCoins = body.requestedCoins;
+
+    await this.offeringService.save(tROffering);
+
+    this.messageGatewayService.reloadMessages(tROffering.tripRequest.requester.id);
+
+    return new OKResponseWithMessageDTO(true, 'Offer was updated');
   }
 
   @Get('offerings/offering-user')
@@ -514,23 +546,27 @@ export class RequestController {
   }
 
   private async updateTripRequest(tR: TripRequest, updateData: UpdateTripRequestRequestDto) {
-    if (updateData.description) {
+    if (updateData.description !== undefined) {
       tR.description = updateData.description;
     }
 
-    if (updateData.startPlz) {
+    if (updateData.startPlz !== undefined) {
       tR.startPlz = await this.plzService.createPlz(updateData.startPlz.plz, updateData.startPlz.location);
     }
 
-    if (updateData.endPlz) {
+    if (updateData.endPlz !== undefined) {
       tR.endPlz = await this.plzService.createPlz(updateData.endPlz.plz, updateData.endPlz.location);
     }
 
-    if (updateData.cargoImgString) {
+    if (updateData.cargoImgString !== undefined) {
       tR.cargoImg = updateData.cargoImgString;
     }
 
-    if (updateData.startDate) {
+    if (updateData.seats !== undefined) {
+      tR.seats = updateData.seats;
+    }
+
+    if (updateData.startDate !== undefined) {
       tR.startDate = new Date(updateData.startDate);
     }
 
