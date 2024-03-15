@@ -12,7 +12,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OfferService } from '../offer.service/offer.service';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { CreateOfferDto } from './DTOs/CreateOfferDto';
@@ -120,9 +120,7 @@ export class OfferController {
     type: GetAllOffersResponseDto,
     description: 'An array of offers that match the search criteria.',
   })
-  async getFilteredOffers(
-    @Query() query: GetFilteredOffersDto,
-  ) {
+  async getFilteredOffers(@Query() query: GetFilteredOffersDto) {
     let offerList: Offer[];
 
     if (query.searchString) {

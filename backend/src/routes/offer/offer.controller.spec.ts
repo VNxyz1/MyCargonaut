@@ -289,7 +289,7 @@ describe('OfferController', () => {
         searchString: searchString,
         toPLZ: '63679',
         fromPLZ: '64002',
-        date: date
+        date: date,
       });
       expect(result.offerList).toBeDefined();
       expect(result.offerList.length).toBe(1);
