@@ -26,7 +26,7 @@ export class RequestOfferingService {
 
   async getAllPendingOfOfferingUser(id: number) {
     const offerings = await this.offeringRepository.find({
-      where: { offeringUser: { id }, accepted: false },
+      where: { offeringUser: { id } },
       relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {

@@ -1,5 +1,5 @@
-import { TripRequestOffering } from '../../../interfaces/TripRequestOffering.ts';
-import { TransitRequest } from '../../../interfaces/TransitRequest.ts';
+import { TripRequestOffering } from '../../../../interfaces/TripRequestOffering.ts';
+import { TransitRequest } from '../../../../interfaces/TransitRequest.ts';
 import { create } from 'zustand';
 
 type Store = {

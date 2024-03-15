@@ -6,7 +6,7 @@ import { useAuth } from './services/authService.tsx';
 import { getLoggedInUser } from './services/userService.tsx';
 import { chatStore } from './view/components/Chat-Page/chats-zustand.ts';
 import { getAllMessages, getUnreadMessages } from './services/messageService.ts';
-import { reqAndOffStore } from './view/components/Chat-Page/offeringsAndRequests-zustand.ts';
+import { reqAndOffStore } from './view/components/Chat-Page/offeringsAndRequests/offeringsAndRequests-zustand.ts';
 import { getOfferings } from './services/tripRequestService.ts';
 import { getTransitRequests } from './services/offerService.tsx';
 

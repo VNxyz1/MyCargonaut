@@ -41,7 +41,7 @@ describe('RequestService', () => {
           2,
         ),
       ).resolves.toBeDefined();
-      const getTR = await requestService.getById(1);
+      const getTR = await requestService.getOpenById(1);
       getTR.requester.trips = [];
       getTR.requester.requestedTransits = [];
       getTR.requester.offers = [];
@@ -51,7 +51,7 @@ describe('RequestService', () => {
 
   describe('getById function', () => {
     it('should retrieve a specific trip request by ID', async () => {
-      const retrievedTripRequest = await requestService.getById(1);
+      const retrievedTripRequest = await requestService.getOpenById(1);
       retrievedTripRequest.requester.trips = [];
       retrievedTripRequest.requester.requestedTransits = [];
       retrievedTripRequest.requester.offers = [];
@@ -59,7 +59,7 @@ describe('RequestService', () => {
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {
-      await expect(requestService.getById(999)).rejects.toThrow(NotFoundException);
+      await expect(requestService.getOpenById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -71,7 +71,7 @@ describe('RequestService', () => {
         { plz: '35390', location: 'Gießen' },
         2,
       );
-      const allTripRequests = await requestService.getAll();
+      const allTripRequests = await requestService.getOpen();
 
       expect(allTripRequests.length).toEqual(2);
     });
@@ -80,7 +80,7 @@ describe('RequestService', () => {
       await deleteDb();
       await setUp();
 
-      await expect(requestService.getAll()).resolves.toEqual([]);
+      await expect(requestService.getOpen()).resolves.toEqual([]);
     });
   });
 
@@ -95,7 +95,7 @@ describe('RequestService', () => {
 
       await requestService.deleteById(1);
 
-      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
+      await expect(requestService.getOpenById(1)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {
@@ -114,7 +114,7 @@ describe('RequestService', () => {
 
       await requestService.delete(savedTripRequest);
 
-      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
+      await expect(requestService.getOpenById(1)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException for non-existing trip request', async () => {

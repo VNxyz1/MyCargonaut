@@ -69,4 +69,7 @@ DELETE localhost:3000/offer/delete/2 HTTP/2
 
 
 ### Test Search
-GET localhost:3000/offer/search?search=gießen&fromPLZ=31234&toPLZ=65678&seats=2&date=2020-12-12&rating=4
+GET localhost:3000/offer/search?search=&fromPLZ=63679&toPLZ=63675&seats=2&date=2020-12-12&rating=4
+
+### Test Search
+GET localhost:3000/offer/search?search=gießen&fromPLZ=63679&toPLZ=63675

@@ -1,4 +1,4 @@
-import { TransitRequest } from "../../../interfaces/TransitRequest.ts";
+import { TransitRequest } from "../../../../interfaces/TransitRequest.ts";
 import { Col, Modal, Row } from 'react-bootstrap';
 import Button from "react-bootstrap/Button";
 import {
@@ -6,9 +6,9 @@ import {
   declineTransitRequest,
   deleteTransitRequest,
   getTransitRequests, updateTransitRequest, UpdateTransitRequestData,
-} from '../../../services/offerService.tsx';
+} from '../../../../services/offerService.tsx';
 import { reqAndOffStore } from './offeringsAndRequests-zustand.ts';
-import { Offer } from '../../../interfaces/Offer.ts';
+import { Offer } from '../../../../interfaces/Offer.ts';
 import Form from 'react-bootstrap/Form';
 import React, { useEffect, useState } from 'react';
 
@@ -22,7 +22,7 @@ function TransitRequestListItem (
 ) {
   const { setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
 
-  const [ showModal, setShowModal ] = useState<boolean>(false);
+  const [ showUpdateModal, setShowUpdateModal ] = useState<boolean>(false);
   const [ updateParams, setUpdateParams ] = useState<UpdateTransitRequestData>({
     offeredCoins: 0,
     requestedSeats: 0,
@@ -84,12 +84,12 @@ function TransitRequestListItem (
     return'';
   }
 
-  const handleOpenModal = () => {
-    setShowModal(true);
+  const handleOpenUpdateModal = () => {
+    setShowUpdateModal(true);
   }
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseUpdateModal = () => {
+    setShowUpdateModal(false);
     resetUpdateParams();
   }
 
@@ -108,7 +108,7 @@ function TransitRequestListItem (
 
     const success = await updateTransitRequest(Number(props.transitRequest.offer?.id), updateParams);
     if (success) {
-      handleCloseModal();
+      handleCloseUpdateModal();
       await getTRs();
     }
   }
@@ -157,7 +157,7 @@ function TransitRequestListItem (
             </>
             :
             <>
-              <Button onClick={handleOpenModal} className='mainButton w-100 mb-2'>Bearbeiten</Button>
+              <Button onClick={handleOpenUpdateModal} className='mainButton w-100 mb-2'>Bearbeiten</Button>
               <Button onClick={handleDelete} className='mainButton w-100 mb-2'>Löschen</Button>
             </>
           }
@@ -171,7 +171,7 @@ function TransitRequestListItem (
         <p style={{wordWrap: 'break-word'}}>{props.transitRequest.text} </p>
       </Row>
 
-      <Modal centered show={showModal} onHide={handleCloseModal}>
+      <Modal centered show={showUpdateModal} onHide={handleCloseUpdateModal}>
         <Modal.Header closeButton />
         <Modal.Body>
           <Form onSubmit={handleUpdateData}>

@@ -20,6 +20,17 @@ export class RequestService {
     return tR;
   }
 
+  async getOpenById(id: number) {
+    const tR = await this.tripRequestRepository.findOne({
+      where: { id, open: true },
+      relations: ['startPlz', 'endPlz', 'offerings'],
+    });
+    if (!tR) {
+      throw new NotFoundException('The trip request could not be found.');
+    }
+    return tR;
+  }
+
   async getById(id: number) {
     const tR = await this.tripRequestRepository.findOne({
       where: { id },
@@ -33,6 +44,17 @@ export class RequestService {
 
   async getAll() {
     const tRs = await this.tripRequestRepository.find({
+      relations: ['startPlz', 'endPlz'],
+    });
+    if (!tRs) {
+      throw new NotFoundException('The trip requests could not be found.');
+    }
+    return tRs;
+  }
+
+  async getOpen() {
+    const tRs = await this.tripRequestRepository.find({
+      where: { open: true },
       relations: ['startPlz', 'endPlz'],
     });
     if (!tRs) {
@@ -57,7 +79,7 @@ export class RequestService {
   }
 
   async deleteById(id: number) {
-    const tR = await this.getById(id);
+    const tR = await this.getOpenById(id);
     await this.delete(tR);
   }
 
