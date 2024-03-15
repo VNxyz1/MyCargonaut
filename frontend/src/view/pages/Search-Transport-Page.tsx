@@ -7,6 +7,8 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import TripListItem from "../components/Search-Transport-Page/Trip-List-Item.tsx";
+import { useLocation } from 'react-router-dom';
+
 
 function SearchTransportPage(
     props: {
@@ -14,17 +16,28 @@ function SearchTransportPage(
         requests: TripRequest[]
     }
 ) {
+    const location = useLocation();
+    const [urlParams, setUrlParams] = useState(new URLSearchParams(location.search));
     const [dataArray, setDataArray] = useState<(Offer | TripRequest)[]>([]);
     const [searchInput, setSearchInput] = useState<string>('');
     const [selectedType, setSelectedType] = useState<string>('');
     const [vonInput, setVonInput] = useState<string>('');
     const [nachInput, setNachInput] = useState<string>('');
-    const [anzahlSitzeInput, setAnzahlSitzeInput] = useState<number>();
+    const [anzahlSitzeInput, setAnzahlSitzeInput] = useState<number>(1);
     const [datumInput, setDatumInput] = useState<string>('');
     const [rating, setRating] = useState<number>(0);
     const [hover, setHover] = useState<number>(0);
 
     useEffect(() => {
+        setUrlParams(new URLSearchParams(location.search));
+        clearAllFilters();
+    }, [location.search]);
+
+    useEffect(() => {
+        setInitialDataBasedOnUrlParams();
+    }, [urlParams]);
+
+    const setInitialDataBasedOnUrlParams = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const tripType = urlParams.get('t');
         
@@ -38,7 +51,7 @@ function SearchTransportPage(
             console.error('Ungültiger Angebotstyp');
             return;
         }
-    }, [props.offers, props.requests]);
+    };
 
     const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(event.target.value);
@@ -121,6 +134,12 @@ function SearchTransportPage(
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const radioValue = event.target.value;
         setSelectedType(radioValue);
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('t', radioValue);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+        clearAllFilters();
     };
 
     const handleClick = (ratingValue: number) => {
@@ -129,6 +148,17 @@ function SearchTransportPage(
 
     const handleMouseEnter = (ratingValue: number) => {
         setHover(ratingValue);
+    };
+
+    const clearAllFilters = () => {
+        setSearchInput('');
+        setVonInput('');
+        setNachInput('');
+        setAnzahlSitzeInput(1);
+        setDatumInput('');
+        setRating(0);
+        setHover(0);
+        setInitialDataBasedOnUrlParams();
     };
 
     return (
@@ -177,7 +207,7 @@ function SearchTransportPage(
                                     <span>
                                         Anzahl Sitze:
                                     </span>
-                                    <input className='w-100' type="number" id="anzahlSitzeInput" onChange={handleAnzahlSitzeInputChange}/>
+                                    <input className='w-100' type="number" id="anzahlSitzeInput" value={anzahlSitzeInput} onChange={handleAnzahlSitzeInputChange}/>
                                 </div>
                                 <hr/>
                                 <div>
@@ -215,9 +245,13 @@ function SearchTransportPage(
                                                 </label>
                                             );
                                         })}   
-                                    </div>                             </div>
+                                    </div>                             
+                                </div>
                             </Card.Body>
-                            <Button className="mainButton w-100 mb-2" onClick={search}>
+                            <Button id='NoBorderButton'  className="mainButton bg-danger w-100" onClick={clearAllFilters}>
+                                Filter zurücksetzen
+                            </Button>
+                            <Button id='borderButton' className="mainButton w-100 mb-2" onClick={search}>
                                 Filter anwenden
                             </Button>
                         </Card>
