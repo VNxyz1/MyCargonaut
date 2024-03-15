@@ -5,67 +5,80 @@ import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 
-interface Route {
-    plz: string;
-    location: string;
-    position: number;
-  }
 
 interface CreateCargoModalComponent extends ModalProps {
     onHide: () => void;
 }
 
-const vehicleList = [
-    "PKW1",
-    "PKW2",
-    "PKW3"
-];
 
 const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: CreateCargoModalComponent) => {
-    const [plzValue, setPlzValue] = useState<string>('');
-    const [locationValue, setLocationValue] = useState<string>('');
-    const [routes, setRoutes] = useState<Route[]>([]);
+    const [startPlzValue, setStartPlzValue] = useState<string>('');
+    const [endPlzValue, setEndPlzValue] = useState<string>('');
+    const [startLocationValue, setStartLocationValue] = useState<string>('');
+    const [endLocationValue, setEndLocationValue] = useState<string>('');
+    const [dateValue, setDateValue] = useState<string>('');
+    const [imageValue, setImageValue] = useState<string>('');
+    const [seatValue, setSeatValue] = useState<number>(0);
+    const [descriptionValue, setDescriptionValue] = useState<string>('');
 
     useEffect(() => {
-        if (!props.show) {
-            setRoutes([]);
-        }
-    }, [props.show]);
 
-    const handleSubmit = (event: any) => {
+    }, []);
+
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
         event.stopPropagation();
         
-        // TODO: send form data to backend
+        try {
+            const response = await fetch('/request', {
+                method: 'POST',
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    "startPlz": {
+                        "plz": startPlzValue,
+                        "location": startLocationValue
+                    },
+                    "endPlz": {
+                        "plz": endPlzValue,
+                        "location": endLocationValue
+                    },
+                    "cargoImg": {imageValue},
+                    "description": descriptionValue,
+                    "startDate": dateValue,
+                    "seats": seatValue
+                }),
+            });    
+            
+            console.log(JSON.stringify({
+                "startPlz": {
+                    "plz": startPlzValue,
+                    "location": startLocationValue
+                },
+                "endPlz": {
+                    "plz": endPlzValue,
+                    "location": endLocationValue
+                },
+                "cargoImg": {imageValue},
+                "description": descriptionValue,
+                "startDate": dateValue,
+                "seats": seatValue
+            }))
+
+            if (response.ok) {
+                console.log('Anfrage erfolgreich gesendet');
+            } else {
+                console.error('Fehler bei der Anfrage an das Backend');
+            }
+        } catch (error) {
+            console.error('Fehler beim Senden der Anfrage:', error);
+        }
+        
+
         props.onHide();
     };
 
-    const newRoute = (plz: string, location: string) => {
-        if (plz.trim() !== '' && location.trim() !== '') {
-            const newRoute: Route = {
-                plz: plz,
-                location: location,
-                position: routes.length,
-            };
-    
-            setRoutes([...routes, newRoute]);
-            setPlzValue('');
-            setLocationValue('');
-        } else {
-            alert('Bitte geben Sie sowohl PLZ als auch Standort ein, bevor Sie eine Route hinzufügen.');
-        }
-    };
-
-    const removeRoute = (position: number) => {
-        const updatedRoutes = routes.filter(route => route.position !== position);
-
-        const reorderedRoutes = updatedRoutes.map((route, index) => ({
-            ...route,
-            position: index,
-        }));
-
-        setRoutes(reorderedRoutes);
-    };
 
     return (
         <Modal
@@ -81,60 +94,49 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
             <Modal.Body>
                 <Form onSubmit={handleSubmit}>
                     <Row>
+                        <span>Start:</span>
                         <Form.Group as={Col} className="mb-3" controlId="plz">
                             <Form.Control
                                 type="text"
-                                onChange={(e) => setPlzValue(e.target.value)}
-                                value={plzValue}
+                                onChange={(e) => setStartPlzValue(e.target.value)}
                                 placeholder="Postleitzahl"/>
                         </Form.Group>
                         <Form.Group as={Col} className="mb-3" controlId="location">
                             <Form.Control
                                 type="text"
-                                onChange={(e) => setLocationValue(e.target.value)}
-                                value={locationValue}
+                                onChange={(e) => setStartLocationValue(e.target.value)}
                                 placeholder="Standort"/>
                         </Form.Group>
-                        <Form.Group as={Col} className="mb-3" controlId="addRoute">
-                            <Button onClick={() => {                        
-                                newRoute(plzValue, locationValue);
-                                setPlzValue(''); 
-                                setLocationValue('');
-                                }} className="mainButton">+</Button>
+                    </Row>
+                    <Row>
+                        <span>Ziel:</span>
+                        <Form.Group as={Col} className="mb-3" controlId="plz">
+                            <Form.Control
+                                type="text"
+                                onChange={(e) => setEndPlzValue(e.target.value)}
+                                placeholder="Postleitzahl"/>
+                        </Form.Group>
+                        <Form.Group as={Col} className="mb-3" controlId="location">
+                            <Form.Control
+                                type="text"
+                                onChange={(e) => setEndLocationValue(e.target.value)}
+                                placeholder="Standort"/>
                         </Form.Group>
                     </Row>
-                    <div className="mb-3" style={{ height: '200px', overflowX: 'hidden' }}>
-                        {routes.map((route, index) => (
-                            <Row key={index}>
-                                <Col>
-                                    <p>{route.position}</p>
-                                </Col>
-                                <Col>
-                                    <p><strong>PLZ:</strong> {route.plz}</p>
-                                </Col>
-                                <Col>
-                                    <p><strong>Location:</strong> {route.location}</p>
-                                </Col>
-                                <Col>
-                                    <Button onClick={() => removeRoute(route.position)} variant="danger">X</Button>
-                                </Col>
-                            </Row>
-                        ))}
-                    </div>
                     <Row>
                         <Form.Group as={Col} className="mb-3" controlId="date">
                             <Form.Control
                                 required
-                                type="text"
+                                type="date"
+                                onChange={(e) => setDateValue(e.target.value)}
                                 placeholder="Datum"/>
                         </Form.Group>
-                        <Form.Group as={Col} className="mb-3" controlId="vehicle">
-                            <Form.Select required>
-                                <option value="">Fahrzeugtyp</option>
-                                {vehicleList.map((type, index) => (
-                                    <option key={index} value={type}>{type}</option>
-                                ))}
-                            </Form.Select>
+                        <Form.Group as={Col} className="mb-3" controlId="imageUpload">
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setImageValue(e.target.value)}
+                            />
                         </Form.Group>
                         <Form.Group as={Col} xs={3} className="mb-3" controlId="vehicleSeatNumber">
                             <Form.Control
@@ -143,16 +145,18 @@ const CreateCargoModalComponent: React.FC<CreateCargoModalComponent> = (props: C
                                 step={1}
                                 min={1}
                                 max={20}
-                                placeholder="Sitzplätze"/>
+                                placeholder="Sitzplätze"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSeatValue(parseInt(e.target.value))}
+                                />
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-3" controlId="registerEmail">
-                        <Form.Control as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
+                        <Form.Control as="textarea" rows={3} placeholder="Beschreibung" onChange={(e) => setDescriptionValue(e.target.value)}/>
                     </Form.Group>
 
                     <Row>
                         <Col xs={12} md="auto" className="text-end d-flex align-items-end justify-content-end">
-                            <Button type="submit" className="mainButton">Fahrt anlegen</Button>
+                            <Button type="submit" className="mainButton">Cargo anlegen</Button>
                         </Col>
                     </Row>
                 </Form>

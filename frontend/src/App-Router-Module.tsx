@@ -27,8 +27,6 @@ function RoutesComponent() {
             await getAllPublicOffers();
             await getAllPublicRequests();
         })()
-
-        console.log(requests)
     }, []);
 
     const getAllPublicOffers = async ()  => {

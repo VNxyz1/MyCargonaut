@@ -31,6 +31,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
     const [seatNumberValue, setSeatNumberValue] = useState<number>(0);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const {isAuthenticated} = useAuth();
+
     useEffect(() => {
         if (!props.show) {
             setRoutes([]);
@@ -39,6 +40,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
             fetchVehicle();
         }
     }, [isAuthenticated && props.show && props.userData]);
+
     const fetchVehicle = async () => {
         try {
             const data = await getOwnVehicles();
@@ -49,6 +51,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
             console.error("Error fetching vehicle data", error);
         }
     };
+
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         event.stopPropagation();
@@ -67,6 +70,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                     bookedSeats: seatNumberValue,
                 }),
             });    
+            
             if (response.ok) {
                 console.log('Anfrage erfolgreich gesendet');
             } else {
@@ -142,7 +146,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                                 }} className="mainButton">+</Button>
                         </Form.Group>
                     </Row>
-                    <div className="mb-3" style={{ height: '200px', overflowX: 'hidden' }}>
+                    <div className="mb-3" style={{ maxHeight: '200px', overflowX: 'hidden' }}>
                         {routes.map((route, index) => (
                             <Row key={index}>
                                 <Col>
@@ -164,7 +168,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                         <Form.Group as={Col} className="mb-3" controlId="date">
                             <Form.Control
                                 required
-                                type="text"
+                                type="date"
                                 onChange={(e) => setDateValue(e.target.value)}
                                 placeholder="Datum"/>
                         </Form.Group>
@@ -194,7 +198,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
                         </Form.Group>
                     </Row>
                     <Form.Group className="mb-3" controlId="registerEmail">
-                        <Form.Control onChange={(e)=> setDescription(e.target.value)} as="textarea" rows={3} placeholder="Beschreibung (optional)"/>
+                        <Form.Control onChange={(e)=> setDescription(e.target.value)} as="textarea" rows={3} placeholder="Beschreibung"/>
                     </Form.Group>
 
                     <Row>
