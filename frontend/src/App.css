@@ -608,8 +608,15 @@ input[type="number"] {
 }
 
 #search-sidebar button {
-    border-radius: 0 0 20px 20px !important;
     margin: 0 !important;
+}
+
+#borderButton {
+    border-radius: 0 0 20px 20px !important;
+}
+
+#NoBorderButton {
+    border-radius: 0 0 0 0 !important;
 }
 
 .searchBar input {

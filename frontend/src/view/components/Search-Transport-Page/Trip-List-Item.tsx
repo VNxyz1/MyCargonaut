@@ -5,11 +5,12 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { Offer } from "../../../interfaces/Offer.ts";
 import { TripRequest } from "../../../interfaces/TripRequest.ts";
 import { useEffect, useState } from "react";
-import platzhalter from "../../../assets/img/platzhalter_auto.jpg";
+import placeholderCar from "../../../assets/img/placeholder_car.png";
+import placeholderBox from "../../../assets/img/placeholder_box.jpg";
 
 function TripListItem(props: { trip: Offer | TripRequest }) {
   const [plzDisplay, setPlzDisplay] = useState({ plz1: "Start", plz2: "End" });
-  const [imgSrc, setImgSrc] = useState<string>(platzhalter);
+  const [ImgSrc, setImgSrc] = useState<string>(placeholderCar);
 
   const setPlz = () => {
     if ("route" in props.trip) {
@@ -37,11 +38,19 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
 
   useEffect(() => {
     setPlz();
-    // Check if there's a vehicle picture available
-    if ("vehicle" in props.trip && props.trip.vehicle.picture) {
-      setImgSrc(props.trip.vehicle.picture);
-    } else if("cargoImg" in props.trip && props.trip.cargoImg != null) {
-      setImgSrc(props.trip.cargoImg);
+
+    if ("vehicle" in props.trip) {
+      if (props.trip.vehicle.picture) {
+        setImgSrc(props.trip.vehicle.picture);
+      } else {
+        setImgSrc(placeholderCar);
+      }
+    } else if("cargoImg" in props.trip) {
+      if (props.trip.cargoImg) {
+        setImgSrc(props.trip.cargoImg);
+          } else {
+        setImgSrc(placeholderBox);
+      }
     }
   }, [props.trip]);
 
@@ -58,18 +67,20 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
   return (
     <div className="mb-4">
       <Link
-        to={"route" in props.trip ? `/offer/${props.trip.id}` : `/request/${props.trip.id}`}
+        to={"route" in props.trip ? `/trip/offer/${props.trip.id}` : `/trip/request/${props.trip.id}`}
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <Card key={props.trip.id}>
           <div className="d-flex">
             <Image
               style={{
+                width: "220px",
+                height: "220px",
                 objectFit: "cover",
                 overflow: "hidden",
                 borderRadius: "0.2rem 0 0 0.2rem"
               }}
-              src={imgSrc}
+              src={ImgSrc}
             />
             <div className="col">
               <Card.Header>
