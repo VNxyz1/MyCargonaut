@@ -16,10 +16,16 @@ export const getTripRequestById = async (id: number) => {
 }
 
 export const deleteOffering = async (id: number) => {
-  console.log(id)
   try {
-    //Todo: muss im backend implementiert werden
-    return false
+    const res = await fetch(`/request/offering/${id}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      return true;
+    }
+    const data = await res.json();
+    console.error(data);
+    return false;
   } catch (e) {
     console.error(e)
   }
@@ -76,6 +82,18 @@ export const acceptOffering = async (id: number) => {
   }
 }
 
+export const declineOffering = async (id: number) => {
+  try {
+    const response = await fetch(`/request/offering/decline/${id}`, {
+      method: "POST"
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 export const getOfferings = async () => {
 
   let sentOfferings = await getOfferingsAsOfferingUser();
@@ -121,4 +139,25 @@ const getOfferingsAsRequestingUser = async () => {
   } catch (e) {
     console.error(e)
   }
+}
+
+export const updateTripRequest = async (id: number, data: UpdateTripRequestData) => {
+  try {
+    const response = await fetch(`/request/offerings/update-params/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(data),
+    });
+    return response.ok;
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+export interface UpdateTripRequestData {
+  requestedCoins: number;
+  text: string;
 }

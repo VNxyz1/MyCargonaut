@@ -15,7 +15,7 @@ export class RequestOfferingService {
 
   async getAllPendingOfRequestingUser(id: number) {
     const offerings = await this.offeringRepository.find({
-      where: { tripRequest: { requester: { id } } },
+      where: { tripRequest: { requester: { id } }, accepted: false },
       relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {
@@ -26,7 +26,7 @@ export class RequestOfferingService {
 
   async getAllPendingOfOfferingUser(id: number) {
     const offerings = await this.offeringRepository.find({
-      where: { offeringUser: { id } },
+      where: { offeringUser: { id }, accepted: false },
       relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offerings) {
@@ -35,10 +35,10 @@ export class RequestOfferingService {
     return offerings;
   }
 
-  async getById(id: number) {
+  async getById(id: number): Promise<TripRequestOffering> {
     const offering = await this.offeringRepository.findOne({
       where: { id },
-      relations: ['offeringUser', 'tripRequest'],
+      relations: ['offeringUser', 'tripRequest', 'tripRequest.requester'],
     });
     if (!offering) {
       throw new NotFoundException('The offering could not be found.');

@@ -4,6 +4,8 @@ import { Conversation, Message, UnreadMessageCount, UnreadMessagesCount } from '
 type Store = {
   chats: Conversation[]
   selectedChat: Conversation
+  noChatSelected: boolean
+  setChatSelected: (selected: boolean) => void
   unreadMessagesTotal: number
   unreadConversations: UnreadMessageCount[]
   setChats: (conversations: Conversation[]) => void
@@ -20,6 +22,8 @@ export const chatStore = create<Store>()((set) => ({
     conversationPartnerName: '',
     messages: [],
   },
+  noChatSelected: false,
+  setChatSelected: (selected: boolean) => set(()=>({noChatSelected: !selected})),
   unreadMessagesTotal: 0,
   unreadConversations: [],
   setChats: (conversations) => set(() => ({ chats: conversations })),

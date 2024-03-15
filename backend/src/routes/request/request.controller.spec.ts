@@ -26,6 +26,8 @@ import { CreateRoutePartDto } from '../offer/DTOs/CreateRoutePartDto';
 import { Offer } from '../../database/Offer';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { MessageService } from '../message.service/message.service';
 
 describe('RequestController', () => {
   let requestService: RequestService;
@@ -56,6 +58,8 @@ describe('RequestController', () => {
         OfferService,
         VehicleService,
         RatingService,
+        MessageGatewayService,
+        MessageService,
       ],
     }).compile();
 

@@ -113,16 +113,17 @@ export class OfferService {
   }
 
   async updateOffer(updateData: UpdateOfferRequestDto, offer: Offer) {
-    if (updateData.description) {
+    if (updateData.description !== undefined) {
       offer.description = updateData.description;
     }
 
-    if (updateData.startDate) {
+    if (updateData.startDate !== undefined) {
       offer.startDate = updateData.startDate;
     }
+
     await this.offerRepository.save(offer);
 
-    if (updateData.route) {
+    if (updateData.route !== undefined) {
       const routeArr = await this.routePartRepository.find({
         where: { offer: { id: offer.id } },
         relations: ['offer', 'plz'],

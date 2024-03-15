@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GetOfferResponseDto } from '../../offer/DTOs/GetOfferResponseDto';
 import { User } from '../../../database/User';
+import { GetOtherUserDto } from '../../offer/DTOs/GetOtherUserDto';
 
 export class GetTransitRequestDto {
   @ApiProperty()
   id: number;
 
-  @ApiProperty({ type: User })
-  requester: User;
+  @ApiProperty({ type: [User, GetOtherUserDto] })
+  requester: User | GetOtherUserDto;
 
   @ApiProperty({ type: GetOfferResponseDto })
   offer: GetOfferResponseDto;

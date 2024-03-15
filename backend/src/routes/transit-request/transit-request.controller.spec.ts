@@ -23,6 +23,8 @@ import { RatingService } from '../rating.service/rating.service';
 import { VehicleController } from '../vehicle/vehicle.controller';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { MessageService } from '../message.service/message.service';
 
 describe('TransitRequestController', () => {
   let transitController: TransitRequestController;
@@ -57,6 +59,8 @@ describe('TransitRequestController', () => {
         PlzService,
         RatingService,
         VehicleService,
+        MessageGatewayService,
+        MessageService,
       ],
     }).compile();
 

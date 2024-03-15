@@ -5,6 +5,7 @@ import { Conversation } from '../../database/Conversation';
 import { Repository } from 'typeorm';
 import { GetUnreadMessageCountDto } from '../message/DTOs/GetUnreadMessageCountDTO';
 import { GetUnreadMessagesCountDto } from '../message/DTOs/GetUnreadMessagesCountDTO';
+import { UserService } from '../user.service/user.service';
 
 @Injectable()
 export class MessageService {
@@ -13,6 +14,7 @@ export class MessageService {
     private readonly messageRepository: Repository<Message>,
     @InjectRepository(Conversation)
     private readonly conversationRepository: Repository<Conversation>,
+    private readonly userService: UserService,
   ) {}
 
   async getConversation(user1: number, user2: number) {
@@ -54,6 +56,18 @@ export class MessageService {
 
     if (conversation == null) {
       throw new NotFoundException(`No Conversation with this Id found.`);
+    }
+    return conversation;
+  }
+
+  async getOrCreateConversation(userId1: number, userId2: number) {
+    let conversation = await this.getConversation(userId1, userId2);
+
+    if (conversation == null) {
+      conversation = new Conversation();
+      conversation.user1 = await this.userService.getUserById(userId1);
+      conversation.user2 = await this.userService.getUserById(userId2);
+      await this.createConversation(conversation);
     }
     return conversation;
   }
