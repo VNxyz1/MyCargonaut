@@ -1,4 +1,4 @@
-KMS WiSe 2023 | MyCargonaut
+KMS WiSe 2023 | MyCargonaut | Anastasia, Elisa, Jimmy, Jonas, Julius, Steffen, Vincent
 
 <img src="frontend/src/assets/img/Logo.png"  width="500px" />
 
@@ -78,8 +78,4 @@ ___
 Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die Swagger API funktioniert :smiling_face_with_tear:
 
 <img src="https://media.tenor.com/Opkrr0Wd2VAAAAAd/struggle-crying.gif"  width="200" />
-
-
-## Gruppe
-Anastasia, Elisa, Jimmy, Jonas, Julius, Steffen, Vincent
 
