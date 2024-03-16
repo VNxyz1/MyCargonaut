@@ -32,6 +32,11 @@ Andere: GitHub, [Figma](https://www.figma.com/), [Docker](https://www.docker.com
 > some content...
 
 >### Angebot/Gesuch erstellen
+> Sobalt Nutzer ihre Handynummer eingefügt haben (diese wird Validiert) können sie eigene Angebote (Fahrten) einstellen. 
+>
+> some content...
+
+>### Kommunikation
 > some content...
 >
 > some content...
@@ -45,7 +50,6 @@ Andere: GitHub, [Figma](https://www.figma.com/), [Docker](https://www.docker.com
 > some content...
 >
 > some content...
-> 
 
 
 ## Development
@@ -73,7 +77,7 @@ Klassendiagramm:  [`documentation/???`](documentation/???)
 
 Domainmodell:  [`documentation/domainmodell.svg`](documentation/domainmodell.svg)
 
-Style Guide:  [`documentation/style/style.pdf`](documentation/style/style.pdf)
+Style Guide:  [`documentation/style-guide/`](documentation/style-guide/)
 ___
 Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die Swagger API funktioniert :smiling_face_with_tear:
 
