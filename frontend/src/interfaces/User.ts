@@ -1,6 +1,7 @@
 import { AverageRatings } from "./Rating";
 
 export interface User {
+
   id: number;
 
   eMail: string;
@@ -12,6 +13,7 @@ export interface User {
   password: string;
 
   birthday: Date;
+  age: number;
 
   profilePicture: string;
 
