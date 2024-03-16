@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
-import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
+import placeholderImg from "../../../assets/img/placeholder_car.png";
 import {deleteVehicle, getOwnVehicles} from "../../../services/vehicleService";
 import {Vehicle, VehicleTypes} from "../../../interfaces/Vehicle";
 import { Modal } from "react-bootstrap";
@@ -48,7 +48,6 @@ function MyVehiclesComponent() {
     };
 
     const handleCloseEditVehicleModal = async () => {
-        await fetchVehicle();
         setSelectedVehicleId(null);
         setShowEditVehicleModal(false);
     };

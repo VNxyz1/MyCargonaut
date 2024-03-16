@@ -29,7 +29,7 @@ const VehicleEditModalComponent: React.FC<VehicleEditModalProps> = (props: Vehic
         }
     }, [props.show]);
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = async (event: any) => {
         if (!props.vehicle) {
             return;
         }
@@ -47,19 +47,21 @@ const VehicleEditModalComponent: React.FC<VehicleEditModalProps> = (props: Vehic
             if (form.elements.seats.value.length > 0) formData.seats = +form.elements.seats.value;
             if (form.elements.description.value.length > 0) formData.description = form.elements.description.value;
 
-            updateVehicle(props.vehicle.id, formData)
-                .then(() => {
+            await updateVehicle(props.vehicle.id, formData)
+                .then(async () => {
                     if (!props.vehicle) {
                         return;
                     }
                     if (image) {
-                        uploadVehicleImage(image, props.vehicle.id).then(() => props.onEdit());
+                        await uploadVehicleImage(image, props.vehicle.id).then(() => props.onEdit());
                     } else if (!previewUrl) {
-                        deleteVehicleProfileImage(props.vehicle.id).then(() => props.onEdit());
+                        await deleteVehicleProfileImage(props.vehicle.id).then(() => props.onEdit());
                     }
                     props.onEdit();
                 })
-                .catch(error => {console.error("Error updating vehicle:", error);});
+                .catch(error => {
+                    console.error("Error updating vehicle:", error);
+                });
             props.onHide();
         }
     };
