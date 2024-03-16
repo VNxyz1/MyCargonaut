@@ -360,6 +360,58 @@ describe('OfferController', () => {
     });
   });
 
+  describe('start trip', () => {
+    it('should set the offer as "inTransit"', async () => {
+      runTestAsProvider();
+      const offerId = 3;
+
+      const offer = await offerService.getOffer(offerId);
+      offer.state = TripState.inTransit;
+
+      const result = await offerController.startTrip(session, offerId);
+      expect(result).toStrictEqual(new OKResponseWithMessageDTO(true, 'Trip is marked as started'));
+      await expect(offerService.getOffer(offerId)).resolves.toStrictEqual(offer);
+    });
+
+    it('should set the offer as "finished"', async () => {
+      runTestAsProvider();
+      const offerId = 3;
+
+      const offer = await offerService.getOffer(offerId);
+      offer.state = TripState.finished;
+
+      const result = await offerController.endTrip(session, offerId);
+      expect(result).toStrictEqual(new OKResponseWithMessageDTO(true, 'Trip is marked as finished'));
+      await expect(offerService.getOffer(offerId)).resolves.toStrictEqual(offer);
+    });
+
+    it('should throw an error if the offer, that should be marked as finished is not in transit yet', async () => {
+      runTestAsProvider();
+      await postNewOffer(1);
+      const offerId = 3;
+
+      const offer = await offerService.getOffer(offerId);
+
+      await expect(offerController.startTrip(session, offerId)).rejects.toStrictEqual(
+        new BadRequestException('Offer was not found. It may already be finished.'),
+      );
+      await expect(offerService.getOffer(offerId)).resolves.toStrictEqual(offer);
+    });
+
+    it('should throw an error if the offer, that should be marked as finished is not in transit yet', async () => {
+      runTestAsProvider();
+      await postNewOffer(1);
+      const offerId = 6;
+
+      const offer = await offerService.getOffer(offerId);
+
+      await expect(offerController.endTrip(session, offerId)).rejects.toStrictEqual(
+        new BadRequestException('The Offer you are trying to find is not in transit yet.'),
+      );
+      await expect(offerService.getOffer(offerId)).resolves.toStrictEqual(offer);
+    });
+  });
+
   afterAll(async () => {
     await deleteDbMock();
   });

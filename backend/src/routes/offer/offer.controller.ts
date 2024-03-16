@@ -231,6 +231,44 @@ export class OfferController {
     return new OKResponseWithMessageDTO(true, 'Offer is reopened');
   }
 
+  @Put('start-trip/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Marks an existing offer as started',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async startTrip(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
+    const userId = session.userData.id;
+    const offer = await this.offerService.getOfferThatIsNotFinished(offerId);
+    if (offer.provider.id !== userId) {
+      throw new BadRequestException('You are not the Provider of this Offer!');
+    }
+
+    offer.state = TripState.inTransit;
+
+    await this.offerService.saveOffer(offer);
+    return new OKResponseWithMessageDTO(true, 'Trip is marked as started');
+  }
+
+  @Put('end-trip/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Marks an existing offer as started',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async endTrip(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
+    const userId = session.userData.id;
+    const offer = await this.offerService.getOfferThatIsInTransit(offerId);
+    if (offer.provider.id !== userId) {
+      throw new BadRequestException('You are not the Provider of this Offer!');
+    }
+
+    offer.state = TripState.finished;
+
+    await this.offerService.saveOffer(offer);
+    return new OKResponseWithMessageDTO(true, 'Trip is marked as finished');
+  }
+
   filterOffersByPLZ(fromPlz: string, toPlz: string, offers: Offer[]): Offer[] {
     return offers.filter((o) => {
       let fromPlzFound = false;

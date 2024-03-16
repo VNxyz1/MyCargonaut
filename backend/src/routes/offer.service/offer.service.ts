@@ -1,8 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateOfferDto } from '../offer/DTOs/CreateOfferDto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/User';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Offer } from '../../database/Offer';
 import { Like } from 'typeorm';
 import { UpdateOfferRequestDto } from '../offer/DTOs/UpdateOfferRequestDto';
@@ -73,15 +73,16 @@ export class OfferService {
     if (searchFor) {
       return await this.offerRepository.find({
         where: [
-          { description: Like(`%${searchFor}%`) },
-          { route: { plz: { location: Like(`%${searchFor}%`) } } },
-          { route: { plz: { plz: Like(`%${searchFor}%`) } } },
+          { description: Like(`%${searchFor}%`), state: Not(TripState.finished) },
+          { route: { plz: { location: Like(`%${searchFor}%`) } }, state: Not(TripState.finished) },
+          { route: { plz: { plz: Like(`%${searchFor}%`) } }, state: Not(TripState.finished) },
         ],
         relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
       });
     }
 
     return await this.offerRepository.find({
+      where: { state: Not(TripState.finished) },
       relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
     });
   }
@@ -107,6 +108,36 @@ export class OfferService {
     });
     if (!offer) {
       throw new InternalServerErrorException('Offer was not found!');
+    }
+
+    return offer;
+  }
+
+  async getOfferThatIsNotFinished(id: number) {
+    const offer = await this.offerRepository.findOne({
+      where: {
+        id: id,
+        state: Not(TripState.finished),
+      },
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
+    });
+    if (!offer) {
+      throw new BadRequestException('Offer was not found. It may already be finished.');
+    }
+
+    return offer;
+  }
+
+  async getOfferThatIsInTransit(id: number) {
+    const offer = await this.offerRepository.findOne({
+      where: {
+        id: id,
+        state: TripState.inTransit,
+      },
+      relations: ['provider', 'route.plz', 'clients', 'transitRequests', 'vehicle'],
+    });
+    if (!offer) {
+      throw new BadRequestException('The Offer you are trying to find is not in transit yet.');
     }
 
     return offer;
