@@ -74,7 +74,7 @@ export const updateTransitRequest = async (id: number, data: UpdateTransitReques
     }
 }
 
-interface UpdateTransitRequestData {
+export interface UpdateTransitRequestData {
     offeredCoins: number;
     requestedSeats: number;
     text: string;
@@ -95,6 +95,18 @@ export const deleteTransitRequest = async (id: number) => {
 export const acceptTransitRequest = async (id: number) => {
     try {
         const response = await fetch(`/transit-request/accept/${id}`, {
+            method: "PUT"
+        });
+        return response.ok;
+
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+export const declineTransitRequest = async (id: number) => {
+    try {
+        const response = await fetch(`/transit-request/decline/${id}`, {
             method: "PUT"
         });
         return response.ok;

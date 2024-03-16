@@ -14,48 +14,43 @@ import {User} from "../../interfaces/User";
 import {getAUser} from "../../services/userService";
 import {useNavigate, useParams} from "react-router-dom";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
+import {useAuth} from '../../services/authService';
 
 function ProfilPage() {
     const { userId } = useParams();
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Fahrten");
     const [userData, setUserData] = useState<User | null>(null);
-    const [userAge, setUserAge] = useState<number | null>(null);
+    const {isAuthenticated} = useAuth();
     const entryDate = new Date((userData as any)?.entryDate);
     const formattedEntryDate = entryDate.toLocaleDateString();
     const navigate = useNavigate();
 
     useEffect(() => {
+        //TODO: Prüfen ob es der eigene Nutzer ist, wenn ja, dann umleiten auf Profil
+        if (isAuthenticated) {
 
-        const fetchData = async () => {
-            const data = await getAUser(userId);
-            if (data !== null) {
-                setUserData(data as any);
-                setProfileImageUrl((data as any)?.profilePicture);
-                const bDate = calculateAge(new Date((data as any)?.birthday));
-                setUserAge(bDate);
-            } else {
-                navigate('/404');
-            }
-        };
+            const fetchData = async () => {
+                const data = await getAUser(userId);
+                if (data !== null) {
+                    setUserData(data as any);
+                    setProfileImageUrl((data as any)?.profilePicture);
 
-        fetchData();
-    }, [userId]);
+                } else {
+                    navigate('/404');
+                }
+            };
+            fetchData();
 
 
-    const calculateAge = (birthDate: Date): number | null => {
-        const currentDate = new Date();
-
-        if (isNaN(birthDate.getTime())) {
-            return null;
+        } else {
+            //TODO: Alter einbauen
+            console.log("Du musst eingeloggt sein, um die seite zu sehen.")
+            navigate('/login');
         }
-        let age = currentDate.getFullYear() - birthDate.getFullYear();
-        if (currentDate.getMonth() < birthDate.getMonth() || (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    };
 
+
+    }, [isAuthenticated, userId]);
 
     const renderSectionContent = () => {
         switch (currentSection) {
@@ -91,17 +86,8 @@ function ProfilPage() {
                                     <p className="prof-lable">Name</p>
                                     <p>{userData.firstName} {userData.lastName}</p>
 
-                                    <p className="prof-lable">Handynummer</p>
-                                    <p>
-                                        {userData.phoneNumber && userData.phoneNumber.length > 0 ? (
-                                            <span className="verification-icon"><i className="icon-badge-check"></i> Handynummer verifiziert</span>
-                                        ) : (
-                                            <span className="verification-icon"><i className="icon-xmark"></i> Handynummer nicht verifiziert (nicht im response)</span>
-                                        )}
-                                    </p>
-
                                     <p className="prof-lable">Alter</p>
-                                    <p>{userAge} Jahre alt (nicht im response)</p>
+                                    <p>{userData.age}</p>
 
                                     <p className="prof-lable">Beschreibung</p>
                                     <p>{userData.description && userData.description.length > 0 ? userData.description : 'Keine Beschreibung vorhanden'}</p>

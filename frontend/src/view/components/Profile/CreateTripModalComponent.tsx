@@ -42,10 +42,8 @@ interface CreateTripModalComponent extends ModalProps {
 const getItemStyle = (isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle | undefined): CSSProperties => ({
   userSelect: 'none',
 
-  // change background colour if dragging
   background: isDragging ? '' : '',
 
-  // styles we need to apply on draggables
   ...draggableStyle,
 });
 

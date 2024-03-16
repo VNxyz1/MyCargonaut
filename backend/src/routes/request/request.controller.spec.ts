@@ -26,6 +26,8 @@ import { CreateRoutePartDto } from '../offer/DTOs/CreateRoutePartDto';
 import { Offer } from '../../database/Offer';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { MockVehicle } from '../vehicle/Mock/MockVehicle';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { MessageService } from '../message.service/message.service';
 
 describe('RequestController', () => {
   let requestService: RequestService;
@@ -56,6 +58,8 @@ describe('RequestController', () => {
         OfferService,
         VehicleService,
         RatingService,
+        MessageGatewayService,
+        MessageService,
       ],
     }).compile();
 
@@ -240,21 +244,21 @@ describe('RequestController', () => {
 
     it('should get filtered trip requests by rating', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 4;
+      query.rating = '4';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(1);
     });
 
     it('should get filtered trip requests by rating. No 5 Star Ratings exist.', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 5;
+      query.rating = '5';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(0);
     });
 
     it('should get filtered trip requests by rating. No 3 Star Ratings exist.', async () => {
       const query = new GetFilteredTripRequestRequestDto();
-      query.rating = 3;
+      query.rating = '3';
       const filteredRequests = await requestController.getFilter(query);
       expect(filteredRequests.tripRequests.length).toBe(0);
     });
@@ -374,7 +378,7 @@ describe('RequestController', () => {
       expect(offer.description).toBe(description);
       expect(offer.startDate).toStrictEqual(new Date(startDate));
 
-      await expect(requestService.getById(1)).rejects.toThrow(NotFoundException);
+      await expect(requestService.getOpenById(1)).rejects.toThrow(NotFoundException);
     });
   });
 

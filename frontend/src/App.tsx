@@ -6,14 +6,20 @@ import { useAuth } from './services/authService.tsx';
 import { getLoggedInUser } from './services/userService.tsx';
 import { chatStore } from './view/components/Chat-Page/chats-zustand.ts';
 import { getAllMessages, getUnreadMessages } from './services/messageService.ts';
+import { reqAndOffStore } from './view/components/Chat-Page/offeringsAndRequests/offeringsAndRequests-zustand.ts';
+import { getOfferings } from './services/tripRequestService.ts';
+import { getTransitRequests } from './services/offerService.tsx';
 
 function App() {
 
   const {setIsConnected } = socketStore();
   const {setChats, sortByDateDesc, setUnreadChats } = chatStore();
   const { isAuthenticated} = useAuth();
+  const { setIncomingOfferings, setSentOfferings, setSentTransitRequests, setIncomingTransitRequests} = reqAndOffStore();
 
   const handleUnreadMessages = async () => {
+    await getReqsAndOffs();
+
     const chats = await getAllMessages();
     const unreadMessagesCount = await getUnreadMessages();
     if (chats && unreadMessagesCount) {
@@ -39,6 +45,8 @@ function App() {
     }
 
     (async ()=> {
+      await getReqsAndOffs();
+
       const userData = await getLoggedInUser();
       if (userData == null || userData.id == undefined) {
         return;
@@ -58,6 +66,19 @@ function App() {
     }
 
   }, [isAuthenticated]);
+
+
+  const getReqsAndOffs = async () => {
+    const {incomingOfferings, sentOfferings} = await getOfferings();
+    setIncomingOfferings(incomingOfferings);
+    setSentOfferings(sentOfferings);
+
+    const {incomingTransitRequests, sentTransitRequests} = await getTransitRequests();
+    setIncomingTransitRequests(incomingTransitRequests);
+    setSentTransitRequests(sentTransitRequests);
+  }
+
+
 
   return (
     <>

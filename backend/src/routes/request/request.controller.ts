@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -48,6 +49,10 @@ import { createRoutePart } from '../utils/createRoutePart';
 import { OfferService } from '../offer.service/offer.service';
 import { VehicleService } from '../vehicle.service/vehicle.service';
 import { RatingService } from '../rating.service/rating.service';
+import { MessageService } from '../message.service/message.service';
+import { Message } from '../../database/Message';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
+import { UpdateTripRequestOffering } from './DTOs/UpdateTripRequestOffering';
 
 @ApiTags('request')
 @Controller('request')
@@ -60,6 +65,8 @@ export class RequestController {
     private readonly offerService: OfferService,
     private readonly vehicleService: VehicleService,
     private readonly ratingService: RatingService,
+    private readonly messageService: MessageService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @Post()
@@ -73,6 +80,11 @@ export class RequestController {
     @UploadedFile() cargoImg?: Express.Multer.File,
   ) {
     const user = await this.userService.getUserById(session.userData.id);
+    if (typeof body.endPlz == 'string') {
+      body.endPlz = JSON.parse(String(body.endPlz));
+      body.startPlz = JSON.parse(String(body.startPlz));
+    }
+
     const tR = await this.createTripRequest(body, user, cargoImg);
 
     await this.requestService.save(tR);
@@ -84,7 +96,7 @@ export class RequestController {
   @ApiOperation({ summary: 'gets all trip request' })
   @ApiResponse({ type: GetAllTripRequestResponseDto })
   async getAll() {
-    const tRArr = await this.requestService.getAll();
+    const tRArr = await this.requestService.getOpen();
     const dto = new GetAllTripRequestResponseDto();
     dto.tripRequests = tRArr.map((tR) => {
       return convertTripRequestToGetDto(tR);
@@ -96,7 +108,7 @@ export class RequestController {
   @ApiOperation({ summary: 'gets trip request by id' })
   @ApiResponse({ type: GetTripRequestResponseDto })
   async getOne(@Param('id', ParseIntPipe) tripRequestId: number) {
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     return convertTripRequestToGetDto(tR);
   }
@@ -115,7 +127,7 @@ export class RequestController {
     if (query.searchString) {
       tRArr = await this.requestService.getFilteredBySearchstring(query.searchString);
     } else {
-      tRArr = await this.requestService.getAll();
+      tRArr = await this.requestService.getOpen();
     }
 
     if (query.seats) {
@@ -141,7 +153,7 @@ export class RequestController {
     }
 
     if (query.rating) {
-      tRArr = await this.filterByRating(query.rating, tRArr);
+      tRArr = await this.filterByRating(Number(query.rating), tRArr);
     }
 
     const dto = new GetAllTripRequestResponseDto();
@@ -159,7 +171,7 @@ export class RequestController {
   @ApiResponse({ type: OKResponseWithMessageDTO })
   async delete(@Param('id', ParseIntPipe) tripRequestId: number, @Session() session: ISession) {
     const userId: number = session.userData.id;
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     this.loggedInUserIsRequester(userId, tR);
 
@@ -182,7 +194,7 @@ export class RequestController {
     @UploadedFile() cargoImg?: Express.Multer.File,
   ) {
     const userId: number = session.userData.id;
-    const tR = await this.requestService.getById(tripRequestId);
+    const tR = await this.requestService.getOpenById(tripRequestId);
 
     this.loggedInUserIsRequester(userId, tR);
 
@@ -228,7 +240,7 @@ export class RequestController {
     const offeringUser = await this.userService.getUserById(offeringUserId);
     userIsValidToBeProvider(offeringUser);
 
-    const tR = await this.requestService.getById(requestId);
+    const tR = await this.requestService.getOpenById(requestId);
 
     if (tR.requester.id === offeringUserId) {
       throw new ForbiddenException('You are not allowed to make a offering to your own trip request!');
@@ -250,7 +262,40 @@ export class RequestController {
 
     await this.offeringService.save(offering);
 
+    this.messageGatewayService.reloadMessages(tR.requester.id);
+
     return new OKResponseWithMessageDTO(true, 'Offer was send.');
+  }
+
+  @Put('/offerings/update-params/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Send an offer to the requester of the request with the given ID.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async putOfferTransit(
+    @Session() session: ISession,
+    @Param('id', ParseIntPipe) requestOfferingId: number,
+    @Body() body: UpdateTripRequestOffering,
+  ) {
+    const offeringUserId = session.userData.id;
+    const offeringUser = await this.userService.getUserById(offeringUserId);
+    userIsValidToBeProvider(offeringUser);
+
+    const tROffering = await this.offeringService.getById(requestOfferingId);
+
+    if (tROffering.offeringUser.id !== offeringUserId) {
+      throw new ForbiddenException('You are not allowed to edit this offering!');
+    }
+
+    tROffering.text = body.text;
+    tROffering.requestedCoins = body.requestedCoins;
+
+    await this.offeringService.save(tROffering);
+
+    this.messageGatewayService.reloadMessages(tROffering.tripRequest.requester.id);
+
+    return new OKResponseWithMessageDTO(true, 'Offer was updated');
   }
 
   @Get('offerings/offering-user')
@@ -289,6 +334,7 @@ export class RequestController {
   async acceptOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
     const userId: number = session.userData.id;
     const offering = await this.offeringService.getById(offeringId);
+    const request = await this.requestService.getOpenById(offering.tripRequest.id);
     if (offering.tripRequest.requester.id !== userId) {
       throw new ForbiddenException('You are not allowed to accept this offering!');
     }
@@ -298,13 +344,89 @@ export class RequestController {
       throw new ForbiddenException('The coin balance of the requesting user is not valid.');
     }
 
+    const conversation = await this.messageService.getOrCreateConversation(
+      offering.tripRequest.requester.id,
+      offering.offeringUser.id,
+    );
+
+    const message = new Message();
+    message.sender = offering.tripRequest.requester;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeAcceptMessage(offering);
+    await this.messageService.createMessage(message);
+
     offering.accepted = true;
     await this.offeringService.save(offering);
+
+    request.open = false;
+    await this.requestService.save(request);
 
     await this.userService.decreaseCoinBalanceOfUser(userId, offering.requestedCoins);
     await this.userService.increaseCoinBalanceOfUser(offering.offeringUser.id, offering.requestedCoins);
 
+    this.messageGatewayService.reloadMessages(offering.tripRequest.requester.id);
+    this.messageGatewayService.reloadMessages(offering.offeringUser.id);
+
     return new OKResponseWithMessageDTO(true, 'Offering was accepted.');
+  }
+
+  @Post('offering/decline/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Declines a offering with the given id.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async decline(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
+    const userId: number = session.userData.id;
+    const offering = await this.offeringService.getById(offeringId);
+    if (offering.tripRequest.requester.id !== userId) {
+      throw new ForbiddenException('You are not allowed to decline this offering!');
+    }
+
+    const conversation = await this.messageService.getOrCreateConversation(
+      offering.tripRequest.requester.id,
+      offering.offeringUser.id,
+    );
+
+    const offeringUserId = offering.offeringUser.id;
+    const requestingUser = offering.tripRequest.requester.id;
+
+    const message = new Message();
+    message.sender = offering.tripRequest.requester;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeDeclineMessage(offering);
+    await this.messageService.createMessage(message);
+    await this.offeringService.delete(offering);
+
+    this.messageGatewayService.reloadMessages(requestingUser);
+    this.messageGatewayService.reloadMessages(offeringUserId);
+
+    return new OKResponseWithMessageDTO(true, 'Offering was declined.');
+  }
+
+  @Delete('offering/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    description: 'Deletes a offering with the given id.',
+  })
+  @ApiResponse({ type: OKResponseWithMessageDTO })
+  async deleteOffering(@Session() session: ISession, @Param('id', ParseIntPipe) offeringId: number) {
+    const userId: number = session.userData.id;
+    const offering = await this.offeringService.getById(offeringId);
+    const tR = await this.requestService.getOpenById(offering.tripRequest.id);
+    if (offering.offeringUser.id !== userId) {
+      throw new ForbiddenException('You are not allowed to delete this offering!');
+    }
+
+    const offeringUserId = offering.offeringUser.id;
+    await this.offeringService.delete(offering);
+
+    this.messageGatewayService.reloadMessages(tR.requester.id);
+    this.messageGatewayService.reloadMessages(offeringUserId);
+
+    return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
   }
 
   @Post('transform-to-offer/:id')
@@ -345,7 +467,7 @@ export class RequestController {
 
     await this.requestService.delete(tR);
 
-    return new OKResponseWithMessageDTO(true, 'Offering was deleted.');
+    return new OKResponseWithMessageDTO(true, 'Request was deleted.');
   }
 
   private async convertToOffer(
@@ -362,9 +484,15 @@ export class RequestController {
     offer.state = TripState.offer;
 
     offer.bookedSeats = tripRequest.seats + data.additionalSeats;
-    offer.vehicle = await this.vehicleService.getVehicle(data.vehicleId, provider.id);
+    offer.vehicle = await this.vehicleService.getVehicle(Number(data.vehicleId), provider.id);
     offer.startDate = new Date(data.startDate);
     offer.description = data.description;
+
+    if (offer.vehicle.seats <= offer.bookedSeats) {
+      throw new BadRequestException(
+        'There are not enough seats in the selected vehicle to create a legitimate offer!',
+      );
+    }
 
     const offerDb = await this.offerService.saveOffer(offer);
 
@@ -434,23 +562,27 @@ export class RequestController {
   }
 
   private async updateTripRequest(tR: TripRequest, updateData: UpdateTripRequestRequestDto) {
-    if (updateData.description) {
+    if (updateData.description !== undefined) {
       tR.description = updateData.description;
     }
 
-    if (updateData.startPlz) {
+    if (updateData.startPlz !== undefined) {
       tR.startPlz = await this.plzService.createPlz(updateData.startPlz.plz, updateData.startPlz.location);
     }
 
-    if (updateData.endPlz) {
+    if (updateData.endPlz !== undefined) {
       tR.endPlz = await this.plzService.createPlz(updateData.endPlz.plz, updateData.endPlz.location);
     }
 
-    if (updateData.cargoImgString) {
+    if (updateData.cargoImgString !== undefined) {
       tR.cargoImg = updateData.cargoImgString;
     }
 
-    if (updateData.startDate) {
+    if (updateData.seats !== undefined) {
+      tR.seats = updateData.seats;
+    }
+
+    if (updateData.startDate !== undefined) {
       tR.startDate = new Date(updateData.startDate);
     }
 
@@ -521,5 +653,21 @@ export class RequestController {
     }
 
     return filteredTripeRequests;
+  }
+
+  private writeDeclineMessage(offering: TripRequestOffering): string {
+    const start = offering.tripRequest.startPlz.location;
+    const end = offering.tripRequest.endPlz.location;
+    const coins = offering.requestedCoins.toString();
+
+    return `Ich habe dein Angebot, mich von ${start} nach ${end} für ${coins} Coins mit zu nehmen, abgelehnt. (automatisierte Nachricht)`;
+  }
+
+  private writeAcceptMessage(offering: TripRequestOffering): string {
+    const start = offering.tripRequest.startPlz.location;
+    const end = offering.tripRequest.endPlz.location;
+    const coins = offering.requestedCoins.toString();
+
+    return `Ich habe dein Angebot, mich von ${start} nach ${end} für ${coins} Coins mit zu nehmen, angenommen. (automatisierte Nachricht)`;
   }
 }

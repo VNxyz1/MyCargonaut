@@ -12,7 +12,7 @@ import {
   Session,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OfferService } from '../offer.service/offer.service';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { CreateOfferDto } from './DTOs/CreateOfferDto';
@@ -27,6 +27,7 @@ import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
 import { UserService } from '../user.service/user.service';
 import { userIsValidToBeProvider } from '../utils/userIsValidToBeProvider';
 import { RatingService } from '../rating.service/rating.service';
+import { GetFilteredOffersDto } from './DTOs/GetFilteredOffersDto';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -115,74 +116,34 @@ export class OfferController {
     description:
       'Example request: "offers/search?search=test&fromPLZ=63679&toPLZ=64002&rating=4&date=2025-01-01".',
   })
-  @ApiQuery({
-    name: 'search',
-    description: 'A search string to filter offers by.',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'fromPLZ',
-    description:
-      'The starting postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'toPLZ',
-    description:
-      'The ending postal code for filtering offers by location. You have to specify fromPLZ and toPLZ.',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'seats',
-    description:
-      'A number of seats to filter offers by. Returns offers with the requested number of available seats or more.',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'date',
-    description: 'A date to filter offers by. Must be in the format YYYY-MM-DD.',
-    required: false,
-  })
-  @ApiQuery({
-    name: 'rating',
-    description: 'A rating to filter offers by. Must be between 0 and 5.',
-    required: false,
-  })
   @ApiResponse({
     type: GetAllOffersResponseDto,
     description: 'An array of offers that match the search criteria.',
   })
-  async getFilteredOffers(
-    @Query('search') searchString?: string,
-    @Query('fromPLZ') fromPLZ?: string,
-    @Query('toPLZ') toPLZ?: string,
-    @Query('seats', ParseIntPipe) seats?: number,
-    @Query('date') date?: string,
-    @Query('rating', ParseIntPipe) rating?: number,
-  ) {
+  async getFilteredOffers(@Query() query: GetFilteredOffersDto) {
     let offerList: Offer[];
 
-    if (searchString) {
-      offerList = await this.offerService.getOffers(searchString);
+    if (query.searchString) {
+      offerList = await this.offerService.getOffers(query.searchString);
     } else {
       offerList = await this.offerService.getOffers();
     }
 
-    if (seats) {
-      offerList = this.filterOffersBySeats(seats, offerList);
+    if (query.seats) {
+      offerList = this.filterOffersBySeats(Number(query.seats), offerList);
     }
 
-    if (rating) {
-      offerList = await this.filterOffersByRating(rating, offerList);
+    if (query.rating) {
+      offerList = await this.filterOffersByRating(Number(query.rating), offerList);
     }
 
-    if (date) {
-      const formattedDate = new Date(date);
+    if (query.date) {
+      const formattedDate = new Date(query.date);
       offerList = this.filterAndSortByDate(formattedDate, offerList);
     }
 
-    if (fromPLZ && toPLZ) {
-      offerList = this.filterOffersByPLZ(fromPLZ, toPLZ, offerList);
+    if (query.fromPLZ && query.toPLZ) {
+      offerList = this.filterOffersByPLZ(query.fromPLZ, query.toPLZ, offerList);
     }
 
     const offerListDto = new GetAllOffersResponseDto();

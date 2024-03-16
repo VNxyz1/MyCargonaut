@@ -23,10 +23,13 @@ import { User } from '../../database/User';
 import { PutTransitRequestRequestDto } from './DTOs/PutTransitRequestRequestDto';
 import { OKResponseWithMessageDTO } from '../../generalDTOs/OKResponseWithMessageDTO';
 import { GetAllPendingTransitRequestsResponseDTO } from './DTOs/GetAllPendingTransitRequestsResponseDTO';
-import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
+import { convertOfferToGetOfferDto, convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { GetTransitRequestDto } from './DTOs/getTransitRequestDto';
 import { PostTransitRequestRequestDto } from './DTOs/PostTransitRequestRequestDto';
 import { TransitRequest } from '../../database/TransitRequest';
+import { MessageService } from '../message.service/message.service';
+import { Message } from '../../database/Message';
+import { MessageGatewayService } from '../../socket/message.gateway.service';
 
 @ApiTags('transit-request')
 @Controller('transit-request')
@@ -35,6 +38,8 @@ export class TransitRequestController {
     private readonly transitRequestService: TransitRequestService,
     private readonly offerService: OfferService,
     private readonly userService: UserService,
+    private readonly messageService: MessageService,
+    private readonly messageGatewayService: MessageGatewayService,
   ) {}
 
   @Post(':id')
@@ -66,6 +71,8 @@ export class TransitRequestController {
     }
     const requestingUser: User = await this.userService.getUserById(requestingUserId);
     await this.transitRequestService.postTransitRequest(offer, requestingUser, body);
+    this.messageGatewayService.reloadMessages(offer.provider.id);
+    this.messageGatewayService.reloadMessages(requestingUserId);
     return new OKResponseWithMessageDTO(true, 'Request was sent');
   }
 
@@ -120,7 +127,7 @@ export class TransitRequestController {
     response.transitRequests = requests.map((tR) => {
       const tRDto = new GetTransitRequestDto();
       tRDto.offer = convertOfferToGetOfferDto(tR.offer);
-      tRDto.requester = tR.requester;
+      tRDto.requester = convertUserToOtherUser(tR.requester);
       tRDto.id = tR.id;
       tRDto.offeredCoins = tR.offeredCoins;
       tRDto.requestedSeats = tR.requestedSeats;
@@ -131,11 +138,11 @@ export class TransitRequestController {
     return response;
   }
 
-  @Put('update-params/:id')
+  @Put('update-params/:offerId')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
     summary: 'Updates the offered coins and/or requested seats of a Transit request',
-    description: `Allows the requester to update the offered coins and/or requested seats of their transit request.`,
+    description: `The provided ID must be the ID of the offer the transit-request is referencing. Allows the requester to update the offered coins and/or requested seats of their transit request.`,
   })
   @ApiResponse({
     status: 200,
@@ -149,7 +156,7 @@ export class TransitRequestController {
   })
   async putTransitRequest(
     @Session() session: ISession,
-    @Param('id', ParseIntPipe) offerId: number,
+    @Param('offerId', ParseIntPipe) offerId: number,
     @Body() body: PutTransitRequestRequestDto,
   ) {
     if (!body.requestedSeats && !body.offeredCoins) {
@@ -162,6 +169,8 @@ export class TransitRequestController {
     const requestingUser: User = await this.userService.getUserById(requestingUserId);
 
     await this.transitRequestService.putTransitRequest(offer, requestingUser, body);
+
+    this.messageGatewayService.reloadMessages(offer.provider.id);
 
     return new OKResponseWithMessageDTO(true, 'Request was updated');
   }
@@ -198,10 +207,63 @@ export class TransitRequestController {
     }
     await this.transitRequestService.acceptTransitRequest(tR);
 
+    const conversation = await this.messageService.getOrCreateConversation(
+      offer.provider.id,
+      tR.requester.id,
+    );
+
+    const message = new Message();
+    message.sender = offer.provider;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeAcceptMessage(tR, offer);
+    await this.messageService.createMessage(message);
+
     await this.userService.decreaseCoinBalanceOfUser(tR.requester.id, tR.offeredCoins);
     await this.userService.increaseCoinBalanceOfUser(offerProviderId, tR.offeredCoins);
 
+    this.messageGatewayService.reloadMessages(offer.provider.id);
+    this.messageGatewayService.reloadMessages(tR.requester.id);
+
     return new OKResponseWithMessageDTO(true, 'Request was accepted');
+  }
+
+  @Put('decline/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Declines a Transit Request',
+    description: `Allows the provider to decline a transit request.`,
+  })
+  async declineRequest(@Session() session: ISession, @Param('id', ParseIntPipe) tRId: number) {
+    const offerProviderId = session.userData.id;
+    const tR = await this.transitRequestService.getTransitRequestById(tRId);
+
+    const offer = await this.offerService.getOffer(tR.offer.id);
+
+    if (offer.provider.id !== offerProviderId) {
+      throw new ForbiddenException('You are not allowed to mark this request as accepted');
+    }
+
+    const conversation = await this.messageService.getOrCreateConversation(
+      offer.provider.id,
+      tR.requester.id,
+    );
+
+    const requesterId = tR.requester.id;
+
+    const message = new Message();
+    message.sender = offer.provider;
+    message.conversation = conversation;
+    message.timestamp = new Date();
+    message.message = this.writeDeclineMessage(tR, offer);
+    await this.messageService.createMessage(message);
+
+    await this.transitRequestService.delete(tR);
+
+    this.messageGatewayService.reloadMessages(offerProviderId);
+    this.messageGatewayService.reloadMessages(requesterId);
+
+    return new OKResponseWithMessageDTO(true, 'Request was declined');
   }
 
   @Delete(':id')
@@ -224,16 +286,36 @@ export class TransitRequestController {
     const tR = await this.transitRequestService.getTransitRequestById(tRId);
 
     const requestingUserId = session.userData.id;
+    const offeringUserId = tR.offer.provider.id;
 
     if (!this.loggedInUserIsRequestingUser(requestingUserId, tR)) {
       throw new ForbiddenException('You are not allowed to delete this Request.');
     }
 
     await this.transitRequestService.delete(tR);
+
+    this.messageGatewayService.reloadMessages(offeringUserId);
+    this.messageGatewayService.reloadMessages(requestingUserId);
+
     return new OKResponseWithMessageDTO(true, 'Request was deleted');
   }
 
   loggedInUserIsRequestingUser(userId: number, tR: TransitRequest): boolean {
     return tR.requester.id === userId;
+  }
+  private writeAcceptMessage(tr: TransitRequest, offer: Offer): string {
+    const start = offer.route[0].plz.location;
+    const end = offer.route[offer.route.length - 1].plz.location;
+    const coins = tr.offeredCoins.toString();
+
+    return `Ich nehme dich mit auf meiner Fahrt von ${start} nach ${end}. Für ${coins} Coins. (automatisierte Nachricht)`;
+  }
+
+  private writeDeclineMessage(tr: TransitRequest, offer: Offer): string {
+    const start = offer.route[0].plz.location;
+    const end = offer.route[offer.route.length - 1].plz.location;
+    const coins = tr.offeredCoins.toString();
+
+    return `Danke für deine Anfrage, aber ich kann dich auf meiner Fahrt von ${start} nach ${end} nicht mit nehmen. Dein Angebot waren ${coins} Coins. (automatisierte Nachricht)`;
   }
 }

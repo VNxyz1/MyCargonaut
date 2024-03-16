@@ -31,6 +31,9 @@ export class TripRequest {
   @Column()
   seats: number;
 
+  @Column({ default: true })
+  open: boolean;
+
   @OneToMany(() => TripRequestOffering, (tripRequestOffering) => tripRequestOffering.tripRequest)
   offerings: TripRequestOffering[];
 }

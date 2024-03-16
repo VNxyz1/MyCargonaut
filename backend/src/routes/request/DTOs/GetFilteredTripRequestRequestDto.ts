@@ -1,4 +1,4 @@
-import { IsISO8601, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsISO8601, IsNumberString, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetFilteredTripRequestRequestDto {
@@ -40,7 +40,7 @@ export class GetFilteredTripRequestRequestDto {
   date?: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   @ApiProperty({ description: 'Filter trip requests by rating.' })
-  rating?: number;
+  rating?: string;
 }
