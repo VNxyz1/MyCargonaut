@@ -2,7 +2,7 @@ KMS WiSe 2023 | MyCargonaut
 
 <img src="frontend/src/assets/img/Logo.png"  width="500px" />
 
----
+
 ## Toolstack
 Frontend: React 
 
@@ -10,7 +10,7 @@ Backend: Nest
 
 Andere: Figma, GitHub
 
----
+
 ## Funktionen
 
 >### Registrieren & Login
@@ -46,7 +46,7 @@ Andere: Figma, GitHub
 >
 > some content...
 > 
----
+
 
 ## Development
 
@@ -79,7 +79,7 @@ Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die
 
 <img src="https://media.tenor.com/Opkrr0Wd2VAAAAAd/struggle-crying.gif"  width="200" />
 
----
+
 ## Gruppe
 Anastasia, Elisa, Jimmy, Jonas, Julius, Steffen, Vincent
 
