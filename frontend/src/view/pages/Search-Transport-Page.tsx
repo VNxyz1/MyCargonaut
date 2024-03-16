@@ -139,7 +139,6 @@ function SearchTransportPage(
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const radioValue = event.target.value;
         setSelectedType(radioValue);
-
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('t', radioValue);
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;

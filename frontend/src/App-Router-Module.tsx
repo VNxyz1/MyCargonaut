@@ -15,7 +15,6 @@ import {TripRequest} from "./interfaces/TripRequest.ts"
 import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
 import ChatPage from "./view/pages/Chat-Page.tsx";
 
-
 function RoutesComponent() {
     const [offers, setOffers] = useState<Offer[]>([]);
     const [requests, setRequests] = useState<TripRequest[]>([]);
