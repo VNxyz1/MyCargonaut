@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
-import placeholderImg from "../../../assets/img/platzhalter_auto.jpg";
+import placeholderImg from "../../../assets/img/placeholder_car.png";
 import {deleteVehicle, getOwnVehicles} from "../../../services/vehicleService";
 import {Vehicle, VehicleTypes} from "../../../interfaces/Vehicle";
 import { Modal } from "react-bootstrap";
@@ -47,17 +47,16 @@ function MyVehiclesComponent() {
         setShowEditVehicleModal(true);
     };
 
-    const handleCloseEditVehicleModal = () => {
+    const handleCloseEditVehicleModal = async () => {
         setSelectedVehicleId(null);
         setShowEditVehicleModal(false);
-        fetchVehicle();
     };
 
     const handleConfirmDeleteVehicle = async () => {
         if (selectedVehicleId !== null) {
             const isDeleted = await deleteVehicle(selectedVehicleId);
             if (isDeleted) {
-                fetchVehicle();
+                await fetchVehicle();
                 handleCloseDeleteVehicleModal();
             } else {
                 console.log("Fehler beim Löschen des Fahrzeugs");

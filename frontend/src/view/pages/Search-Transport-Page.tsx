@@ -45,7 +45,7 @@ function SearchTransportPage(
     const setInitialDataBasedOnUrlParams = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const tripType = urlParams.get('t');
-        
+
         if (tripType === 'offer') {
             setSelectedType('offer');
             setDataArray(props.offers);
@@ -81,12 +81,12 @@ function SearchTransportPage(
     const search = async () => {
         try {
             const searchParams: string[] = [];
-    
+
             // Suchbegriff hinzufügen
             if (searchInput.trim() !== '') {
                 searchParams.push(`search=${encodeURIComponent(searchInput.trim())}`);
             }
-    
+
             // Von und nach PLZ hinzufügen
             if (vonInput.trim() !== '') {
                 searchParams.push(`fromPLZ=${encodeURIComponent(vonInput.trim())}`);
@@ -94,22 +94,22 @@ function SearchTransportPage(
             if (nachInput.trim() !== '') {
                 searchParams.push(`toPLZ=${encodeURIComponent(nachInput.trim())}`);
             }
-    
+
             // Bewertung hinzufügen
             if (rating !== 0) {
                 searchParams.push(`rating=${rating}`);
             }
-    
+
             // Datum hinzufügen
             if (datumInput.trim() !== '') {
                 searchParams.push(`date=${encodeURIComponent(datumInput.trim())}`);
             }
-    
+
             // Anzahl Sitze hinzufügen
             if (anzahlSitzeInput !== 0) {
                 searchParams.push(`seats=${anzahlSitzeInput}`);
             }
-    
+
             let url;
             if (selectedType === 'offer') {
                 url = `/offer/search?${searchParams.join('&')}`;
@@ -139,7 +139,6 @@ function SearchTransportPage(
     const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const radioValue = event.target.value;
         setSelectedType(radioValue);
-        
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('t', radioValue);
         const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
@@ -165,6 +164,10 @@ function SearchTransportPage(
         setHover(0);
         setInitialDataBasedOnUrlParams();
     };
+
+    useEffect(() => {
+        props.reRender()
+    }, []);
 
     return (
         <>
@@ -249,8 +252,8 @@ function SearchTransportPage(
                                                     />
                                                 </label>
                                             );
-                                        })}   
-                                    </div>                             
+                                        })}
+                                    </div>
                                 </div>
                             </Card.Body>
                             <Button id='NoBorderButton'  className="mainButton bg-danger w-100" onClick={clearAllFilters}>
