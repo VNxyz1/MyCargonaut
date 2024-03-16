@@ -4,11 +4,11 @@ KMS WiSe 2023 | MyCargonaut | Anastasia, Elisa, Jimmy, Jonas, Julius, Steffen, V
 
 
 ## Toolstack
-Frontend: React 
+Frontend: [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [React Bootstrap](https://react-bootstrap.netlify.app/)
 
-Backend: Nest
+Backend: [NestJs](https://nestjs.com/), [TypeORM](https://typeorm.io/)
 
-Andere: Figma, GitHub
+Andere: GitHub, [Figma](https://www.figma.com/), [Docker](https://www.docker.com/), [Node.js](https://nodejs.org/en), [Dependabot](https://github.com/dependabot)
 
 
 ## Funktionen
