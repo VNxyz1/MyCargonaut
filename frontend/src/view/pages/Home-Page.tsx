@@ -45,11 +45,11 @@ function HomePage() {
                         <img src={transporter}></img>
                     </Col>
                     <Col sm={6} className="homeTxtBox-r">
-                        <p>FAHRT ANBIETEN</p>
+                        <p>FAHRTEN ANBIETEN</p>
                         <h3>Bist du auf dem Weg und kannst jemanden mitnehmen oder etwas transportieren?</h3>
                         <div className="btn_wrapper">
-                            <Link to="/search-cargo"><Button className="mainButton">Cargo suchen</Button></Link>
-                            <Button className="mainButton" onClick={() => navi('/profil', { state: { redirected: true } })}>Fahrt anlegen</Button>
+                            <Link to="/search-transport?t=request"><Button className="mainButton">Gesuche ansehen</Button></Link>
+                            <Button className="mainButton w-auto" onClick={() => navi('/profil', { state: { redirected: true } })}>Angebot erstellen</Button>
                         </div>
                     </Col>
                 </Row>
@@ -59,8 +59,8 @@ function HomePage() {
                         <p>TRANSPORTIEREN LASSEN</p>
                         <h3>Suchst du eine Mitfahrgelegenheit oder jemanden, der etwas für dich transportiert?</h3>
                         <div className="btn_wrapper">
-                            <Link to="/search-transport"><Button className="mainButton">Fahrt suche</Button></Link>
-                            <Link to="/profil"><Button className="mainButton">Cargo anlegen</Button></Link>
+                            <Link to="/search-transport?t=offer"><Button className="mainButton w-auto">Angebote ansehen</Button></Link>
+                            <Link to="/profil"><Button className="mainButton">Gesuch erstellen</Button></Link>
                         </div>
                     </Col>
                     <Col sm={6} className="homeImg">

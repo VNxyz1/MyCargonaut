@@ -19,7 +19,7 @@ import {useAuth} from '../../services/authService';
 function ProfilPage() {
     const { userId } = useParams();
     const [profileImageUrl, setProfileImageUrl] = useState(null);
-    const [currentSection, setCurrentSection] = useState("Fahrten");
+    const [currentSection, setCurrentSection] = useState("Angebote");
     const [userData, setUserData] = useState<User | null>(null);
     const {isAuthenticated} = useAuth();
     const entryDate = new Date((userData as any)?.entryDate);
@@ -44,7 +44,6 @@ function ProfilPage() {
 
 
         } else {
-            //TODO: Alter einbauen
             console.log("Du musst eingeloggt sein, um die seite zu sehen.")
             navigate('/login');
         }
@@ -52,11 +51,12 @@ function ProfilPage() {
 
     }, [isAuthenticated, userId]);
 
+
     const renderSectionContent = () => {
         switch (currentSection) {
-            case "Fahrten":
+            case "Angebote":
                 return <UserTripsComponent/>;
-            case "Zu Transportieren":
+            case "Gesuche":
                 return <UserTransportsComponent/>;
             case "Bewertungen":
                 return <UserRatingsComponent/>;
@@ -110,8 +110,8 @@ function ProfilPage() {
 
                     <Col sm={8} id="prof-content">
                         <div className="profil_navi">
-                            <span onClick={() => setCurrentSection("Fahrten")} className={`prof-tab ${currentSection === "Fahrten" ? "active" : ""}`}> Fahrten </span>
-                            <span onClick={() => setCurrentSection("Zu Transportieren")} className={`prof-tab ${currentSection === "Zu Transportieren" ? "active" : ""}`}> Zu Transportieren </span>
+                            <span onClick={() => setCurrentSection("Angebote")} className={`prof-tab ${currentSection === "Angebote" ? "active" : ""}`}> Angebote </span>
+                            <span onClick={() => setCurrentSection("Gesuche")} className={`prof-tab ${currentSection === "Gesuche" ? "active" : ""}`}> Gesuche </span>
                             <span onClick={() => setCurrentSection("Bewertungen")} className={`prof-tab ${currentSection === "Bewertungen" ? "active" : ""}`}> Bewertungen </span>
                         </div>
 
