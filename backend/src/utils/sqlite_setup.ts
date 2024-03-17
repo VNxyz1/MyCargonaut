@@ -11,6 +11,7 @@ import { TripRequestOffering } from '../database/TripRequestOffering';
 import { Vehicle } from '../database/Vehicle';
 import { Conversation } from '../database/Conversation';
 import { Message } from '../database/Message';
+import { ReservedCoin } from '../database/ReservedCoin';
 
 export const entityArr: EntityClassOrSchema[] = [
   User,
@@ -24,6 +25,7 @@ export const entityArr: EntityClassOrSchema[] = [
   Vehicle,
   Conversation,
   Message,
+  ReservedCoin
 ];
 
 export const sqlite_setup = (path: string) => {
