@@ -51,7 +51,23 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
       day: "numeric",
     });
   };
-
+  const getStateDisplay= () =>{
+    var state = 'none';
+    if('state' in props.trip){
+      switch (props.trip.state){
+        case 0: state="request";
+        break;
+        case 1: state = "offer";
+        break;
+        case 2: state = "booked";
+        break;
+        case 3: state = "intransit";
+        break;
+        case 4: state = "finished";
+        break;}
+    }
+    return (<span className="badge bg-secondary">{state}</span>);
+  }
   const setImage = () => {
     const { trip } = props;
   
@@ -100,6 +116,7 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
                   </h5>
                 </div>
                 <p>{convertDateTimeForDisplay()}</p>
+                <p>{getStateDisplay()}</p>
               </Card.Header>
               <Card.Body>
                 {props.trip.description.length > 320
