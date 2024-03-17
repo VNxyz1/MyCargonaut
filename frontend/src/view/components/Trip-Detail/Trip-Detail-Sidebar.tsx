@@ -100,6 +100,7 @@ function DetailSidebar(
     const handleClose = () => {
         setShowTransitRequestModal(false);
         setShowNotLoggedInModal(false);
+        setShowDeleteModal(false);
         console.log("closed")
     }
 
