@@ -255,13 +255,16 @@ function UserPage(
 
                             <div className="prof-side-btn-wrapper">
                                 <span className="section-seperator"></span>
-                               {!userData || !userData.phoneNumber ? "Um diese Aktionen auszuführen, musst du deine Handynummer hinterlegen." : ""}
+                                {!userData || (!userData.phoneNumber || !userData.profilePicture) ? (
+                                    <p>Um diese Aktionen auszuführen, musst du deine {userData?.phoneNumber ? "Handynummer" : <strong >Handynummer</strong>} und ein {userData?.profilePicture ? "Profilbild" : <strong >Profilbild</strong>} hinterlegen.</p>
+
+                                ) : ""}
                                 {userData && (
                                     <>
-                                        <span onClick={() => userData && userData.phoneNumber && openCreateTripModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Angebot erstellen</span>
-                                        <span onClick={() => userData && userData.phoneNumber && openCreateCargoModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Gesuch erstellen</span>
-                                        <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
-                                        <span onClick={() => userData && userData.phoneNumber && openRatingModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt bewerten</span>
+                                        <span onClick={() => userData && userData.phoneNumber && userData.profilePicture && openCreateTripModal()} className={userData && userData.phoneNumber && userData.profilePicture ? "" : "disabled"}><i className="icon-plus"></i> Fahrt anlegen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && userData.profilePicture && openCreateCargoModal()} className={userData && userData.phoneNumber && userData.profilePicture ? "" : "disabled"}><i className="icon-plus"></i> Transport anlegen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && userData.profilePicture && openVehicleAddModal()} className={userData && userData.phoneNumber && userData.profilePicture ? "" : "disabled"}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && userData.profilePicture && openRatingModal()} className={userData && userData.phoneNumber && userData.profilePicture ? "" : "disabled"}><i className="icon-plus"></i> Fahrt bewerten</span>
                                     </>
                                 )}
 

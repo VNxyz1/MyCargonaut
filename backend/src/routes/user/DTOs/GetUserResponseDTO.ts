@@ -28,6 +28,9 @@ export class GetUserResponseDto {
   coins: number;
 
   @ApiProperty()
+  reservedCoins: number;
+
+  @ApiProperty()
   description: string;
 
   @ApiProperty()

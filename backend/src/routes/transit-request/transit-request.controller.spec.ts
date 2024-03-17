@@ -216,7 +216,7 @@ describe('TransitRequestController', () => {
   });
 
   describe('acceptRequest', () => {
-    it('should accept a transit request', async () => {
+    it('should accept a transit request and update client balances', async () => {
       await setCoinBalanceOfUser(1, 500);
       await setCoinBalanceOfUser(2, 500);
 
