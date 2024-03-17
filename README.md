@@ -11,7 +11,53 @@ Backend: [NestJs](https://nestjs.com/), [TypeORM](https://typeorm.io/)
 Andere: GitHub, [Figma](https://www.figma.com/), [Docker](https://www.docker.com/), [Node.js](https://nodejs.org/en), [Dependabot](https://github.com/dependabot)
 
 
+ER Diagram:  [`documentation/ERDiagram.png`](documentation/ERDiagram.png)
+
+Domainmodell:  [`documentation/domainmodell.svg`](documentation/domainmodell.svg)
+
+Style Guide:  [`documentation/style-guide/`](documentation/style-guide/)
+
+
+## Die Software starten
+
+### Dev Start
+1. Clonen
+
+2. Frontend dependencies installieren und bauen
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+3. Backend dependencies installieren und starten:
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+Öffnen auf: http://localhost:3000
+
+API Doku: http://localhost:3000/api/
+
+
+### Docker Compose Start
+1. Clonen
+2. `docker compose up -d`
+
+Öffnen auf: http://localhost:8000/ | Nutzer: test | PW: 1234
+
+API Doku: http://localhost:8000/api/
+
+___
+### Deployment (nicht funktional)
+
+Deployment : http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
+
+
 ## Funktionen
+Ein grober überblick
 
 ### Registrieren
 Um alle Funktionen der Plattform nutzen zu können, ist eine Registrierung erforderlich. Während des Registrierungsprozesses wird überprüft, ob der Benutzer das Mindestalter von 18 Jahren erreicht hat. Darüber hinaus wird das Passwort gemäß den aktuellen Sicherheitsstandards gehasht, um die Sicherheit zu gewährleisten und die Vertraulichkeit der Benutzerdaten zu schützen.
@@ -28,55 +74,4 @@ In der Profilansicht sind sämtliche relevante Informationen zum Nutzer zu finde
 ### Angebot und Gesuch einstellen
 In der Profilansicht finden sich die Optionen "Fahrt anlegen" und "Gesuch anlegen". Klickt man auf eine dieser Optionen, öffnet sich das entsprechende Modal. Beim Anlegen einer Fahrt hat der Benutzer die Möglichkeit, eines seiner Fahrzeuge auszuwählen und damit eine Route zu erstellen, wobei die Plätze für die einzelnen Etappen per Drag-and-Drop verschoben werden können. Beim Anlegen eines Gesuches kann der Benutzer lediglich Start- und Zielorte angeben. Darüber hinaus können bei beiden Optionen weitere Informationen wie das Datum, die Anzahl der Sitzplätze und eine Beschreibung eingegeben werden. Bestätigt der Nutzer seine Eingabe wird das Angebot/Gesuch auf der Suchseite angezeigt, und andere Nutzer können es sehen.
 
->### Benutzer-/Fahrzeugverwaltung
-> some content...
->
-> some content...
-
->### Kommunikation
-> some content...
->
-> some content...
-
->### Preisgestaltung
-> some content...
->
-> some content...
-
->### Bewertung
-> some content...
->
-> some content...
-
-
-## Development
-
-Der Server kann nur auf ein build zugreifen. Jede änderung im React Code wird erst nach einem ausführen des Build Scripts gültig.
-```bash
-cd frontend
-npm run build
-```
-
-
-Server Starten:
-```bash
-cd backend
-npm run start:dev
-```
-___
-Öffnen auf: http://localhost:3000
-
-API Doku: http://localhost:3000/api/
-
-Deployment: http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
-
-ER Diagram:  [`documentation/ERDiagram.png`](documentation/ERDiagram.png)
-
-Domainmodell:  [`documentation/domainmodell.svg`](documentation/domainmodell.svg)
-
-Style Guide:  [`documentation/style-guide/`](documentation/style-guide/)
-___
-Es muss für jeden Request und jeden Response ein DTO erstellt werden, damit die Swagger API funktioniert :smiling_face_with_tear:
-
-<img src="https://media.tenor.com/Opkrr0Wd2VAAAAAd/struggle-crying.gif"  width="200" />
 
