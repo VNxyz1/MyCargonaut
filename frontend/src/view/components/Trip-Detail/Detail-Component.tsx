@@ -11,6 +11,7 @@ import ProfileDisplay from "./ProfileDisplay.tsx";
 import {User} from "../../../interfaces/User";
 import { useAuth } from "../../../services/authService.tsx";
 import { getClients } from "../../../services/offerService.tsx";
+import {getLoggedInUser} from "../../../services/userService.tsx";
 
 interface RouteDisplay {
     plz: string,
@@ -30,10 +31,25 @@ function DetailComponent(
     const [routeDisplays, setRouteDisplays] = useState<RouteDisplay[]>([]);
     
     const {isAuthenticated} = useAuth();
-    const [clientsUserData,setClientsUserData] = useState<User[]>([]);
+    const [clientsUserData, setClientsUserData] = useState<User[]>([]);
 
     const createRouteDisplayArr = (routeParts: RoutePart[]):RouteDisplay[] => {
         return routeParts.map((rP)=> convertRoutePartToPlzDisplay(rP));
+    }
+
+    const userIsTripOwner = () => {
+        let ownerId: number = -1;
+        let loggedInUserId: number | undefined;
+
+        if ("provider" in props.trip) {
+            ownerId = props.trip.provider.id
+        } else if ("requester" in props.trip) {
+            ownerId = props.trip.requester.id
+        }
+
+        getLoggedInUser().then(value => loggedInUserId = value?.id)
+
+        return loggedInUserId && loggedInUserId === ownerId;
     }
 
     const fetchClientUsers = async () => {
@@ -141,7 +157,7 @@ function DetailComponent(
 
     }, [imageUrl]);
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isAuthenticated && userIsTripOwner()) {
             fetchClientUsers();
         } 
     }, []);
