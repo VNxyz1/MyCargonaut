@@ -34,6 +34,8 @@ export class MockGetUser {
   averageRatings: GetAverageRatingsDto;
   totalRatings: GetUserRatingsDto;
 
+  reservedCoins?: number;
+
   constructor(asProvider?: boolean, forService?: boolean) {
     this.id = 1;
     this.entryDate = new Date('2021-02-18');
@@ -56,6 +58,7 @@ export class MockGetUser {
       this.offers = [];
       this.trips = [];
       this.entryDate = '2021-02-18';
+      this.reservedCoins = 0;
     }
   }
 }
