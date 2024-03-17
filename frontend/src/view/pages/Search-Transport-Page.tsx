@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import TripListItem from "../components/Search-Transport-Page/Trip-List-Item.tsx";
 import { useLocation } from 'react-router-dom';
+import Form from 'react-bootstrap/Form';
 
 
 function SearchTransportPage(
@@ -78,13 +79,14 @@ function SearchTransportPage(
         setDatumInput(event.target.value);
     };
 
-    const search = async () => {
+    const search = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             const searchParams: string[] = [];
 
             // Suchbegriff hinzufügen
             if (searchInput.trim() !== '') {
-                searchParams.push(`search=${encodeURIComponent(searchInput.trim())}`);
+                searchParams.push(`searchString=${encodeURIComponent(searchInput.trim())}`);
             }
 
             // Von und nach PLZ hinzufügen
@@ -173,30 +175,30 @@ function SearchTransportPage(
         <>
             <Container className="content-container">
                 <Row>
-                    <div className="col-sm-3" id="search-sidebar">
+                    <Form onSubmit={search} className="col-sm-3 mb-3" id="search-sidebar">
                         <Card>
                             <Card.Body>
                                 <p>Angebotstyp</p>
                                 <div>
                                     <span>
-                                        <input
+                                        <Form.Check
                                             type="radio"
                                             value="offer"
+                                            label='Angebot'
                                             checked={selectedType === 'offer'}
                                             onChange={handleRadioChange}
                                         />
-                                        <span> Angebot</span>
                                     </span>
                                 </div>
                                 <div>
                                     <span>
-                                        <input
+                                        <Form.Check
                                             type="radio"
                                             value="request"
+                                            label='Gesuch'
                                             checked={selectedType === 'request'}
                                             onChange={handleRadioChange}
                                         />
-                                        <span> Gesuch</span>
                                     </span>
                                 </div>
                             </Card.Body>
@@ -205,24 +207,24 @@ function SearchTransportPage(
                                 <span>
                                     Postleitzahl:
                                 </span>
-                                <div className="d-flex flex-row">
-                                    <input className='w-50' type="text" placeholder="Von" id="vonInput" value={vonInput} onChange={handleVonInputChange}/>
+                                <div className="d-flex flex-row align-items-center">
+                                    <Form.Control className='w-50' type="text" placeholder="Von" id="vonInput" value={vonInput} onChange={handleVonInputChange}/>
                                     <FontAwesomeIcon className="px-2 pt-1" icon={faArrowRight} />
-                                    <input className='w-50' type="text" placeholder="Nach" id="nachInput" value={nachInput} onChange={handleNachInputChange}/>
+                                    <Form.Control className='w-50' type="text" placeholder="Nach" id="nachInput" value={nachInput} onChange={handleNachInputChange}/>
                                 </div>
                                 <hr/>
                                 <div>
                                     <span>
                                         Anzahl Sitze:
                                     </span>
-                                    <input className='w-100' type="number" id="anzahlSitzeInput" value={anzahlSitzeInput} onChange={handleAnzahlSitzeInputChange}/>
+                                    <Form.Control className='w-100' type="number" id="anzahlSitzeInput" value={anzahlSitzeInput} onChange={handleAnzahlSitzeInputChange}/>
                                 </div>
                                 <hr/>
                                 <div>
                                     <span>
                                         Datum:
                                     </span>
-                                    <input className='w-100' type="date" id="datumInput" value={datumInput} onChange={handleDatumInputChange}/>
+                                    <Form.Control className='w-100' type="date" id="datumInput" value={datumInput} onChange={handleDatumInputChange}/>
                                 </div>
                                 <hr/>
                                 <div>
@@ -259,12 +261,12 @@ function SearchTransportPage(
                             <Button id='NoBorderButton'  className="mainButton bg-danger w-100" onClick={clearAllFilters}>
                                 Filter zurücksetzen
                             </Button>
-                            <Button id='borderButton' className="mainButton w-100 mb-2" onClick={search}>
+                            <Button type='submit' id='borderButton' className="mainButton w-100 mb-2">
                                 Filter anwenden
                             </Button>
                         </Card>
-                    </div>
-                    <div className="col-sm-9">
+                    </Form>
+                    <Form onSubmit={search} className="col-sm-9">
                         <div className="input-group mb-3 searchBar">
                             <input
                                 type="text"
@@ -278,8 +280,7 @@ function SearchTransportPage(
                             <div className="input-group-append">
                                 <button
                                     className="btn btn-outline-secondary"
-                                    type="button"
-                                    onClick={search}
+                                    type="submit"
                                 >
                                     Suchen
                                 </button>
@@ -288,7 +289,7 @@ function SearchTransportPage(
                         {dataArray.map((item) => (
                             <TripListItem trip={item}></TripListItem>
                         ))}
-                    </div>
+                    </Form>
                 </Row>
             </Container>
         </>
