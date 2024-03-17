@@ -10,6 +10,7 @@ import { useAuth } from "../../../services/authService.tsx";
 import { User } from "../../../interfaces/User.ts";
 import { getLoggedInUser } from "../../../services/userService.tsx";
 import { endTrip, startTrip } from "../../../services/offerService.tsx";
+import TripDeleteModal from "./Trip-Delete-Modal.tsx";
 
 
 function DetailSidebar(
@@ -19,10 +20,12 @@ function DetailSidebar(
 ) {
     const [showTransitRequestModal, setShowTransitRequestModal] = useState(false);
     const [showNotLoggedInModal, setShowNotLoggedInModal] = useState(false);
+    const [showDeleteModal,setShowDeleteModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState<User | null>(null);
     const {isAuthenticated} = useAuth();
     
+
     const fetchLoggedInUser = async () => {
         const data = await getLoggedInUser();
         if (data !== null) {
@@ -90,6 +93,9 @@ function DetailSidebar(
         }
     }
 
+    const handleOpenDeleteModal = () => {
+        setShowDeleteModal(true);
+    }
 
     const handleClose = () => {
         setShowTransitRequestModal(false);
@@ -119,6 +125,9 @@ function DetailSidebar(
                         {!isProvider()?" ":<Button onClick={handleEndTrip} className="mainButton w-100 mb-2">
                             End Trip
                         </Button>}
+                        {!isProvider()?" ":<Button onClick={handleOpenDeleteModal} className="mainButton w-100 mb-2">
+                            Delete Trip
+                        </Button>}
                     </Card.Header>
                     <Card.Body>
                         <ProfileDisplay user={"provider" in props.trip ? props.trip.provider : props.trip.requester}/>
@@ -132,6 +141,7 @@ function DetailSidebar(
             </div>
             <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.trip.id}/>
             <NotLoggedInModal show={showNotLoggedInModal} onClose={handleClose}/>
+            <TripDeleteModal show={showDeleteModal} onClose={handleClose} trip={props.trip}/>
         </>
     )
     

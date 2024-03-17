@@ -1,5 +1,6 @@
 import {Offer, OfferList} from "../interfaces/Offer.ts";
 import { TransitRequest } from "../interfaces/TransitRequest.ts";
+import { User } from "../interfaces/User.ts";
 
 export const getOfferById = async (id: number) => {
     try {
@@ -188,19 +189,31 @@ export const endTrip = async (id: number) => {
   }
 export const getClients = async(id: number) =>{
     try {
-        const res = await fetch(`/offer/clients/${id}`, {
-          method: "GET",
-          
-        })
+        const res = await fetch(`/offer/clients/${id}`,{
+            method: "GET",
+            headers: { "Content-type": "application/json" },
+        });
         if (res.ok) {
             const data = await res.json();
             console.log(data);
-            return data;
+            return data.clients as User[];
+        }else {
+            console.error("Error fetching data");
+            return null;
         }
-        const data = await res.json();
-        console.error(data);
-        return [];
       } catch (e) {
         console.error(e)
       }
 }
+export const deleteTrip = async (id: number) => {
+    try {
+      const response = await fetch(`/offer/delete/${id}`, {
+        method: "DELETE",
+        
+      });
+      return response.ok;
+  
+    } catch (e) {
+      console.error(e)
+    }
+  }

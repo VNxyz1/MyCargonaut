@@ -55,7 +55,7 @@ function DetailComponent(
     const fetchClientUsers = async () => {
         const data = await getClients(props.trip.id);
         if (data !== null) {
-            setClientsUserData(data.clients as any);
+            setClientsUserData(data as any);
         }
     };
     const convertRoutePartToPlzDisplay = (routePart: RoutePart): RouteDisplay => {
@@ -212,7 +212,7 @@ function DetailComponent(
                     </Card.Text>
                 </Card.Body>
             </Card>
-            {clientsUserData !== null && clientsUserData.length<1? " ":
+            { clientsUserData.length === 0 ? " ":
             <Card className="mb-3">
                 <Card.Body>
                     <Card.Title>Mitfahrer</Card.Title>
