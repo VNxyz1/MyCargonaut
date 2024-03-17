@@ -219,8 +219,7 @@ export class TransitRequestController {
     message.message = this.writeAcceptMessage(tR, offer);
     await this.messageService.createMessage(message);
 
-    await this.userService.decreaseCoinBalanceOfUser(tR.requester.id, tR.offeredCoins);
-    await this.userService.increaseCoinBalanceOfUser(offerProviderId, tR.offeredCoins);
+    await this.userService.reserveCoinBalanceOfUser(tR.requester.id, tR.offeredCoins);
 
     this.messageGatewayService.reloadMessages(offer.provider.id);
     this.messageGatewayService.reloadMessages(tR.requester.id);

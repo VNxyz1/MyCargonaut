@@ -12,6 +12,7 @@ import { RoutePart } from '../../database/RoutePart';
 import { PlzService } from '../plz.service/plz.service';
 import { createRoutePart } from '../utils/createRoutePart';
 import { Vehicle } from '../../database/Vehicle';
+import { ReservedCoin } from '../../database/ReservedCoin';
 
 @Injectable()
 export class OfferService {
@@ -27,6 +28,8 @@ export class OfferService {
     @InjectRepository(Vehicle)
     private readonly vehicleRepository: Repository<Vehicle>,
     private readonly plzService: PlzService,
+    @InjectRepository(ReservedCoin)
+    private readonly reservedCoinRepository: Repository<ReservedCoin>,
   ) {}
 
   async saveRoutePart(routePart: RoutePart) {
@@ -195,5 +198,16 @@ export class OfferService {
       throw new InternalServerErrorException('The offer could not be saved.');
     }
     return updatedOffer;
+  }
+
+  async getReservedCoinsForClient(client: User, offer: Offer) {
+    const result = await this.reservedCoinRepository
+      .createQueryBuilder('reservedCoin')
+      .select('reservedCoin.amount')
+      .where('reservedCoin.user = :userId', { userId: client.id })
+      .andWhere('reservedCoin.trip = :tripId', { tripId: offer.id })
+      .getOne();
+
+    return result ? result.amount : null;
   }
 }
