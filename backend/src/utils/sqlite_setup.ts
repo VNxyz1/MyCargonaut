@@ -25,7 +25,7 @@ export const entityArr: EntityClassOrSchema[] = [
   Vehicle,
   Conversation,
   Message,
-  ReservedCoin
+  ReservedCoin,
 ];
 
 export const sqlite_setup = (path: string) => {

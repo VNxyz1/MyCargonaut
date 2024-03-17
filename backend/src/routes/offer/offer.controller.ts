@@ -266,9 +266,9 @@ export class OfferController {
 
     offer.state = TripState.finished;
 
-    for(const client of offer.clients) {
+    for (const client of offer.clients) {
       const amount = await this.offerService.getReservedCoinsForClient(client, offer);
-      if(amount != null) {
+      if (amount != null) {
         await this.userService.decreaseReservedCoinBalanceOfUser(client.id, amount);
         await this.userService.increaseCoinBalanceOfUser(offer.provider.id, amount);
       }

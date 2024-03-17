@@ -55,10 +55,13 @@ describe('UserService', () => {
   it('should retrieve a list of all users', async () => {
     const result = await userService.getAllUsers();
     const resultMock: MockGetUser[] = [];
-    const mockUser = new MockGetUser(true);
+    const mockUser = new MockGetUser(true, true);
     mockUser.entryDate = '2021-02-18';
-    mockUser.password = '1234';
+    mockUser.offers = undefined;
     mockUser.requestedTransits = undefined;
+    mockUser.trips = undefined;
+    mockUser.password = '1234';
+
     resultMock.push(mockUser);
     expect(result).toEqual(resultMock);
   });
