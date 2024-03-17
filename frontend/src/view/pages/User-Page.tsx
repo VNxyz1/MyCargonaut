@@ -15,8 +15,9 @@ import {getAUser} from "../../services/userService";
 import {useNavigate, useParams} from "react-router-dom";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 import {useAuth} from '../../services/authService';
+import {AlertProps} from "../../interfaces/AlertProps.ts";
 
-function ProfilPage() {
+function ProfilPage({ handleShowAlert }: AlertProps) {
     const { userId } = useParams();
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Angebote");
@@ -29,7 +30,6 @@ function ProfilPage() {
     useEffect(() => {
         //TODO: Prüfen ob es der eigene Nutzer ist, wenn ja, dann umleiten auf Profil
         if (isAuthenticated) {
-
             const fetchData = async () => {
                 const data = await getAUser(userId);
                 if (data !== null) {
@@ -44,7 +44,8 @@ function ProfilPage() {
 
 
         } else {
-            console.log("Du musst eingeloggt sein, um die seite zu sehen.")
+            handleShowAlert('Du musst dich einloggen', 'error')
+            console.log("Du musst eingeloggt sein, um die Seite zu sehen.")
             navigate('/login');
         }
 

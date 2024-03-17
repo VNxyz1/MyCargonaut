@@ -8,6 +8,7 @@ import React, {useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth, loginUser} from "../../../services/authService";
 import {postUser } from "../../../services/userService";
+import {AlertProps} from "../../../interfaces/AlertProps.ts";
 
 interface RegisterDataProps {
     eMail: string;
@@ -17,7 +18,7 @@ interface RegisterDataProps {
     birthday: Date | undefined;
 }
 
-function RegisterForm() {
+function RegisterForm({ handleShowAlert }: AlertProps) {
     const [validated, setValidated] = useState(false);
     const [feedback, setFeedback] = useState<string | undefined>(undefined);
     const [ageError, setAgeError] = useState<string | null>(null);
@@ -41,11 +42,13 @@ function RegisterForm() {
         event.preventDefault();
 
         if (!isOldEnough()) {
+            handleShowAlert('Du bist nicht volljährig.', 'error');
             console.error('Die Person ist nicht 18 Jahre alt.');
             return
         }
 
         if (passwordErrors.length != 0) {
+            handleShowAlert('Passwort erfüllt nicht die Anforderungen.', 'error');
             console.error('Passwort erfüllt nicht die anforderungen');
             return
         }
@@ -57,6 +60,7 @@ function RegisterForm() {
         if (form.checkValidity()) {
             registerData.password = checkPasswords();
             if (registerData.password.trim() === "") {
+                handleShowAlert('Die Passwörter sind nicht gleich!', 'error');
                 console.error('Passwörter ungleich!');
                 return
             }
@@ -71,11 +75,14 @@ function RegisterForm() {
 
                 if (loginRes.success) {
                     login();
+                    handleShowAlert('Erfolgreich registriert!', 'success');
                     navigate('/');
                 } else {
+                    handleShowAlert(loginRes.error, 'error');
                     setFeedback(loginRes.error);
                 }
             } else if (registerRes) {
+                handleShowAlert(registerRes.message, 'error');
                 setFeedback(registerRes.message);
             }
         }

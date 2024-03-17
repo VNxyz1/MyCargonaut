@@ -4,13 +4,14 @@ import Form from "react-bootstrap/Form";
 import {useState} from "react";
 import {useAuth, loginUser} from '../../../services/authService';
 import {useNavigate} from 'react-router-dom';
+import {AlertProps} from "../../../interfaces/AlertProps";
 
 interface LoginDataProps {
     eMail: string;
     password: string;
 }
 
-function LoginForm() {
+function LoginForm({ handleShowAlert }: AlertProps ) {
     const {login} = useAuth();
     const navigate = useNavigate();
     const [feedback, setFeedback] = useState<string | undefined>(undefined);
@@ -24,9 +25,11 @@ function LoginForm() {
             const res = await loginUser(loginData);
 
             if (res.success) {
+                handleShowAlert('Erfolgreich eingeloggt!', 'success');
                 login();
                 navigate('/');
             } else {
+                handleShowAlert('Fehler beim Einloggen', 'error');
                 setFeedback(res.error);
             }
         } catch (error) {

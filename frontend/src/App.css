@@ -20,6 +20,35 @@
 .add-shadow {
     box-shadow: var(--shadow_default) !important;
 }
+/*------------Alert------------*/
+.alertContainer{
+    position: fixed;
+    right: 40px;
+    top: 140px;
+    max-width: 300px;
+    z-index: 10000;
+}
+
+.fade.toast {
+    border-radius: 0;
+    border: none;
+}
+
+
+.alertContainer .toast-header{
+    background: none;
+}
+
+.alertContainer.error-alert .toast{
+    background: #f77;
+}
+.alertContainer.success-alert .toast{
+    background: #00c86d;
+}
+.alertContainer.info-alert .toast{
+    background: #00c8dd;
+}
+
 
 /*_____________________________*/
 .back_btn {
@@ -237,7 +266,6 @@ nav input[type="checkbox"] {
 
     nav ul {
         background-color: #ffffff;
-
         opacity: 0;
         position: absolute;
         top: 90px;
@@ -247,6 +275,8 @@ nav input[type="checkbox"] {
         height: 0px;
         transition: var(--transition);
         padding: 0;
+        box-shadow: #63636333 0 4px 5px;
+        margin-top: 50px;
     }
 
     nav a {
@@ -260,9 +290,14 @@ nav input[type="checkbox"] {
         width: 100%;
     }
 
+    .navi_content ul {
+        overflow: hidden;
+    }
+
     #toggle_button:checked ~ ul {
-        height: 220px;
+        height: 300px;
         opacity: 1;
+        overflow: hidden;
     }
 
     #toggle_button:checked ~ .toggle_button .bar-2 {

@@ -27,11 +27,14 @@ import AverageRatingsComponent from "../components/Ratings/AverageRatingsCompone
 import MyFinishedTripsComponent from '../components/Profile/MyFinishedTripsComponent.tsx';
 import { NavState, RedirectType } from '../../interfaces/NavState.ts';
 
-function UserPage(
-  props: {
-      reRender: ()=> void
-  }
-) {
+interface UserPageProps {
+    reRender: () => void;
+    handleShowAlert: (message: string, type?: "success" | "error" | "info") => void;
+}
+
+
+function UserPage(props: UserPageProps) {
+
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Angebote & Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
@@ -102,6 +105,7 @@ function UserPage(
 
         if (isloggedOut) {
             logout();
+            props.handleShowAlert('Erfolgreich ausgellogt!', 'success');
             navigate('/');
         }
     };
@@ -122,6 +126,9 @@ function UserPage(
             if (isImageUploaded) {
                 handleCloseEditImageModal();
             }
+            props.handleShowAlert('Profilbild wurde geändert', 'success')
+        } else {
+            props.handleShowAlert('Es ist ein Fehler beim hochladen des Bildes aufgetreten', 'error')
         }
     };
 
@@ -148,6 +155,7 @@ function UserPage(
         const isImageDeleted = await deleteProfileImage();
         if (isImageDeleted) {
             fetchLoggedInUser();
+            props.handleShowAlert('Profilbild wurde entfernt', 'success')
         }
     };
 
