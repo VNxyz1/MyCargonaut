@@ -32,7 +32,7 @@ Andere: GitHub, [Figma](https://www.figma.com/), [Docker](https://www.docker.com
 > some content...
 
 >### Angebot/Gesuch erstellen
-> Sobalt Nutzer ihre Handynummer eingefügt haben (diese wird Validiert) können sie eigene Angebote (Fahrten) einstellen. 
+> Sobalt Nutzer ihre Handynummer (diese wird Validiert) & ein Profilbild eingefügt haben können sie eigene Angebote (Fahrten) einstellen und weitere Aktionen wie Transporte und Fahrzeuge anlegen und Bewertungen schreiben. 
 >
 > some content...
 
