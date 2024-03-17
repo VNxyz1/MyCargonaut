@@ -20,7 +20,7 @@ function AverageRatingsComponent (
         passengerPleasantness: props.averageRatings.passengerPleasantness * 20,
         punctuality: props.averageRatings.punctuality * 20,
         reliability: props.averageRatings.reliability * 20,
-        totalRating: props.averageRatings.totalRating * 20
+        total: props.averageRatings.total * 20
     }
 
     return (
@@ -28,10 +28,10 @@ function AverageRatingsComponent (
             <div className="rating-wrapper">
                 <div className="rating-txt">
                     <TotalRatingHeadline/>
-                    <span>{percentRatings.totalRating > 0 ? percentRatings.totalRating.toFixed() : 0}%</span>
+                    <span>{percentRatings.total > 0 ? percentRatings.total.toFixed() : 0}%</span>
                 </div>
                 <ProgressBar
-                    now={percentRatings.totalRating}/>
+                    now={percentRatings.total}/>
             </div>
             <div className="rating-wrapper">
                 <div className="rating-txt">
