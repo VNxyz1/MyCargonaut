@@ -26,6 +26,8 @@ export class MockGetUser {
 
   coins: number;
 
+  reservedCoins: number;
+
   requestedTransits: TransitRequest[];
 
   offers?: MockGetOffer[];
@@ -45,6 +47,7 @@ export class MockGetUser {
     this.profilePicture = '';
     this.phoneNumber = '';
     this.coins = 500;
+    this.reservedCoins = 0;
     this.requestedTransits = [];
 
     if (asProvider) {
