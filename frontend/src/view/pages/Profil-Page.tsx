@@ -26,11 +26,14 @@ import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../.
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 import MyFinishedTripsComponent from '../components/Profile/MyFinishedTripsComponent.tsx';
 
-function UserPage(
-  props: {
-      reRender: ()=> void
-  }
-) {
+interface UserPageProps {
+    reRender: () => void;
+    handleShowAlert: (message: string, type?: "success" | "error" | "info") => void;
+}
+
+
+function UserPage(props: UserPageProps) {
+
     const [profileImageUrl, setProfileImageUrl] = useState(null);
     const [currentSection, setCurrentSection] = useState("Meine Angebote & Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
@@ -93,6 +96,7 @@ function UserPage(
 
         if (isloggedOut) {
             logout();
+            props.handleShowAlert('Erfolgreich ausgellogt!', 'success');
             navigate('/');
         }
     };

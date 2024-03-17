@@ -20,6 +20,35 @@
 .add-shadow {
     box-shadow: var(--shadow_default) !important;
 }
+/*------------Alert------------*/
+.alertContainer{
+    position: fixed;
+    right: 40px;
+    top: 140px;
+    max-width: 300px;
+    z-index: 10000;
+}
+
+.fade.toast {
+    border-radius: 0;
+    border: none;
+}
+
+
+.alertContainer .toast-header{
+    background: none;
+}
+
+.alertContainer.error-alert .toast{
+    background: #f77;
+}
+.alertContainer.success-alert .toast{
+    background: #00c86d;
+}
+.alertContainer.info-alert .toast{
+    background: #00c8dd;
+}
+
 
 /*_____________________________*/
 .back_btn {

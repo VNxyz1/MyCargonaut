@@ -12,10 +12,23 @@ import {Offer} from "./interfaces/Offer.ts";
 import {TripRequest} from "./interfaces/TripRequest.ts"
 import BadRequestPage from "./view/pages/404-Bad-Request.tsx";
 import ChatPage from "./view/pages/Chat-Page.tsx";
+import AlertComponent from "./view/components/AlertComponent.tsx";
 
-function RoutesComponent() {
+
+
+function RoutesComponent( ) {
     const [offers, setOffers] = useState<Offer[]>([]);
     const [requests, setRequests] = useState<TripRequest[]>([]);
+
+    const [alertMessage, setAlertMessage] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertType, setAlertType] = useState<'success' | 'error' | 'info'>('success'); // Neuer State für den Alert-Typ
+
+    const handleShowAlert = (message: string, type: 'success' | 'error' | 'info' = 'success') => { // Default-Wert für den Alert-Typ
+        setAlertMessage(message);
+        setAlertType(type); // Setzen Sie den Alert-Typ basierend auf dem übergebenen Wert
+        setShowAlert(true);
+    };
 
 
     useEffect(() => {
@@ -63,10 +76,11 @@ function RoutesComponent() {
     return (
         <BrowserRouter>
             <NavigationComponent/>
+            <AlertComponent message={alertMessage} type={alertType} show={showAlert} onClose={() => setShowAlert(false)} />
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginAndRegisterPage/>}/>
-                <Route path="/profil" element={<ProfilPage  reRender={reRender}/>} />
+                <Route path="/login" element={<LoginAndRegisterPage handleShowAlert={handleShowAlert} />} />
+                <Route path="/profil" element={<ProfilPage reRender={reRender} handleShowAlert={handleShowAlert}/>} />
                 <Route path="/user/:userId" element={<UserPage />} />
                 <Route path="/search-transport" element={<SearchTransportPage reRender={reRender} offers={offers} requests={requests} />} />
                 <Route path="/messages" element={<ChatPage />} />
