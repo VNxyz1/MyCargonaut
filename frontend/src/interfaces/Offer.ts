@@ -30,3 +30,11 @@ export interface Offer {
 export interface OfferList{
     offerList: Offer[];
 }
+
+export enum TripState {
+    request,
+    offer,
+    bookedUp,
+    inTransit,
+    finished,
+}

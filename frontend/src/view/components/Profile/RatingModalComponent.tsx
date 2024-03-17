@@ -67,7 +67,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
         }
     };
 
-    const handleSubmit = (event: any) => {
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         const form = event.currentTarget;
         event.preventDefault();
         event.stopPropagation();
@@ -198,7 +198,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             const offersData = await getOwnOffers();
             const offersList: Offer[] = [];
             if (offersData) {
-                for (const offer of offersData.offerList) {
+                for (const offer of offersData) {
                     if (new Date(offer.startDate) < new Date()) {
                         const needRating = await checkingRated(offer.id);
                         if (needRating) {
@@ -218,7 +218,7 @@ const RatingModalComponent: React.FC<RatingModalProps> = (props: RatingModalProp
             const offersData = await getPassengerOffers();
             const offersList: Offer[] = [];
             if (offersData) {
-                for (const offer of offersData.offerList) {
+                for (const offer of offersData) {
                     if (new Date(offer.startDate) < new Date()) {
                         const needRating = await checkingRated(offer.id);
                         if (needRating) {
