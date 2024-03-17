@@ -249,8 +249,8 @@ function UserPage(
                                {!userData || !userData.phoneNumber ? "Um diese Aktionen auszuführen, musst du deine Handynummer hinterlegen." : ""}
                                 {userData && (
                                     <>
-                                        <span onClick={() => userData && userData.phoneNumber && openCreateTripModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt anlegen</span>
-                                        <span onClick={() => userData && userData.phoneNumber && openCreateCargoModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Transport anlegen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openCreateTripModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Angebot erstellen</span>
+                                        <span onClick={() => userData && userData.phoneNumber && openCreateCargoModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Gesuch erstellen</span>
                                         <span onClick={() => userData && userData.phoneNumber && openVehicleAddModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrzeug hinzufügen</span>
                                         <span onClick={() => userData && userData.phoneNumber && openRatingModal()} className={userData && userData.phoneNumber ? "" : "disabled"}><i className="icon-plus"></i> Fahrt bewerten</span>
                                     </>
