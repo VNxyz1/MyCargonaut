@@ -24,7 +24,7 @@ function SearchTransportPage(
     const [selectedType, setSelectedType] = useState<string>('');
     const [vonInput, setVonInput] = useState<string>('');
     const [nachInput, setNachInput] = useState<string>('');
-    const [anzahlSitzeInput, setAnzahlSitzeInput] = useState<number>(1);
+    const [anzahlSitzeInput, setAnzahlSitzeInput] = useState<string>('');
     const [datumInput, setDatumInput] = useState<string>('');
     const [rating, setRating] = useState<number>(0);
     const [hover, setHover] = useState<number>(0);
@@ -71,7 +71,7 @@ function SearchTransportPage(
     };
 
     const handleAnzahlSitzeInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAnzahlSitzeInput(Number(event.target.value));
+        setAnzahlSitzeInput(event.target.value);
     };
 
     const handleDatumInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +106,7 @@ function SearchTransportPage(
             }
 
             // Anzahl Sitze hinzufügen
-            if (anzahlSitzeInput !== 0) {
+            if (anzahlSitzeInput !== '') {
                 searchParams.push(`seats=${anzahlSitzeInput}`);
             }
 
@@ -158,7 +158,7 @@ function SearchTransportPage(
         setSearchInput('');
         setVonInput('');
         setNachInput('');
-        setAnzahlSitzeInput(1);
+        setAnzahlSitzeInput('');
         setDatumInput('');
         setRating(0);
         setHover(0);

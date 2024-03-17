@@ -53,22 +53,22 @@ function TripListItem(props: { trip: Offer | TripRequest }) {
   };
 
   const setImage = () => {
-    if ("route" in props.trip) {
-      if (props.trip.vehicle.picture !== undefined) {
-        if (props.trip.vehicle.picture.trim().length !== 0) {
-          setImgSrc(`${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${props.trip.vehicle.picture}`)
-          return;
-        }
-      }
-      setImgSrc(placeholderCar)
-    } else if("cargoImg" in props.trip) {
-      if (props.trip.cargoImg !== null) {
-        setImgSrc(`${window.location.protocol}//${window.location.host}/request/cargo-image/${props.trip.cargoImg}`);
+    const { trip } = props;
+  
+    if ("route" in trip) {
+      if (trip.vehicle?.picture?.length) {
+        setImgSrc(`${window.location.protocol}//${window.location.host}/vehicle/vehicle-image/${trip.vehicle.picture}`);
         return;
       }
-      setImgSrc(placeholderBox)
+      setImgSrc(placeholderCar);
+    } else if ("cargoImg" in trip) {
+      if (trip.cargoImg) {
+        setImgSrc(`${window.location.protocol}//${window.location.host}/request/cargo-image/${trip.cargoImg}`);
+        return;
+      }
+      setImgSrc(placeholderBox);
     }
-  }
+  };
 
   return (
     <div className="mb-4">
