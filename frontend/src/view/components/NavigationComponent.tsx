@@ -45,20 +45,20 @@ function NavigationComponent() {
                             </label>
 
                             <ul>
-                              <li><Link to="/search-transport?t=offer">Fahrt suche</Link></li>
-                              <li><Link to="/search-transport?t=request">Cargo suchen</Link></li>
+                              <li><Link to="/search-transport?t=offer">Angebotene Fahrten</Link></li>
+                              <li><Link to="/search-transport?t=request">Gesuche</Link></li>
                                 {!isAuthenticated && (
                                     <>
-                                        <li><Link to="/login">Fahrt veröffentlichen</Link></li>
-                                        <li><Link to="/login">Cargo veröffentlichen</Link></li>
+                                        <li><Link to="/login">Angebot veröffentlichen</Link></li>
+                                        <li><Link to="/login">Gesuch veröffentlichen</Link></li>
                                         <li><Link to="/login" className="nav-login-btn">Login</Link></li>
                                     </>
                                 )}
 
                                 {isAuthenticated && (
                                     <>
-                                        <li><Link to="/profil">Fahrt veröffentlichen</Link></li>
-                                        <li><Link to="/profil">Cargo veröffentlichen</Link></li>
+                                        <li><Link to="/profil">Angebot veröffentlichen</Link></li>
+                                        <li><Link to="/profil">Gesuch veröffentlichen</Link></li>
                                         <li className='d-lg-none'><Link to="/messages">Nachrichten</Link></li>
                                         <ListGroup.Item className='d-none d-lg-block'>
                                             <Link to="/messages">Nachrichten</Link>
