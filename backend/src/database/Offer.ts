@@ -4,6 +4,7 @@ import { TransitRequest } from './TransitRequest';
 import { RoutePart } from './RoutePart';
 import { Rating } from './Rating';
 import { Vehicle } from './Vehicle';
+import { ReservedCoin } from './ReservedCoin';
 
 @Entity()
 export class Offer {
@@ -47,4 +48,7 @@ export class Offer {
 
   @OneToMany(() => Rating, (rating) => rating.trip)
   ratings: Rating[];
+
+  @OneToMany(() => ReservedCoin, (reservedCoin) => reservedCoin.trip)
+  reservedCoins: ReservedCoin[];
 }

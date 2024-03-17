@@ -6,6 +6,7 @@ import { Rating } from './Rating';
 import { TripRequestOffering } from './TripRequestOffering';
 import { Conversation } from './Conversation';
 import { Message } from './Message';
+import { ReservedCoin } from './ReservedCoin';
 
 @Entity()
 @Unique(['eMail'])
@@ -36,6 +37,9 @@ export class User {
 
   @Column({ default: 500 })
   coins: number;
+
+  @Column({ default: 0 })
+  reservedCoins: number;
 
   @OneToMany(() => Offer, (offer) => offer.provider)
   offers: Offer[];
@@ -76,4 +80,7 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.sender)
   messageSender: Message[];
+
+  @OneToMany(() => ReservedCoin, (reservedCoin) => reservedCoin.user)
+  reservedCoinsForTrips: ReservedCoin[];
 }

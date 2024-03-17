@@ -4,6 +4,7 @@ import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { Offer } from '../../database/Offer';
 import { Plz } from '../../database/Plz';
+import { ReservedCoin } from '../../database/ReservedCoin';
 import { TransitRequest } from '../../database/TransitRequest';
 import { PutTransitRequestRequestDto } from '../transit-request/DTOs/PutTransitRequestRequestDto';
 import { PostTransitRequestRequestDto } from '../transit-request/DTOs/PostTransitRequestRequestDto';
@@ -19,13 +20,20 @@ export class TransitRequestService {
     private readonly plzRepository: Repository<Plz>,
     @InjectRepository(TransitRequest)
     private readonly transitRequestRepository: Repository<TransitRequest>,
+    @InjectRepository(ReservedCoin)
+    private readonly reservedCoinRepository: Repository<ReservedCoin>,
   ) {}
 
   async postTransitRequest(offer: Offer, requestingUser: User, request: PostTransitRequestRequestDto) {
     const transitRequestCheck = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
+    const clientCheck = await this.findOfferWithRequeserAsClient(requestingUser, offer);
 
     if (transitRequestCheck) {
       throw new BadRequestException('There already is a pending request!');
+    }
+
+    if (clientCheck) {
+      throw new BadRequestException('You were already accepted as client!');
     }
 
     let transitRequest = this.transitRequestRepository.create();
@@ -121,6 +129,13 @@ export class TransitRequestService {
     offer.transitRequests = offer.transitRequests.filter((tranReq) => tranReq.id !== tR.id);
     offer.bookedSeats += tR.requestedSeats;
 
+    //Insert reserved coins
+    const reservedCoin = this.reservedCoinRepository.create();
+    reservedCoin.amount = tR.offeredCoins;
+    reservedCoin.user = client;
+    reservedCoin.trip = offer;
+    await this.reservedCoinRepository.save(reservedCoin);
+
     await this.offerRepository.save(offer);
 
     client.requestedTransits = client.requestedTransits.filter((rT) => rT.id !== tR.id);
@@ -155,6 +170,17 @@ export class TransitRequestService {
       .leftJoinAndSelect('transitRequest.requester', 'requester')
       .leftJoinAndSelect('transitRequest.offer', 'offer')
       .where('transitRequest.requester.id = :userId AND transitRequest.offer.id = :offerId', {
+        userId: requestingUser.id,
+        offerId: offer.id,
+      })
+      .getOne();
+  }
+
+  private async findOfferWithRequeserAsClient(requestingUser: User, offer: Offer) {
+    return await this.offerRepository
+      .createQueryBuilder('offer')
+      .leftJoinAndSelect('offer.clients', 'clients')
+      .where('clients.id = :userId AND offer.id = :offerId', {
         userId: requestingUser.id,
         offerId: offer.id,
       })

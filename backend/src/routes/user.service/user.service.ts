@@ -100,6 +100,19 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
+  async reserveCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.coins -= coins;
+    user.reservedCoins += coins;
+    await this.userRepository.save(user);
+  }
+
+  async decreaseReservedCoinBalanceOfUser(id: number, coins: number) {
+    const user = await this.getUserById(id);
+    user.reservedCoins -= coins;
+    await this.userRepository.save(user);
+  }
+
   async removeOldImage(userId: number): Promise<void> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
