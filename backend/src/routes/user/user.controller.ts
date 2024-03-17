@@ -56,6 +56,7 @@ export class UserController {
     userDto.lastName = user.lastName;
     userDto.birthday = user.birthday;
     userDto.coins = user.coins;
+    userDto.reservedCoins = user.reservedCoins;
     userDto.entryDate = new Date(user.entryDate);
     userDto.description = user.description;
     userDto.requestedTransits = user.requestedTransits;
