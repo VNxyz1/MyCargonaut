@@ -20,7 +20,7 @@ import { ISession } from '../../utils/ISession';
 import { IsLoggedInGuard } from '../../guards/auth/is-logged-in.guard';
 import { GetAllOffersResponseDto } from './DTOs/GetAllOffersResponseDto';
 import { UpdateOfferRequestDto } from './DTOs/UpdateOfferRequestDto';
-import { convertOfferToGetOfferDto } from '../utils/convertToOfferDto';
+import { convertOfferToGetOfferDto, convertUserToOtherUser } from '../utils/convertToOfferDto';
 import { TripState } from '../../database/TripState';
 import { Offer } from '../../database/Offer';
 import { GetOfferResponseDto } from './DTOs/GetOfferResponseDto';
@@ -28,6 +28,11 @@ import { UserService } from '../user.service/user.service';
 import { userIsValidToBeProvider } from '../utils/userIsValidToBeProvider';
 import { RatingService } from '../rating.service/rating.service';
 import { GetFilteredOffersDto } from './DTOs/GetFilteredOffersDto';
+import { get } from 'http';
+import { GetUserResponseDto } from '../user/DTOs/GetUserResponseDTO';
+import { GetOfferClientsDto } from './DTOs/GetOfferClientsDto';
+import { User } from 'src/database/User';
+import { GetOtherUserDto } from './DTOs/GetOtherUserDto';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -267,6 +272,25 @@ export class OfferController {
 
     await this.offerService.saveOffer(offer);
     return new OKResponseWithMessageDTO(true, 'Trip is marked as finished');
+  }
+
+  @Get('clients/:id')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({
+    summary: 'Retruns all clients for a offer only if user is provider'
+  })
+  async getClients(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number){
+    const userId = session.userData.id;
+    const offer = await this.offerService.getOffer(offerId)
+    if (offer.provider.id !== userId) {
+      throw new BadRequestException('You are not the Provider of this Offer!');
+    }
+    const clients = new GetOfferClientsDto;
+    clients.clients = [];
+    offer.clients.forEach(element => {
+      clients.clients.push(convertUserToOtherUser(element));
+    });
+    return clients;
   }
 
   filterOffersByPLZ(fromPlz: string, toPlz: string, offers: Offer[]): Offer[] {

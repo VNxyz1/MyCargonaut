@@ -43,7 +43,7 @@ export class VehicleService {
     const vehicle = await this.vehicleRepository.find({
       where: { id: vehicleId },
     });
-    console.log(vehicle[0]);
+  
     if (vehicle[0]) return true;
     return false;
   }
