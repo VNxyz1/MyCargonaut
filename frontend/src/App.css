@@ -466,9 +466,11 @@ nav input[type="checkbox"] {
 .profil_navi {
     display: flex !important;
     flex-direction: row !important;
+    justify-content: space-between;
     gap: 30px;
     margin-bottom: 35px;
     transition: var(--transition);
+    align-items: end;
 }
 
 .profil_navi .prof-tab {

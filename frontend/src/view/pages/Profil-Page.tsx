@@ -24,6 +24,7 @@ import {User} from "../../interfaces/User";
 import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
+import MyFinishedTripsComponent from '../components/Profile/MyFinishedTripsComponent.tsx';
 
 function UserPage(
   props: {
@@ -31,7 +32,7 @@ function UserPage(
   }
 ) {
     const [profileImageUrl, setProfileImageUrl] = useState(null);
-    const [currentSection, setCurrentSection] = useState("Meine Fahrten");
+    const [currentSection, setCurrentSection] = useState("Meine Angebote & Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
     const [showCreateCargoModal, setShowCreateCargoModal] = useState(false);
@@ -161,9 +162,11 @@ function UserPage(
     /*----------------*/
     const renderSectionContent = () => {
         switch (currentSection) {
-            case "Meine Fahrten":
+            case "Meine Angebote & Fahrten":
                 return <MyTripsComponent/>;
-            case "Meine Transporte":
+            case "Meine abgeschlossenen Fahrten":
+                return <MyFinishedTripsComponent/>;
+            case "Meine Gesuche":
                 return <MyTransportsComponent/>;
             case "Meine Fahrzeuge":
                 return <MyVehiclesComponent/>;
@@ -319,8 +322,9 @@ function UserPage(
 
                     <Col sm={8} id="prof-content">
                         <div className="profil_navi">
-                            <span onClick={() => setCurrentSection("Meine Fahrten")} className={`prof-tab ${currentSection === "Meine Fahrten" ? "active" : ""}`}> Meine Fahrten </span>
-                            <span onClick={() => setCurrentSection("Meine Transporte")} className={`prof-tab ${currentSection === "Meine Transporte" ? "active" : ""}`}> Meine Transporte </span>
+                            <span onClick={() => setCurrentSection("Meine Angebote & Fahrten")} className={`prof-tab ${currentSection === "Meine Angebote & Fahrten" ? "active" : ""}`}> Meine<br/>Angebote & Fahrten </span>
+                            <span onClick={() => setCurrentSection("Meine abgeschlossenen Fahrten")} className={`prof-tab ${currentSection === "Meine abgeschlossenen Fahrten" ? "active" : ""}`}> Meine<br/>abgeschlossenen Fahrten </span>
+                            <span onClick={() => setCurrentSection("Meine Gesuche")} className={`prof-tab ${currentSection === "Meine Gesuche" ? "active" : ""}`}> Meine Gesuche </span>
                             <span onClick={() => setCurrentSection("Meine Fahrzeuge")} className={`prof-tab ${currentSection === "Meine Fahrzeuge" ? "active" : ""}`}> Meine Fahrzeuge </span>
                             <span onClick={() => setCurrentSection("Bewertungen")} className={`prof-tab ${currentSection === "Bewertungen" ? "active" : ""}`}> Bewertungen </span>
                         </div>

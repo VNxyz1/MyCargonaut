@@ -104,6 +104,19 @@ export class RequestController {
     return dto;
   }
 
+  @Get('own')
+  @UseGuards(IsLoggedInGuard)
+  @ApiOperation({ summary: 'gets all trip request that the logged in user is the requester of' })
+  @ApiResponse({ type: GetAllTripRequestResponseDto })
+  async getOwn(@Session() session: ISession) {
+    const tRArr = await this.requestService.getOfUser(session.userData.id);
+    const dto = new GetAllTripRequestResponseDto();
+    dto.tripRequests = tRArr.map((tR) => {
+      return convertTripRequestToGetDto(tR);
+    });
+    return dto;
+  }
+
   @Get('one/:id')
   @ApiOperation({ summary: 'gets trip request by id' })
   @ApiResponse({ type: GetTripRequestResponseDto })

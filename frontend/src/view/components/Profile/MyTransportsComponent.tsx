@@ -1,34 +1,38 @@
 import Container from 'react-bootstrap/Container';
-import Accordion from "react-bootstrap/Accordion";
-
+import { useEffect, useState } from 'react';
+import { TripRequest } from '../../../interfaces/TripRequest.ts';
+import { getOwnTripRequests } from '../../../services/tripRequestService.ts';
+import { Row } from 'react-bootstrap';
+import TripListItem from '../Search-Transport-Page/Trip-List-Item.tsx';
 
 
 function MyTransportsComponent() {
-    return (
+  const [requests, setRequests] = useState<TripRequest[]>([]);
 
-            <Container>
-                <p>Du hast derzeit nichts, was transportiert werden muss.</p>
+  useEffect(() => {
+    renderRequests();
+  }, []);
 
-                <Accordion defaultActiveKey="0">
+  const renderRequests = async () => {
+    const tripRequests = await getOwnTripRequests();
+    if (tripRequests) {
+      setRequests(tripRequests);
+    }
+  };
 
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header>Accordion Item #1</Accordion.Header>
-                        <Accordion.Body>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                            minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                            aliquip ex ea commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                            culpa qui officia deserunt mollit anim id est laborum.
-                        </Accordion.Body>
-                    </Accordion.Item>
-
-                </Accordion>
-
-            </Container>
-
-);
+  return (
+    <Container>
+      {requests.length !== 0 ?
+        <></>
+        : <h3>Du hast zurzeit keine Gesuche eingestellt</h3>
+      }
+      <Row>
+        {requests.map((tR)=> (
+          <TripListItem trip={tR}/>
+        ))}
+      </Row>
+    </Container>
+  );
 }
 
 export default MyTransportsComponent;

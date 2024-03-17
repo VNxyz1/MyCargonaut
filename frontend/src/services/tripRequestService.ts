@@ -69,6 +69,20 @@ export interface PostRequestPlz {
   "location": string;
 }
 
+export const getOwnTripRequests = async () => {
+  try {
+    const res = await fetch(`/request/own`);
+    if (res.ok) {
+      const data = await res.json();
+      return data.tripRequests as TripRequest[];
+    }
+    const data = await res.json();
+    console.error(data);
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 
 export const acceptOffering = async (id: number) => {
   try {

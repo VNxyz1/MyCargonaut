@@ -6,10 +6,9 @@ import { Row } from 'react-bootstrap';
 import TripListItem from '../Search-Transport-Page/Trip-List-Item.tsx';
 
 
-function MyTripsComponent() {
-    const [plannedOffersAsDriver, setPlannedOffersAsDriver] = useState<Offer[]>([]);
-    const [plannedOffersAsPassenger, setPlannedOffersAsPassenger] = useState<Offer[]>([]);
-
+function MyFinishedTripsComponent() {
+    const [finishedOffersAsDriver, setFinishedOffersAsDriver] = useState<Offer[]>([]);
+    const [finishedOffersAsPassenger, setFinishedOffersAsPassenger] = useState<Offer[]>([]);
 
 
     useEffect(() => {
@@ -20,16 +19,16 @@ function MyTripsComponent() {
     const renderOffersAsDriver = async () => {
         const offers = await getOwnOffers();
         if (offers) {
-            const { planned } = splitIntoPlannedAndFinished(offers);
-            setPlannedOffersAsDriver(planned);
+            const { finished } = splitIntoPlannedAndFinished(offers);
+            setFinishedOffersAsDriver(finished);
         }
     }
 
     const renderOffersAsPassenger = async () => {
         const offers = await getPassengerOffers();
         if (offers) {
-            const { planned} = splitIntoPlannedAndFinished(offers);
-            setPlannedOffersAsPassenger(planned);
+            const {finished} = splitIntoPlannedAndFinished(offers);
+            setFinishedOffersAsPassenger(finished);
         }
     }
 
@@ -51,26 +50,26 @@ function MyTripsComponent() {
     return (
 
         <Container>
-            {plannedOffersAsDriver.length == 0 && plannedOffersAsPassenger.length == 0 ?
-              <h3>Du hast keine Fahrten geplant</h3>
+            {finishedOffersAsDriver.length == 0 && finishedOffersAsPassenger.length == 0 ?
+              <h3>Du hast keine Fahrten beendet</h3>
               : <></>
             }
-            {plannedOffersAsDriver.length !== 0 ?
-              <h3>Du Fährst:</h3>
+            {finishedOffersAsDriver.length !== 0 ?
+              <h3>Du bist gefahren:</h3>
               : <></>
             }
             <Row>
-                {plannedOffersAsDriver.map((offer)=> (
+                {finishedOffersAsDriver.map((offer)=> (
                       <TripListItem trip={offer}/>
                 ))}
             </Row>
 
-            {plannedOffersAsPassenger.length !== 0 ?
-              <h3>Du Fährst mit:</h3>
+            {finishedOffersAsPassenger.length !== 0 ?
+              <h3>Du bist mit gefahren:</h3>
               : <></>
             }
             <Row>
-                {plannedOffersAsPassenger.map((offer)=> (
+                {finishedOffersAsPassenger.map((offer)=> (
                       <TripListItem trip={offer}/>
                 ))}
             </Row>
@@ -83,5 +82,5 @@ function MyTripsComponent() {
     );
 }
 
-export default MyTripsComponent;
+export default MyFinishedTripsComponent;
 

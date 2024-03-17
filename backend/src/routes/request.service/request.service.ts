@@ -63,6 +63,17 @@ export class RequestService {
     return tRs;
   }
 
+  async getOfUser(userId: number) {
+    const tRs = await this.tripRequestRepository.find({
+      where: { requester: { id: userId } },
+      relations: ['startPlz', 'endPlz'],
+    });
+    if (!tRs) {
+      throw new NotFoundException('The trip requests could not be found.');
+    }
+    return tRs;
+  }
+
   async getFilteredBySearchstring(searchFor: string) {
     const tRs = await this.tripRequestRepository.find({
       where: [

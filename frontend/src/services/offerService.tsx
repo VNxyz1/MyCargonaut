@@ -19,8 +19,8 @@ export const getOwnOffers = async () => {
     try {
         const res = await fetch(`/offer/own`);
         if(res.ok){
-            const data: OfferList = await res.json();
-            return data;
+            const data = await res.json();
+            return data.offerList as Offer[];
         }
         const data = await res.json();
         console.error(data);
@@ -33,8 +33,8 @@ export const getPassengerOffers = async () => {
     try {
         const res = await fetch(`/offer/own/passenger`);
         if(res.ok){
-            const data: OfferList = await res.json();
-            return data;
+            const data = await res.json();
+            return data.offerList as Offer[];
         }
         const data = await res.json();
         console.error(data);
