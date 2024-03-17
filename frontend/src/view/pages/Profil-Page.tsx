@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useLocation} from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -48,7 +48,8 @@ function UserPage(
     const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
-
+    const location = useLocation();
+    
     useEffect(() => {
         if (isAuthenticated) {
             fetchLoggedInUser();
@@ -56,6 +57,13 @@ function UserPage(
             navigate('/login');
         }
     }, [isAuthenticated, navigate]);
+
+    useEffect(() => {
+        const state = location.state as { redirected: boolean }; 
+        if (state && state.redirected) {
+            setShowCreateTripModal(true);
+        }
+    }, [location]);
 
     const calculateAge = (birthDate: Date): number | null => {
         const currentDate = new Date();

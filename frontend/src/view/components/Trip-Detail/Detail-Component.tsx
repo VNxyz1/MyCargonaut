@@ -7,6 +7,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useEffect, useState} from "react";
 import {TripRequest} from "../../../interfaces/TripRequest.ts";
 import {RoutePart} from "../../../interfaces/RoutePart.ts";
+import ProfileDisplay from "./ProfileDisplay.tsx";
+import {User} from "../../../interfaces/User";
+import { useAuth } from "../../../services/authService.tsx";
+import { getClients } from "../../../services/offerService.tsx";
 
 interface RouteDisplay {
     plz: string,
@@ -24,12 +28,20 @@ function DetailComponent(
     const [imageUrl, setImageUrl] = useState<string|undefined>();
     const [imageAltText, setImageAltText] = useState<string>("placeholder");
     const [routeDisplays, setRouteDisplays] = useState<RouteDisplay[]>([]);
-
+    
+    const {isAuthenticated} = useAuth();
+    const [clientsUserData,setClientsUserData] = useState<User[]>([]);
 
     const createRouteDisplayArr = (routeParts: RoutePart[]):RouteDisplay[] => {
         return routeParts.map((rP)=> convertRoutePartToPlzDisplay(rP));
     }
 
+    const fetchClientUsers = async () => {
+        const data = await getClients(props.trip.id);
+        if (data !== null) {
+            setClientsUserData(data.clients as any);
+        }
+    };
     const convertRoutePartToPlzDisplay = (routePart: RoutePart): RouteDisplay => {
         const plz = routePart.plz.plz;
         const location = routePart.plz.location;
@@ -128,7 +140,12 @@ function DetailComponent(
 
 
     }, [imageUrl]);
-
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchClientUsers();
+        } 
+    }, []);
+    
 
     return (
         <div className="mt-4" style={{ width: "100%" }} >
@@ -179,6 +196,20 @@ function DetailComponent(
                     </Card.Text>
                 </Card.Body>
             </Card>
+            {clientsUserData !== null && clientsUserData.length<1? " ":
+            <Card className="mb-3">
+                <Card.Body>
+                    <Card.Title>Mitfahrer</Card.Title>
+                    <Card.Text>
+                        {clientsUserData.map(user => {
+                                return (
+                                    <ProfileDisplay  user={user!}/>
+                                )
+                            }
+                        )}
+                    </Card.Text>
+                </Card.Body>
+            </Card>}
 
         </div>
     )

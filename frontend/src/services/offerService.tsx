@@ -174,7 +174,7 @@ export const startTrip = async (id: number) => {
       console.error(e)
     }
   }
-  export const endTrip = async (id: number) => {
+export const endTrip = async (id: number) => {
     try {
       const response = await fetch(`/offer/end-trip/${id}`, {
         method: "PUT",
@@ -186,3 +186,21 @@ export const startTrip = async (id: number) => {
       console.error(e)
     }
   }
+export const getClients = async(id: number) =>{
+    try {
+        const res = await fetch(`/offer/clients/${id}`, {
+          method: "GET",
+          
+        })
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            return data;
+        }
+        const data = await res.json();
+        console.error(data);
+        return [];
+      } catch (e) {
+        console.error(e)
+      }
+}
