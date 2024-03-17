@@ -25,6 +25,7 @@ import {useAuth, logoutUser} from '../../services/authService';
 import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../../services/userService";
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 import MyFinishedTripsComponent from '../components/Profile/MyFinishedTripsComponent.tsx';
+import { NavState, RedirectType } from '../../interfaces/NavState.ts';
 
 function UserPage(
   props: {
@@ -48,7 +49,7 @@ function UserPage(
     const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
+    const locationRef = useLocation();
     
     useEffect(() => {
         if (isAuthenticated) {
@@ -59,11 +60,19 @@ function UserPage(
     }, [isAuthenticated, navigate]);
 
     useEffect(() => {
-        const state = location.state as { redirected: boolean }; 
-        if (state && state.redirected) {
-            setShowCreateTripModal(true);
+        const state = locationRef.state as NavState;
+        if (state && state.redirected && state.type !== undefined) {
+            if (state.type == RedirectType.offer) {
+                setShowCreateTripModal(true);
+            } else if (state.type == RedirectType.request) {
+                setShowCreateCargoModal(true);
+            }
         }
-    }, [location]);
+    }, [locationRef]);
+
+    useEffect(() => {
+        navigate("/profil", {})
+    }, [showCreateCargoModal, showCreateTripModal]);
 
     const calculateAge = (birthDate: Date): number | null => {
         const currentDate = new Date();

@@ -7,6 +7,7 @@ import transporter from "../../assets/img/home_transport.png";
 import pakete from "../../assets/img/home_package.png";
 import {Link, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import { RedirectType } from '../../interfaces/NavState.ts';
 
 function HomePage() {
 
@@ -49,7 +50,7 @@ function HomePage() {
                         <h3>Bist du auf dem Weg und kannst jemanden mitnehmen oder etwas transportieren?</h3>
                         <div className="btn_wrapper">
                             <Link to="/search-transport?t=request"><Button className="mainButton">Gesuche ansehen</Button></Link>
-                            <Button className="mainButton w-auto" onClick={() => navi('/profil', { state: { redirected: true } })}>Angebot erstellen</Button>
+                            <Button className="mainButton w-auto" onClick={() => navi('/profil', { state: { redirected: true, type: RedirectType.offer } })} >Angebot erstellen</Button>
                         </div>
                     </Col>
                 </Row>
@@ -60,7 +61,7 @@ function HomePage() {
                         <h3>Suchst du eine Mitfahrgelegenheit oder jemanden, der etwas für dich transportiert?</h3>
                         <div className="btn_wrapper">
                             <Link to="/search-transport?t=offer"><Button className="mainButton w-auto">Angebote ansehen</Button></Link>
-                            <Link to="/profil"><Button className="mainButton">Gesuch erstellen</Button></Link>
+                            <Button className="mainButton" onClick={() => navi('/profil', { state: { redirected: true, type: RedirectType.request } })} >Gesuch erstellen</Button>
                         </div>
                     </Col>
                     <Col sm={6} className="homeImg">

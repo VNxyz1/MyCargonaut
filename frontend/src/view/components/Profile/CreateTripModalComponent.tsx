@@ -210,7 +210,7 @@ const CreateTripModalComponent: React.FC<CreateTripModalComponent> = (props: Cre
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          FAHRT ANLEGEN
+          ANGEBOT ERSTELLEN
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

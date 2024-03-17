@@ -1,15 +1,18 @@
 import Container from 'react-bootstrap/Container';
 import Logo from "../../assets/img/Logo.png";
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 import {useAuth} from '../../services/authService';
 import {useEffect, useState} from "react";
 import { chatStore } from './Chat-Page/chats-zustand.ts';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { RedirectType } from '../../interfaces/NavState.ts';
 
 function NavigationComponent() {
     const {isAuthenticated} = useAuth();
     const [isSticky, setSticky] = useState(false);
     const { unreadMessagesTotal } = chatStore();
+    const navi = useNavigate();
+
 
     const spacerHeight = isSticky ? 99 : 131;
     const handleScroll = () => {
@@ -57,8 +60,8 @@ function NavigationComponent() {
 
                                 {isAuthenticated && (
                                     <>
-                                        <li><Link to="/profil">Angebot veröffentlichen</Link></li>
-                                        <li><Link to="/profil">Gesuch veröffentlichen</Link></li>
+                                        <li><a onClick={() => navi('/profil', { state: { redirected: true, type: RedirectType.offer } })}>Angebot veröffentlichen</a></li>
+                                        <li><a onClick={() => navi('/profil', { state: { redirected: true, type: RedirectType.request } })}>Gesuch veröffentlichen</a></li>
                                         <li className='d-lg-none'><Link to="/messages">Nachrichten</Link></li>
                                         <ListGroup.Item className='d-none d-lg-block'>
                                             <Link to="/messages">Nachrichten</Link>
