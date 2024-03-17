@@ -32,7 +32,7 @@ function AccumulatedRatingsCard(props: {
         const count = ratings.length;
         return {
             amount: count,
-            totalRating: total.totalRating / count * 20,
+            total: total.totalRating / count * 20,
             punctuality: total.punctuality / count * 20,
             reliability: total.reliability / count * 20,
             comfortDuringTrip: total.comfortDuringTrip / count * 20,
@@ -49,7 +49,7 @@ function AccumulatedRatingsCard(props: {
                 <Card.Title>
                     <div className="rating-txt">
                         {props.driver ? 'Fahrer' : 'Mitfahrer'} Bewertung
-                        <span>{averageRatings.totalRating.toFixed(0)}%</span>
+                        <span>{averageRatings.total.toFixed(0)}%</span>
                     </div>
                 </Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">aus {averageRatings.amount} abgegebenen Bewertungen</Card.Subtitle>

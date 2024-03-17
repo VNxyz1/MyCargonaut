@@ -61,7 +61,7 @@ export enum RatingTypes {
 
 export interface AverageRatings {
     amount: number;
-    totalRating: number;
+    total: number;
     punctuality: number;
     reliability: number;
     comfortDuringTrip: number;
