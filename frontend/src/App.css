@@ -321,7 +321,7 @@ nav input[type="checkbox"] {
     clip-path: polygon(0px 0px, 100% 0px, 100% 80%, 24.5% 100%, 0px 80%);
     color: #ffffffd6;
     height: 70vh;
-    background-position: center -200px;
+    background-position: center -180px;
     display: flex;
     align-items: center;
 }
@@ -431,6 +431,21 @@ nav input[type="checkbox"] {
 }
 
 @media (max-width: 575px) {
+
+    .home_header{
+        clip-path: polygon(0px 0px,100% 0px,100% 87%,24.5% 100%,0px 87%);
+        height: 400px;
+    }
+
+    .home_header .content_area {
+        margin-top: 0;
+    }
+
+    .home_header .homeTitel {
+        font-size: 36px;
+        line-height: 50px;
+    }
+
     .homeCont-sec {
         flex-direction: column-reverse;
     }
