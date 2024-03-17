@@ -59,6 +59,9 @@ Deployment : http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
 ## Funktionen
 Ein grober überblick
 
+### Unit Tests
+Für jede Funktion in backend Controllern und Services wurden ausreichend sinnvolle Tests geschrieben, die (so wie das linten) in der CD-Pipe ausgeführt werden.
+
 ### Websockets
 Für ein flüssigeres Nutzungserlebnis wurden im Bereich des Chats Websockets implementiert.
 
