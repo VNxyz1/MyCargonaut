@@ -101,7 +101,7 @@ function DetailComponent(
     }
 
     const convertDateTimeForDisplay = () => {
-        const date = new Date(props.trip.createdAt);
+        const date = new Date(props.trip.startDate);
 
         return date.toLocaleString("de-DE", {
             weekday: "long",

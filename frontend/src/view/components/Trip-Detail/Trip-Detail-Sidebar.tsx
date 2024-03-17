@@ -134,7 +134,7 @@ function DetailSidebar(
                         <ProfileDisplay user={"provider" in props.trip ? props.trip.provider : props.trip.requester}/>
                     </Card.Body>
                     <Card.Footer className="d-flex justify-content-between">
-                        <span>Anzeigen-ID</span>
+                        <span>{"provider" in props.trip ? "Anzeigen-ID" : "Gesuch-ID"}</span>
                         <span>{props.trip.id}</span>
                     </Card.Footer>
                 </Card>
