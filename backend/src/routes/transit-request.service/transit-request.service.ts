@@ -23,9 +23,14 @@ export class TransitRequestService {
 
   async postTransitRequest(offer: Offer, requestingUser: User, request: PostTransitRequestRequestDto) {
     const transitRequestCheck = await this.findTransitRequestWithOfferAndRequester(requestingUser, offer);
+    const clientCheck = await this.findOfferWithRequeserAsClient(requestingUser, offer);
 
     if (transitRequestCheck) {
       throw new BadRequestException('There already is a pending request!');
+    }
+
+    if (clientCheck) {
+      throw new BadRequestException('You were already accepted as client!');
     }
 
     let transitRequest = this.transitRequestRepository.create();
@@ -155,6 +160,17 @@ export class TransitRequestService {
       .leftJoinAndSelect('transitRequest.requester', 'requester')
       .leftJoinAndSelect('transitRequest.offer', 'offer')
       .where('transitRequest.requester.id = :userId AND transitRequest.offer.id = :offerId', {
+        userId: requestingUser.id,
+        offerId: offer.id,
+      })
+      .getOne();
+  }
+
+  private async findOfferWithRequeserAsClient(requestingUser: User, offer: Offer) {
+    return await this.offerRepository
+      .createQueryBuilder('offer')
+      .leftJoinAndSelect('offer.clients', 'clients')
+      .where('clients.id = :userId AND offer.id = :offerId', {
         userId: requestingUser.id,
         offerId: offer.id,
       })
