@@ -4,6 +4,7 @@ import { User } from '../../database/User';
 import { Repository } from 'typeorm';
 import { Offer } from '../../database/Offer';
 import { Plz } from '../../database/Plz';
+import { ReservedCoin } from '../../database/ReservedCoin';
 import { TransitRequest } from '../../database/TransitRequest';
 import { PutTransitRequestRequestDto } from '../transit-request/DTOs/PutTransitRequestRequestDto';
 import { PostTransitRequestRequestDto } from '../transit-request/DTOs/PostTransitRequestRequestDto';
@@ -19,6 +20,8 @@ export class TransitRequestService {
     private readonly plzRepository: Repository<Plz>,
     @InjectRepository(TransitRequest)
     private readonly transitRequestRepository: Repository<TransitRequest>,
+    @InjectRepository(ReservedCoin)
+    private readonly reservedCoinRepository: Repository<ReservedCoin>,
   ) {}
 
   async postTransitRequest(offer: Offer, requestingUser: User, request: PostTransitRequestRequestDto) {
@@ -125,6 +128,13 @@ export class TransitRequestService {
     offer.clients.push(client);
     offer.transitRequests = offer.transitRequests.filter((tranReq) => tranReq.id !== tR.id);
     offer.bookedSeats += tR.requestedSeats;
+
+    //Insert reserved coins
+    const reservedCoin = this.reservedCoinRepository.create();
+    reservedCoin.amount = tR.offeredCoins;
+    reservedCoin.user = client;
+    reservedCoin.trip = offer;
+    await this.reservedCoinRepository.save(reservedCoin);
 
     await this.offerRepository.save(offer);
 
