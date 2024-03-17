@@ -15,6 +15,31 @@ export const getTripRequestById = async (id: number) => {
   }
 }
 
+export const postOffering = async (requestId: number, body: PostOfferingBody) => {
+  try {
+    const res = await fetch(`/request/offering/${requestId}`, {
+      method: 'POST',
+      headers: {
+        "Content-type": "application/json"
+      },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) {
+      return true;
+    }
+    const data = await res.json();
+    console.error(data);
+    return false;
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+interface PostOfferingBody {
+  requestedCoins: number;
+  text: string;
+}
+
 export const deleteOffering = async (id: number) => {
   try {
     const res = await fetch(`/request/offering/${id}`, {
