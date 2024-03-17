@@ -5,10 +5,12 @@ import Button from 'react-bootstrap/Button';
 
 import transporter from "../../assets/img/home_transport.png";
 import pakete from "../../assets/img/home_package.png";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 
 function HomePage() {
+
+    const navi = useNavigate();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,7 +49,7 @@ function HomePage() {
                         <h3>Bist du auf dem Weg und kannst jemanden mitnehmen oder etwas transportieren?</h3>
                         <div className="btn_wrapper">
                             <Link to="/search-cargo"><Button className="mainButton">Cargo suchen</Button></Link>
-                            <Link to="/profil"><Button className="mainButton">Fahrt anlegen</Button></Link>
+                            <Button className="mainButton" onClick={() => navi('/profil', { state: { redirected: true } })}>Fahrt anlegen</Button>
                         </div>
                     </Col>
                 </Row>
