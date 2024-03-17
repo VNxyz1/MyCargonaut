@@ -270,7 +270,7 @@ export class OfferController {
       const amount = await this.offerService.getReservedCoinsForClient(client, offer);
       if (amount != null) {
         await this.userService.decreaseReservedCoinBalanceOfUser(client.id, amount);
-        await this.userService.increaseCoinBalanceOfUser(offer.provider.id, amount);
+        await this.userService.increaseCoinBalanceOfUser(offer.provider.id, Math.round(amount * 0.95));
       }
     }
 
@@ -281,7 +281,7 @@ export class OfferController {
   @Get('clients/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Retruns all clients for a offer only if user is provider',
+    summary: 'Returns all clients for a offer only if user is provider',
   })
   async getClients(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
     const userId = session.userData.id;
