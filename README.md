@@ -26,7 +26,7 @@ Der Nutzer kann in der Navigationsleiste auf "Fahrt suchen" oder "Cargo suchen" 
 In der Profilansicht sind sämtliche relevante Informationen zum Nutzer zu finden. Hier besteht die Möglichkeit, das eigene Profil zu bearbeiten. Darüber hinaus können Nutzer ihre aktuellen Coins, Bewertungen und weitere persönliche Angaben einsehen. Ebenso ist es möglich, Fahrzeuge anzulegen, die dann bei der Angebotserstellung angegeben werden können. Es wurde darauf geachtet, dass Benutzer erst Fahrten anbieten und erstellen können, sobald sie eine Telefonnummer und ein Profilbild hinterlegt haben. Die Profilansicht bietet zudem eine Übersicht über geplante Fahrten und Transporte sowie eigene Fahrzeuge und Bewertungen des Nutzers. Von hier aus können Nutzer auch alle Fahrten bewerten, an denen sie teilgenommen haben.
 
 ### Angebot und Gesuch einstellen
-In der Profilansicht finden sich die Optionen "Fahrt anlegen" und "Transport anlegen". Klickt man auf eine dieser Optionen, öffnet sich das entsprechende Modal. Beim Anlegen einer Fahrt hat der Benutzer die Möglichkeit, eines seiner Fahrzeuge auszuwählen und damit eine Route zu erstellen, wobei die Plätze für die einzelnen Etappen per Drag-and-Drop verschoben werden können. Beim Anlegen eines Transports kann der Benutzer lediglich Start- und Zielorte angeben. Darüber hinaus können bei beiden Optionen weitere Informationen wie das Datum, die Anzahl der Sitzplätze und eine Beschreibung eingegeben werden. Bestätigt der Nutzer seine Eingabe wird das Angebot/Gesuch auf der Suchseite angezeigt, und andere Nutzer können es sehen.
+In der Profilansicht finden sich die Optionen "Fahrt anlegen" und "Gesuch anlegen". Klickt man auf eine dieser Optionen, öffnet sich das entsprechende Modal. Beim Anlegen einer Fahrt hat der Benutzer die Möglichkeit, eines seiner Fahrzeuge auszuwählen und damit eine Route zu erstellen, wobei die Plätze für die einzelnen Etappen per Drag-and-Drop verschoben werden können. Beim Anlegen eines Gesuches kann der Benutzer lediglich Start- und Zielorte angeben. Darüber hinaus können bei beiden Optionen weitere Informationen wie das Datum, die Anzahl der Sitzplätze und eine Beschreibung eingegeben werden. Bestätigt der Nutzer seine Eingabe wird das Angebot/Gesuch auf der Suchseite angezeigt, und andere Nutzer können es sehen.
 
 >### Benutzer-/Fahrzeugverwaltung
 > some content...
@@ -70,7 +70,7 @@ API Doku: http://localhost:3000/api/
 
 Deployment: http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
 
-ER Diagram:  [`documentation/???`](documentation/ERDiagram.png)
+ER Diagram:  [`documentation/ERDiagram.png`](documentation/ERDiagram.png)
 
 Domainmodell:  [`documentation/domainmodell.svg`](documentation/domainmodell.svg)
 
