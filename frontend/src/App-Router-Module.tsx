@@ -81,7 +81,7 @@ function RoutesComponent( ) {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginAndRegisterPage handleShowAlert={handleShowAlert} />} />
                 <Route path="/profil" element={<ProfilPage reRender={reRender} handleShowAlert={handleShowAlert}/>} />
-                <Route path="/user/:userId" element={<UserPage />} />
+                <Route path="/user/:userId" element={<UserPage handleShowAlert={handleShowAlert}/>} />
                 <Route path="/search-transport" element={<SearchTransportPage reRender={reRender} offers={offers} requests={requests} />} />
                 <Route path="/messages" element={<ChatPage />} />
                 <Route path="/trip/:type/:id" element={<TripDetailPage/>} />

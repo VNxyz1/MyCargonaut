@@ -117,6 +117,9 @@ function UserPage(props: UserPageProps) {
             if (isImageUploaded) {
                 handleCloseEditImageModal();
             }
+            props.handleShowAlert('Profilbild wurde geändert', 'success')
+        } else {
+            props.handleShowAlert('Es ist ein Fehler beim hochladen des Bildes aufgetreten', 'error')
         }
     };
 
@@ -143,6 +146,7 @@ function UserPage(props: UserPageProps) {
         const isImageDeleted = await deleteProfileImage();
         if (isImageDeleted) {
             fetchLoggedInUser();
+            props.handleShowAlert('Profilbild wurde entfernt', 'success')
         }
     };
 

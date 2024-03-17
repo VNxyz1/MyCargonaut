@@ -17,7 +17,7 @@ function LoginAndRegisterPage({ handleShowAlert }: AlertProps ) {
                     <LoginForm handleShowAlert={handleShowAlert}/>
                 </Col>
                 <Col className="d-flex justify-content-xl-start justify-content-center">
-                    <RegisterForm/>
+                    <RegisterForm handleShowAlert={handleShowAlert}/>
                 </Col>
             </Row>
         </Container>
