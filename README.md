@@ -70,7 +70,7 @@ API Doku: http://localhost:3000/api/
 
 Deployment: http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
 
-Klassendiagramm:  [`documentation/???`](documentation/???)
+ER Diagram:  [`documentation/???`](documentation/ERDiagram.png)
 
 Domainmodell:  [`documentation/domainmodell.svg`](documentation/domainmodell.svg)
 
