@@ -59,6 +59,9 @@ Deployment : http://85.215.49.94:8000/ | Nutzer: test | PW: 1234
 ## Funktionen
 Ein grober überblick
 
+### Websockets
+Für ein flüssigeres Nutzungserlebnis wurden im Bereich des Chats Websockets implementiert.
+
 ### Registrieren
 Um alle Funktionen der Plattform nutzen zu können, ist eine Registrierung erforderlich. Während des Registrierungsprozesses wird überprüft, ob der Benutzer das Mindestalter von 18 Jahren erreicht hat. Darüber hinaus wird das Passwort gemäß den aktuellen Sicherheitsstandards gehasht, um die Sicherheit zu gewährleisten und die Vertraulichkeit der Benutzerdaten zu schützen.
 
