@@ -28,11 +28,7 @@ import { UserService } from '../user.service/user.service';
 import { userIsValidToBeProvider } from '../utils/userIsValidToBeProvider';
 import { RatingService } from '../rating.service/rating.service';
 import { GetFilteredOffersDto } from './DTOs/GetFilteredOffersDto';
-import { get } from 'http';
-import { GetUserResponseDto } from '../user/DTOs/GetUserResponseDTO';
 import { GetOfferClientsDto } from './DTOs/GetOfferClientsDto';
-import { User } from 'src/database/User';
-import { GetOtherUserDto } from './DTOs/GetOtherUserDto';
 
 @ApiTags('offer')
 @Controller('offer')
@@ -277,17 +273,17 @@ export class OfferController {
   @Get('clients/:id')
   @UseGuards(IsLoggedInGuard)
   @ApiOperation({
-    summary: 'Retruns all clients for a offer only if user is provider'
+    summary: 'Retruns all clients for a offer only if user is provider',
   })
-  async getClients(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number){
+  async getClients(@Session() session: ISession, @Param('id', ParseIntPipe) offerId: number) {
     const userId = session.userData.id;
-    const offer = await this.offerService.getOffer(offerId)
+    const offer = await this.offerService.getOffer(offerId);
     if (offer.provider.id !== userId) {
       throw new BadRequestException('You are not the Provider of this Offer!');
     }
-    const clients = new GetOfferClientsDto;
+    const clients = new GetOfferClientsDto();
     clients.clients = [];
-    offer.clients.forEach(element => {
+    offer.clients.forEach((element) => {
       clients.clients.push(convertUserToOtherUser(element));
     });
     return clients;

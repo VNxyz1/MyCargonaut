@@ -1,7 +1,5 @@
-import { IsNotEmpty, IsString, IsISO8601, IsArray, ArrayMinSize, IsNumber, Validate } from 'class-validator';
+import { IsArray, ArrayMinSize } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateRoutePartDto } from './CreateRoutePartDto';
-import { VehicleExistsValidator } from '../../utils/custom_validators';
 import { GetOtherUserDto } from './GetOtherUserDto';
 export class GetOfferClientsDto {
   @IsArray()
@@ -11,5 +9,4 @@ export class GetOfferClientsDto {
     minimum: 2,
   })
   clients: GetOtherUserDto[];
-
 }
