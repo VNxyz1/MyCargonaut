@@ -24,7 +24,7 @@ import {getLoggedInUser, uploadImage, deleteProfileImage, deleteUser} from "../.
 import AverageRatingsComponent from "../components/Ratings/AverageRatingsComponent.tsx";
 
 function UserPage() {
-    const [profileImageUrl, setProfileImageUrl] = useState(null);
+    const [profileImageUrl, setProfileImageUrl] = useState<string| null>(null);
     const [currentSection, setCurrentSection] = useState("Meine Fahrten");
     const [showProfileEditModal, setShowProfileEditModal] = useState(false);
     const [showVehicleAddModal, setShowVehicleAddModal] = useState(false);
@@ -35,7 +35,7 @@ function UserPage() {
     const [showDeleteProfileModal, setShowDeleteProfileModal] = useState(false);
     const [userData, setUserData] = useState<User | null>(null);
     const [userAge, setUserAge] = useState<number | null>(null);
-    const entryDate = new Date((userData as any)?.entryDate);
+    const entryDate = new Date((userData as User)?.entryDate);
     const formattedEntryDate = entryDate.toLocaleDateString();
     const {isAuthenticated, logout} = useAuth();
     const navigate = useNavigate();
@@ -64,9 +64,9 @@ function UserPage() {
     const fetchLoggedInUser = async () => {
         const data = await getLoggedInUser();
         if (data !== null) {
-            setUserData(data as any);
-            setProfileImageUrl((data as any)?.profilePicture);
-            const bDate = calculateAge(new Date((data as any)?.birthday));
+            setUserData(data as User);
+            setProfileImageUrl((data as User)?.profilePicture);
+            const bDate = calculateAge(new Date((data as User)?.birthday));
             setUserAge(bDate);
         }
     };

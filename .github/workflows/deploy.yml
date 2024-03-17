@@ -9,20 +9,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: SSH Key Action
-        uses: shimataro/ssh-key-action@v2
+      - uses: alex-ac/github-action-ssh-docker-compose@master
+        name: Docker-Compose Remote Deployment
         with:
-          key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
-          known_hosts: ${{ secrets.DEVELOPMENT_TEST_SERVER_KNOWN_HOSTS }}
-
-      - name: Deploy to server
-        uses: alex-ac/github-action-ssh-docker-compose@master
-        with:
-          ssh_private_key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
           ssh_host: ${{ secrets.DEVELOPMENT_TEST_SERVER_IP }}
+          ssh_private_key: ${{ secrets.DEVELOPMENT_TEST_SERVER_SSH }}
           ssh_user: ${{ secrets.DEVELOPMENT_TEST_SERVER_USER }}
-          docker_compose_filename: docker-compose.yml
+          docker_compose_prefix: cargonaut
