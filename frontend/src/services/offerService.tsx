@@ -162,3 +162,27 @@ const getReceivedTransitRequests = async ():Promise<TransitRequest[] | undefined
         console.error(e)
     }
 }
+export const startTrip = async (id: number) => {
+    try {
+      const response = await fetch(`/offer/start-trip/${id}`, {
+        method: "PUT",
+        
+      });
+      return response.ok;
+  
+    } catch (e) {
+      console.error(e)
+    }
+  }
+  export const endTrip = async (id: number) => {
+    try {
+      const response = await fetch(`/offer/end-trip/${id}`, {
+        method: "PUT",
+        
+      });
+      return response.ok;
+  
+    } catch (e) {
+      console.error(e)
+    }
+  }

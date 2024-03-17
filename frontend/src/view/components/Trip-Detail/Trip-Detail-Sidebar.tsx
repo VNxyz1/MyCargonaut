@@ -6,6 +6,10 @@ import ProfileDisplay from "./ProfileDisplay.tsx";
 import TransitRequestModal from "./Transit-Request-Modal.tsx";
 import NotLoggedInModal from "../Login-Regist/Not-Logged-In-Modal.tsx";
 import {TripRequest} from "../../../interfaces/TripRequest.ts";
+import { useAuth } from "../../../services/authService.tsx";
+import { User } from "../../../interfaces/User.ts";
+import { getLoggedInUser } from "../../../services/userService.tsx";
+import { endTrip, startTrip } from "../../../services/offerService.tsx";
 
 
 function DetailSidebar(
@@ -16,9 +20,20 @@ function DetailSidebar(
     const [showTransitRequestModal, setShowTransitRequestModal] = useState(false);
     const [showNotLoggedInModal, setShowNotLoggedInModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
-
+    const [userData, setUserData] = useState<User | null>(null);
+    const {isAuthenticated} = useAuth();
+    
+    const fetchLoggedInUser = async () => {
+        const data = await getLoggedInUser();
+        if (data !== null) {
+            setUserData(data as any);
+        }
+    };
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchLoggedInUser();
+        } 
+    }, [isAuthenticated]);
     useEffect(() => {
         const item = localStorage.getItem('isAuthenticated');
         if(item) {
@@ -26,8 +41,15 @@ function DetailSidebar(
         }
 
     }, []);
-
-
+    
+    const isProvider = () =>{
+        
+        if('provider' in props.trip && userData){
+            if(userData!.id == props.trip.provider.id) return true;
+        }
+        return false;
+    }
+ 
     const handleOpenRequestModal = () => {
         if(isLoggedIn) {
             setShowTransitRequestModal(true);
@@ -53,6 +75,21 @@ function DetailSidebar(
             setShowNotLoggedInModal(true);
         }
     }
+    const handleStartTrip = () => {
+        if(isAuthenticated) {
+            startTrip(props.trip.id);
+        } else {
+            setShowNotLoggedInModal(true);
+        }
+    }
+    const handleEndTrip = () => {
+        if(isAuthenticated) {
+            endTrip(props.trip.id);
+        } else {
+            setShowNotLoggedInModal(true);
+        }
+    }
+
 
     const handleClose = () => {
         setShowTransitRequestModal(false);
@@ -60,21 +97,28 @@ function DetailSidebar(
         console.log("closed")
     }
 
-
+   
     return (
         <>
             <div className="mt-4" style={{width: "100%"}}>
                 <Card>
                     <Card.Header>
-                        <Button onClick={handleOpenRequestModal} className="mainButton w-100 mb-2">
+                        
+                        {isProvider()?" ":<Button onClick={handleOpenRequestModal} className="mainButton w-100 mb-2">
                             Angebot machen
-                        </Button>
-                        <Button onClick={handleOpenChatPage} className="mainButton w-100 mb-2">
+                        </Button>}
+                        {isProvider()?" ":<Button onClick={handleOpenChatPage} className="mainButton w-100 mb-2">
                             Nachricht schreiben
-                        </Button>
-                        <Button onClick={handleAddToWatchlist} className="mainButton w-100 mb-2">
+                        </Button>}
+                        {isProvider()?" ":<Button onClick={handleAddToWatchlist} className="mainButton w-100 mb-2">
                             Zur Merkliste hinzufügen
-                        </Button>
+                        </Button>}
+                        {!isProvider()?" ":<Button onClick={handleStartTrip} className="mainButton w-100 mb-2">
+                            Start Trip
+                        </Button>}
+                        {!isProvider()?" ":<Button onClick={handleEndTrip} className="mainButton w-100 mb-2">
+                            End Trip
+                        </Button>}
                     </Card.Header>
                     <Card.Body>
                         <ProfileDisplay user={"provider" in props.trip ? props.trip.provider : props.trip.requester}/>
@@ -89,8 +133,8 @@ function DetailSidebar(
             <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.trip.id}/>
             <NotLoggedInModal show={showNotLoggedInModal} onClose={handleClose}/>
         </>
-
     )
+    
 }
 
 export default DetailSidebar
