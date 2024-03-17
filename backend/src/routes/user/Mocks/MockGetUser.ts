@@ -26,8 +26,6 @@ export class MockGetUser {
 
   coins: number;
 
-  reservedCoins: number;
-
   requestedTransits: TransitRequest[];
 
   offers?: MockGetOffer[];
