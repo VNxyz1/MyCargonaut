@@ -45,7 +45,7 @@ function ProfilPage({ handleShowAlert }: AlertProps) {
 
         } else {
             handleShowAlert('Du musst dich einloggen', 'error')
-            console.log("Du musst eingeloggt sein, um die seite zu sehen.")
+            console.log("Du musst eingeloggt sein, um die Seite zu sehen.")
             navigate('/login');
         }
 
