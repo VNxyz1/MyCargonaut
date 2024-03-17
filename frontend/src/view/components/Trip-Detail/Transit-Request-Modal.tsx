@@ -22,7 +22,6 @@ function TransitRequestModal(props: TransitRequestModalProps) {
 
     const sendTransitRequest = async () => {
         try {
-            console.log(data)
             const res = await fetch(`/transit-request/${props.offerId}`, {
                 method: "POST",
                 headers: {
@@ -105,10 +104,10 @@ function TransitRequestModal(props: TransitRequestModalProps) {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={props.onClose}>
-                        Close
+                        Abbrechen
                     </Button>
                     <Button className="mainButton" type="submit" onClick={sendTransitRequest}>
-                        Save Changes
+                        Angebot machen
                     </Button>
                 </Modal.Footer>
             </Modal>

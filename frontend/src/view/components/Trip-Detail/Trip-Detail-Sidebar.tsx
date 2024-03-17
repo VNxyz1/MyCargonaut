@@ -11,6 +11,7 @@ import { User } from "../../../interfaces/User.ts";
 import { getLoggedInUser } from "../../../services/userService.tsx";
 import { endTrip, startTrip } from "../../../services/offerService.tsx";
 import TripDeleteModal from "./Trip-Delete-Modal.tsx";
+import TripRequestOfferingModal from './TripRequestOfferingModal.tsx';
 
 
 function DetailSidebar(
@@ -20,7 +21,8 @@ function DetailSidebar(
 ) {
     const [showTransitRequestModal, setShowTransitRequestModal] = useState(false);
     const [showNotLoggedInModal, setShowNotLoggedInModal] = useState(false);
-    const [showDeleteModal,setShowDeleteModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showTripRequestModal, setShowTripRequestModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState<User | null>(null);
     const {isAuthenticated} = useAuth();
@@ -55,11 +57,16 @@ function DetailSidebar(
  
     const handleOpenRequestModal = () => {
         if(isLoggedIn) {
-            setShowTransitRequestModal(true);
+            if ("provider" in props.trip) {
+                setShowTransitRequestModal(true);
+            } else {
+                setShowTripRequestModal(true);
+            }
         } else {
             setShowNotLoggedInModal(true);
         }
     }
+
 
     const handleOpenChatPage = () => {
         if(isLoggedIn) {
@@ -70,14 +77,6 @@ function DetailSidebar(
         }
     }
 
-    const handleAddToWatchlist = () => {
-        if(isLoggedIn) {
-            //todo
-            alert("not implemented");
-        } else {
-            setShowNotLoggedInModal(true);
-        }
-    }
     const handleStartTrip = () => {
         if(isAuthenticated) {
             startTrip(props.trip.id);
@@ -101,7 +100,7 @@ function DetailSidebar(
         setShowTransitRequestModal(false);
         setShowNotLoggedInModal(false);
         setShowDeleteModal(false);
-        console.log("closed")
+        setShowTripRequestModal(false);
     }
 
    
@@ -116,9 +115,6 @@ function DetailSidebar(
                         </Button>}
                         {isProvider()?" ":<Button onClick={handleOpenChatPage} className="mainButton w-100 mb-2">
                             Nachricht schreiben
-                        </Button>}
-                        {isProvider()?" ":<Button onClick={handleAddToWatchlist} className="mainButton w-100 mb-2">
-                            Zur Merkliste hinzufügen
                         </Button>}
                         {!isProvider()?" ":<Button onClick={handleStartTrip} className="mainButton w-100 mb-2">
                             Start Trip
@@ -141,6 +137,7 @@ function DetailSidebar(
 
             </div>
             <TransitRequestModal show={showTransitRequestModal} onClose={handleClose} offerId={props.trip.id}/>
+            <TripRequestOfferingModal show={showTripRequestModal} onClose={handleClose} requestId={props.trip.id}/>
             <NotLoggedInModal show={showNotLoggedInModal} onClose={handleClose}/>
             <TripDeleteModal show={showDeleteModal} onClose={handleClose} trip={props.trip}/>
         </>

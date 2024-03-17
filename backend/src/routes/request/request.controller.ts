@@ -276,6 +276,7 @@ export class RequestController {
     await this.offeringService.save(offering);
 
     this.messageGatewayService.reloadMessages(tR.requester.id);
+    this.messageGatewayService.reloadMessages(offeringUserId);
 
     return new OKResponseWithMessageDTO(true, 'Offer was send.');
   }
